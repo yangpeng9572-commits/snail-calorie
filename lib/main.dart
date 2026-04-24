@@ -4,6 +4,7 @@ import 'package:quick_actions/quick_actions.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
+import 'core/widgets/offline_banner.dart';
 import 'core/l10n/app_localizations.dart';
 import 'data/services/local_storage_service.dart';
 import 'data/services/auth_service.dart';
@@ -15,6 +16,8 @@ import 'features/auth/login_page.dart';
 import 'features/export/export_page.dart';
 import 'features/share/share_profile_page.dart';
 import 'features/onboarding/onboarding_page.dart';
+import 'features/splash/splash_page.dart';
+import 'features/settings/privacy_policy_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -119,7 +122,8 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
     final localeCode = ref.watch(localeProvider);
     final l10n = AppLocalizations(localeCode);
 
-    return MaterialApp(
+    return OfflineBanner(
+      child: MaterialApp(
       title: l10n.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
@@ -138,10 +142,15 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
             return SlidePageRoute(page: const ExportPage());
           case '/share-profile':
             return SlidePageRoute(page: const ShareProfilePage());
+          case '/splash':
+            return SlidePageRoute(page: const SplashPage());
+          case '/privacy-policy':
+            return SlidePageRoute(page: const PrivacyPolicyPage());
           default:
             return null;
         }
       },
+      ),
     );
   }
 }

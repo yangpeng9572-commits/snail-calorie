@@ -320,6 +320,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
 
+            const SizedBox(height: 12),
+
+            // 隱私權政策
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
+                title: const Text('隱私權政策'),
+                subtitle: const Text('了解我們如何處理您的資料', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
+              ),
+            ),
+
             const SizedBox(height: 24),
 
             // 關於

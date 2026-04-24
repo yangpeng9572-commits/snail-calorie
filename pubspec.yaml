@@ -51,6 +51,9 @@ dependencies:
   # 快捷動作
   quick_actions: ^1.0.7
 
+  # 網路連線檢測
+  connectivity_plus: ^6.1.2
+
   # Firebase（等 Andy 提供設定檔後啟用，版本已確認相容）
   # firebase_core: ^3.13.0
   # firebase_auth: ^5.6.0
