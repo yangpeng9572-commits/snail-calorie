@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+
+/// 深色主題
+class AppThemeDark {
+  AppThemeDark._();
+
+  // 品牌色彩（浅色版綠色）
+  static const Color primaryColor = Color(0xFF81C784);
+  static const Color secondaryColor = Color(0xFF4DB6AC);
+  static const Color accentColor = Color(0xFFFFB74D);
+  static const Color errorColor = Color(0xFFEF5350);
+
+  // 營養素色彩
+  static const Color calorieColor = Color(0xFFFF8A65);
+  static const Color carbsColor = Color(0xFF64B5F6);
+  static const Color proteinColor = Color(0xFF81C784);
+  static const Color fatColor = Color(0xFFFFD54F);
+
+  // 深色背景色彩
+  static const Color backgroundColor = Color(0xFF121212);
+  static const Color cardColor = Color(0xFF1E1E1E);
+  static const Color surfaceColor = Color(0xFF1E1E1E);
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFFB0B0B0);
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
+        primary: primaryColor,
+        secondary: secondaryColor,
+        tertiary: accentColor,
+        error: errorColor,
+        surface: surfaceColor,
+        onPrimary: Colors.black,
+        onSecondary: Colors.black,
+        onSurface: textPrimary,
+        onError: Colors.white,
+      ),
+      scaffoldBackgroundColor: backgroundColor,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF1E1E1E),
+        foregroundColor: textPrimary,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      cardTheme: CardTheme(
+        color: cardColor,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.black,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF1E1E1E),
+        selectedItemColor: primaryColor,
+        unselectedItemColor: textSecondary,
+        type: BottomNavigationBarType.fixed,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF2C2C2C),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        hintStyle: const TextStyle(color: textSecondary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primaryColor;
+          }
+          return Colors.grey;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primaryColor.withOpacity(0.5);
+          }
+          return Colors.grey.withOpacity(0.3);
+        }),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: textPrimary),
+        bodyMedium: TextStyle(color: textPrimary),
+        bodySmall: TextStyle(color: textSecondary),
+        titleLarge: TextStyle(color: textPrimary),
+        titleMedium: TextStyle(color: textPrimary),
+        titleSmall: TextStyle(color: textPrimary),
+        labelLarge: TextStyle(color: textPrimary),
+        labelMedium: TextStyle(color: textPrimary),
+        labelSmall: TextStyle(color: textSecondary),
+      ),
+    );
+  }
+}

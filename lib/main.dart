@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/app_theme_dark.dart';
 import 'data/services/local_storage_service.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/firestore_service.dart';
@@ -38,15 +39,19 @@ final authServiceProvider = Provider<AuthService>((ref) {
   throw UnimplementedError('AuthService must be overridden at startup');
 });
 
-class SnailCalorieApp extends StatelessWidget {
+class SnailCalorieApp extends ConsumerWidget {
   const SnailCalorieApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       title: '食刻輕卡',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppThemeDark.darkTheme,
+      themeMode: themeMode,
       home: const AuthGate(),
       routes: {
         '/profile': (_) => const ProfilePage(),

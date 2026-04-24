@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/daily_log.dart';
 import '../models/food_item.dart';
@@ -145,6 +146,24 @@ class LocalStorageService {
   }
 
   static const String _keyNotificationSettings = 'notification_settings';
+
+  // ==================== 主題設定 ====================
+
+  static const String _keyThemeMode = 'theme_mode';
+
+  /// 儲存主題模式
+  Future<void> saveThemeMode(ThemeMode mode) async {
+    await _prefs.setString(_keyThemeMode, mode.index.toString());
+  }
+
+  /// 讀取主題模式
+  ThemeMode getThemeMode() {
+    final str = _prefs.getString(_keyThemeMode);
+    if (str == null) return ThemeMode.system;
+    final index = int.tryParse(str);
+    if (index == null || index < 0 || index > 2) return ThemeMode.system;
+    return ThemeMode.values[index];
+  }
 
   Future<void> clearAll() async {
     await _prefs.clear();

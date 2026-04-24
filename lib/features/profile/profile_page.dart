@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_theme_dark.dart';
 import '../../core/constants/app_constants.dart';
 import '../../data/services/auth_service.dart';
 
@@ -250,6 +251,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
             const SizedBox(height: 24),
 
+            // 主題設定
+            const Text('外觀設定', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            _ThemeSwitch(
+              title: '深色主題',
+              subtitle: '切換深色/淺色模式',
+              icon: Icons.dark_mode,
+              value: ref.watch(themeModeProvider) == ThemeMode.dark,
+              onChanged: (v) {
+                ref.read(themeModeProvider.notifier).setThemeMode(
+                  v ? ThemeMode.dark : ThemeMode.light,
+                );
+              },
+            ),
+
+            const SizedBox(height: 24),
+
             // 提醒設定
             const Text('提醒設定', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
@@ -488,16 +506,53 @@ class _NotificationSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        leading: Icon(icon, color: AppTheme.primaryColor),
+        leading: Icon(icon, color: isDark ? AppThemeDark.primaryColor : AppTheme.primaryColor),
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: AppTheme.primaryColor,
+          activeColor: isDark ? AppThemeDark.primaryColor : AppTheme.primaryColor,
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeSwitch extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _ThemeSwitch({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(icon, color: isDark ? AppThemeDark.primaryColor : AppTheme.primaryColor),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: isDark ? AppThemeDark.primaryColor : AppTheme.primaryColor,
         ),
       ),
     );

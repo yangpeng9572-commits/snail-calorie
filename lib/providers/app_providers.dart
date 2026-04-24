@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/services/local_storage_service.dart';
 import '../data/services/open_food_facts_service.dart';
@@ -8,6 +9,37 @@ import '../data/models/food_item.dart';
 import '../data/models/daily_log.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/date_utils.dart';
+
+// ==================== 主題設定 Provider ====================
+
+/// 主題模式 Provider
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  final storage = ref.watch(localStorageProvider);
+  return ThemeModeNotifier(storage);
+});
+
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  final LocalStorageService _storage;
+
+  ThemeModeNotifier(this._storage) : super(ThemeMode.system) {
+    _load();
+  }
+
+  void _load() {
+    final savedTheme = _storage.getThemeMode();
+    state = savedTheme;
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = mode;
+    await _storage.saveThemeMode(mode);
+  }
+
+  Future<void> toggleDarkMode() async {
+    final newMode = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    await setThemeMode(newMode);
+  }
+}
 
 // ==================== 認證狀態 Provider ====================
 
