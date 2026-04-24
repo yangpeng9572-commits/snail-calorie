@@ -146,6 +146,17 @@ class LocalStorageService {
   }
 
   static const String _keyNotificationSettings = 'notification_settings';
+  static const String _keyLastExportTime = 'last_export_time';
+
+  /// 儲存上一次匯出時間
+  Future<void> saveLastExportTime(String timestamp) async {
+    await _prefs.setString(_keyLastExportTime, timestamp);
+  }
+
+  /// 讀取上一次匯出時間
+  String? getLastExportTime() {
+    return _prefs.getString(_keyLastExportTime);
+  }
 
   // ==================== 主題設定 ====================
 

@@ -39,6 +39,9 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
 
+  # 分享功能
+  share_plus: ^9.0.0
+
   # Firebase（等 Andy 提供設定檔後啟用，版本已確認相容）
   # firebase_core: ^3.13.0
   # firebase_auth: ^5.6.0

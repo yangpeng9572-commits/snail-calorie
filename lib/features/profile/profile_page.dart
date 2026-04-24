@@ -360,7 +360,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
             const SizedBox(height: 24),
 
-            // 清除本地資料（危險區域）
+            // 資料匯出
+            const Text('資料管理', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.file_download, color: AppTheme.primaryColor),
+                title: const Text('匯出飲食記錄'),
+                subtitle: const Text('將記錄匯出為 CSV 或 JSON 格式', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pushNamed(context, '/export'),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 危險區域
             const Text('危險區域', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Card(

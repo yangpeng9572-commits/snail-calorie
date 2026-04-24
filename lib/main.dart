@@ -9,6 +9,7 @@ import 'features/home/home_page.dart';
 import 'features/profile/profile_page.dart';
 import 'features/charts/charts_page.dart';
 import 'features/auth/login_page.dart';
+import 'features/export/export_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -56,6 +57,7 @@ class SnailCalorieApp extends ConsumerWidget {
       routes: {
         '/profile': (_) => const ProfilePage(),
         '/charts': (_) => const ChartsPage(),
+        '/export': (_) => const ExportPage(),
       },
     );
   }
