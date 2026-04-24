@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/services/local_storage_service.dart';
 import '../data/services/open_food_facts_service.dart';
 import '../data/services/firestore_service.dart';
+import '../data/services/notification_service.dart';
 import '../data/models/meal_record.dart';
 import '../data/models/food_item.dart';
 import '../data/models/daily_log.dart';
@@ -300,5 +301,117 @@ class WeightRecordsNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   Future<void> refresh() async {
     await _load();
+  }
+}
+
+// ==================== 通知設定 Providers ====================
+
+/// 通知服務單例
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  return NotificationService();
+});
+
+/// 通知設定狀態
+class NotificationSettings {
+  final bool breakfastEnabled;
+  final bool lunchEnabled;
+  final bool dinnerEnabled;
+
+  const NotificationSettings({
+    this.breakfastEnabled = false,
+    this.lunchEnabled = false,
+    this.dinnerEnabled = false,
+  });
+
+  NotificationSettings copyWith({
+    bool? breakfastEnabled,
+    bool? lunchEnabled,
+    bool? dinnerEnabled,
+  }) {
+    return NotificationSettings(
+      breakfastEnabled: breakfastEnabled ?? this.breakfastEnabled,
+      lunchEnabled: lunchEnabled ?? this.lunchEnabled,
+      dinnerEnabled: dinnerEnabled ?? this.dinnerEnabled,
+    );
+  }
+}
+
+/// 通知設定 Provider
+final notificationSettingsProvider =
+    StateNotifierProvider<NotificationSettingsNotifier, NotificationSettings>((ref) {
+  return NotificationSettingsNotifier(ref);
+});
+
+class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
+  final Ref _ref;
+
+  NotificationSettingsNotifier(this._ref) : super(const NotificationSettings()) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final storage = _ref.read(localStorageProvider);
+    final settings = storage.getNotificationSettings();
+    state = settings;
+    await _syncReminders();
+  }
+
+  Future<void> toggleBreakfast(bool enabled) async {
+    state = state.copyWith(breakfastEnabled: enabled);
+    await _saveAndSync();
+  }
+
+  Future<void> toggleLunch(bool enabled) async {
+    state = state.copyWith(lunchEnabled: enabled);
+    await _saveAndSync();
+  }
+
+  Future<void> toggleDinner(bool enabled) async {
+    state = state.copyWith(dinnerEnabled: enabled);
+    await _saveAndSync();
+  }
+
+  Future<void> _saveAndSync() async {
+    final storage = _ref.read(localStorageProvider);
+    await storage.saveNotificationSettings(state);
+    await _syncReminders();
+  }
+
+  Future<void> _syncReminders() async {
+    final notificationService = _ref.read(notificationServiceProvider);
+
+    // 取消所有現有提醒
+    await notificationService.cancelAllReminders();
+
+    // 根據設定重新排程
+    if (state.breakfastEnabled) {
+      await notificationService.scheduleMealReminder(
+        id: 1,
+        title: '🍳 早餐時間到！',
+        body: '記得吃早餐，補充一天的活力！',
+        hour: 8,
+        minute: 0,
+      );
+    }
+
+    if (state.lunchEnabled) {
+      await notificationService.scheduleMealReminder(
+        id: 2,
+        title: '🥗 午餐時間到！',
+        body: '該吃午餐了，注意營養均衡！',
+        hour: 12,
+        minute: 0,
+      );
+    }
+
+    if (state.dinnerEnabled) {
+      await notificationService.scheduleMealReminder(
+        id: 3,
+        title: '🍽️ 晚餐時間到！',
+        body: '晚餐時間到了，別忘了記錄！',
+        hour: 18,
+        minute: 0,
+      );
+    }
   }
 }

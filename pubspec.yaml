@@ -35,6 +35,10 @@ dependencies:
   uuid: ^4.4.0
   image_picker: ^1.1.2
 
+  # 本地通知
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
+
   # Firebase（可選，需手動設定）
   # firebase_core: ^3.1.0
   # firebase_auth: ^4.19.0

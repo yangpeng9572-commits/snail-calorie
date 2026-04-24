@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/daily_log.dart';
 import '../models/food_item.dart';
 import '../../core/utils/date_utils.dart';
+import '../../providers/app_providers.dart';
 
 /// 本地存儲服務（使用 SharedPreferences + JSON）
 class LocalStorageService {
@@ -121,6 +122,29 @@ class LocalStorageService {
   }
 
   // ==================== 清除所有資料 ====================
+
+  /// 儲存通知設定
+  Future<void> saveNotificationSettings(NotificationSettings settings) async {
+    await _prefs.setString(_keyNotificationSettings, json.encode({
+      'breakfastEnabled': settings.breakfastEnabled,
+      'lunchEnabled': settings.lunchEnabled,
+      'dinnerEnabled': settings.dinnerEnabled,
+    }));
+  }
+
+  /// 讀取通知設定
+  NotificationSettings getNotificationSettings() {
+    final str = _prefs.getString(_keyNotificationSettings);
+    if (str == null) return const NotificationSettings();
+    final map = json.decode(str) as Map<String, dynamic>;
+    return NotificationSettings(
+      breakfastEnabled: map['breakfastEnabled'] as bool? ?? false,
+      lunchEnabled: map['lunchEnabled'] as bool? ?? false,
+      dinnerEnabled: map['dinnerEnabled'] as bool? ?? false,
+    );
+  }
+
+  static const String _keyNotificationSettings = 'notification_settings';
 
   Future<void> clearAll() async {
     await _prefs.clear();

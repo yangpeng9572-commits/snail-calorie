@@ -248,8 +248,68 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
 
+            const SizedBox(height: 24),
+
+            // 提醒設定
+            const Text('提醒設定', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            _NotificationSwitch(
+              title: '早餐提醒',
+              subtitle: '08:00',
+              icon: Icons.egg_alt,
+              value: ref.watch(notificationSettingsProvider).breakfastEnabled,
+              onChanged: (v) => ref.read(notificationSettingsProvider.notifier).toggleBreakfast(v),
+            ),
+            _NotificationSwitch(
+              title: '午餐提醒',
+              subtitle: '12:00',
+              icon: Icons.lunch_dining,
+              value: ref.watch(notificationSettingsProvider).lunchEnabled,
+              onChanged: (v) => ref.read(notificationSettingsProvider.notifier).toggleLunch(v),
+            ),
+            _NotificationSwitch(
+              title: '晚餐提醒',
+              subtitle: '18:00',
+              icon: Icons.dinner_dining,
+              value: ref.watch(notificationSettingsProvider).dinnerEnabled,
+              onChanged: (v) => ref.read(notificationSettingsProvider.notifier).toggleDinner(v),
+            ),
+
             const SizedBox(height: 32),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationSwitch extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _NotificationSwitch({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(icon, color: AppTheme.primaryColor),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: AppTheme.primaryColor,
         ),
       ),
     );
