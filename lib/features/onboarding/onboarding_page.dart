@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../wizard/calorie_wizard.dart';
 
 class OnboardingPage extends StatefulWidget {
   final VoidCallback onComplete;
@@ -80,7 +81,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       curve: Curves.easeInOut,
                     );
                   } else {
-                    widget.onComplete();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CalorieWizard(onComplete: widget.onComplete),
+                      ),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
