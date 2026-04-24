@@ -38,6 +38,13 @@ class HomePage extends ConsumerWidget {
             icon: const Icon(Icons.person),
             onPressed: () => Navigator.pushNamed(context, '/profile'),
           ),
+          IconButton(
+            icon: const Icon(Icons.star),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SearchPage()),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
