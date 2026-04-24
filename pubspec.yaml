@@ -39,9 +39,11 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
 
-  # Firebase（可選，需手動設定）
-  # firebase_core: ^3.1.0
-  # firebase_auth: ^4.19.0
+  # Firebase（等 Andy 提供設定檔後啟用，版本已確認相容）
+  # firebase_core: ^3.13.0
+  # firebase_auth: ^5.6.0
+  # cloud_firestore: ^5.6.6
+  # google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:

@@ -108,6 +108,11 @@ class HomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
+            // 快速捷徑
+            _QuickShortcuts(),
+
+            const SizedBox(height: 24),
+
             // 餐次列表
             const Text('今日餐次', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -398,6 +403,134 @@ class _MacroProgressCard extends StatelessWidget {
                 valueColor: AlwaysStoppedAnimation(color),
                 minHeight: 6,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 快速捷徑區塊
+class _QuickShortcuts extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _ShortcutCard(
+          icon: Icons.search,
+          label: '搜尋食物',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SearchPage()),
+          ),
+        ),
+        _ShortcutCard(
+          icon: Icons.qr_code_scanner,
+          label: '掃描條碼',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
+          ),
+        ),
+        _ShortcutCard(
+          icon: Icons.star,
+          label: '我的最愛',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SearchPage()),
+            );
+          },
+        ),
+        _ShortcutCard(
+          icon: Icons.monitor_weight,
+          label: '記錄體重',
+          onTap: () => _showWeightDialog(context, ref),
+        ),
+      ],
+    );
+  }
+
+  void _showWeightDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('記錄體重'),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: '體重 (kg)',
+            hintText: '例如：65.5',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              final weight = double.tryParse(controller.text);
+              if (weight != null && weight > 0) {
+                ref.read(dailyLogProvider.notifier).updateWeight(weight);
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('體重 $weight kg 已記錄')),
+                );
+              }
+            },
+            child: const Text('確定'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 捷徑卡片
+class _ShortcutCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ShortcutCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 72,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: AppTheme.primaryColor, size: 24),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
