@@ -60,6 +60,9 @@ dependencies:
   # cloud_firestore: ^5.6.6
   # google_sign_in: ^6.2.1
 
+  # Firebase Crashlytics（等 Andy 提供設定檔後啟用）
+  # firebase_crashlytics: ^3.5.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,3 +72,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
