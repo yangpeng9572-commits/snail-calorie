@@ -20,7 +20,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   void initState() {
     super.initState();
     // 自動聚焦到搜尋框
-    WidgetsBinding.instance.addPostFrameCallback((_) => _focusNode.requestFocus());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+      // 檢查是否有從 camera search 傳來的食物名稱
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is String && args.isNotEmpty) {
+        _controller.text = args;
+        _onSearch(args);
+      }
+    });
   }
 
   @override
