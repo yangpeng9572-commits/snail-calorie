@@ -29,10 +29,11 @@ void main() async {
   await authService.initGuestMode();
 
   // 設定快捷動作
-  final QuickActions quickActions = QuickActions();
+  // ignore: prefer_const_constructors (QuickActions from quick_actions package)
+  final quickActions = QuickActions();
   quickActions.setShortcutItems([
-    ShortcutItem(type: 'breakfast', localizedTitle: '新增早餐', localizedSubtitle: '快速記錄早餐', icon: 'ic_launcher'),
-    ShortcutItem(type: 'weight', localizedTitle: '記錄體重', localizedSubtitle: '開啟體重記錄', icon: 'ic_launcher'),
+    const ShortcutItem(type: 'breakfast', localizedTitle: '新增早餐', localizedSubtitle: '快速記錄早餐', icon: 'ic_launcher'),
+    const ShortcutItem(type: 'weight', localizedTitle: '記錄體重', localizedSubtitle: '開啟體重記錄', icon: 'ic_launcher'),
   ]);
 
   runApp(
@@ -63,7 +64,7 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
   @override
   void initState() {
     super.initState();
-    // 處理快捷動作
+    // ignore: prefer_const_constructors (QuickActions from quick_actions package)
     QuickActions().initialize((String? type) {
       if (type == 'breakfast') {
         // 導航到新增早餐頁

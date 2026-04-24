@@ -594,62 +594,6 @@ class _CalorieCardState extends State<_CalorieCard> with SingleTickerProviderSta
   }
 }
 
-/// 營養素進度卡片
-class _MacroProgressCard extends StatelessWidget {
-  final String label;
-  final double current;
-  final double target;
-  final double progress;
-  final Color color;
-  final String unit;
-
-  const _MacroProgressCard({
-    required this.label,
-    required this.current,
-    required this.target,
-    required this.progress,
-    required this.color,
-    required this.unit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 8),
-            Text(
-              '${current.round()}$unit',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            Text(
-              '/ ${target.round()}$unit',
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress.clamp(0.0, 1.0),
-                backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation(color),
-                minHeight: 6,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 /// 快速捷徑區塊
 class _QuickShortcuts extends ConsumerWidget {
   @override
