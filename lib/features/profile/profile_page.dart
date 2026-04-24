@@ -309,6 +309,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
             const SizedBox(height: 24),
 
+            // 分享 QR Code
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.qr_code, color: AppTheme.primaryColor),
+                title: const Text('分享營養目標'),
+                subtitle: const Text('生成 QR Code 分享給朋友或營養師'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pushNamed(context, '/share-profile'),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
             // 關於
             const Text('關於', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),

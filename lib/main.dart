@@ -12,6 +12,7 @@ import 'features/profile/profile_page.dart';
 import 'features/charts/charts_page.dart';
 import 'features/auth/login_page.dart';
 import 'features/export/export_page.dart';
+import 'features/share/share_profile_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -68,6 +69,8 @@ class SnailCalorieApp extends ConsumerWidget {
             return SlidePageRoute(page: const ChartsPage());
           case '/export':
             return SlidePageRoute(page: const ExportPage());
+          case '/share-profile':
+            return SlidePageRoute(page: const ShareProfilePage());
           default:
             return null;
         }
