@@ -76,3 +76,11 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
+  # App Icon 設定
+  # flutter_icons:
+  #   android: true
+  #   ios: true
+  #   image_path: "assets/icon/app_icon.png"
+  #   adaptive_icon_background: "#4CAF50"
+  #   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"

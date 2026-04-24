@@ -137,7 +137,7 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
       themeMode: themeMode,
       locale: Locale(localeCode),
       supportedLocales: const [Locale('zh'), Locale('en')],
-      home: const AuthGate(),
+      home: const SplashPage(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/profile':
