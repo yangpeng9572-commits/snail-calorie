@@ -168,9 +168,24 @@ class _FoodListTile extends ConsumerWidget {
                 child: const Icon(Icons.fastfood, color: Colors.grey),
               ),
         title: Text(food.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(
-          '${food.brand ?? '一般'} • ${food.calories.round()} kcal/100g',
-          style: const TextStyle(fontSize: 12),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${food.brand ?? '一般'} • ${food.calories.round()} kcal/100g',
+              style: const TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                _MacroTag(label: '碳', value: food.carbs.round(), color: AppTheme.carbsColor),
+                const SizedBox(width: 4),
+                _MacroTag(label: '蛋白質', value: food.protein.round(), color: AppTheme.proteinColor),
+                const SizedBox(width: 4),
+                _MacroTag(label: '脂肪', value: food.fat.round(), color: AppTheme.fatColor),
+              ],
+            ),
+          ],
         ),
         trailing: IconButton(
           icon: Icon(isFav ? Icons.star : Icons.star_border,
@@ -194,8 +209,8 @@ class _FoodListTile extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('熱量: ${food.calories.round()} kcal / 100g'),
-            Text('碳水: ${food.carbs.round()}g / 100g'),
-            Text('蛋白: ${food.protein.round()}g / 100g'),
+            Text('碳水化合物: ${food.carbs.round()}g / 100g'),
+            Text('蛋白質: ${food.protein.round()}g / 100g'),
             Text('脂肪: ${food.fat.round()}g / 100g'),
             const SizedBox(height: 16),
             StatefulBuilder(
@@ -263,6 +278,37 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 16),
           Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
         ],
+      ),
+    );
+  }
+}
+
+class _MacroTag extends StatelessWidget {
+  final String label;
+  final int value;
+  final Color color;
+
+  const _MacroTag({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        '$label: ${value}g',
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

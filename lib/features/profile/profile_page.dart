@@ -114,9 +114,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             const Text('基本資料', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             _TextField(label: '名稱', controller: _nameController, hint: '你的名字'),
-            _TextField(label: '年齡', controller: _ageController, hint: '25', keyboardType: TextInputType.number),
-            _TextField(label: '身高 (cm)', controller: _heightController, hint: '170', keyboardType: TextInputType.number),
-            _TextField(label: '體重 (kg)', controller: _weightController, hint: '65', keyboardType: TextInputType.number),
+            _TextField(label: '年齡（歲）', controller: _ageController, hint: '25', keyboardType: TextInputType.number),
+            _TextField(label: '身高（cm）', controller: _heightController, hint: '170', keyboardType: TextInputType.number),
+            _TextField(label: '體重（kg）', controller: _weightController, hint: '65', keyboardType: TextInputType.number),
 
             const SizedBox(height: 24),
 
@@ -178,8 +178,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     const Text('計算後的每日目標', style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     Text('熱量: ${target.calories} kcal'),
-                    Text('碳水: ${target.carbsGrams.round()}g'),
-                    Text('蛋白: ${target.proteinGrams.round()}g'),
+                    Text('碳水化合物: ${target.carbsGrams.round()}g'),
+                    Text('蛋白質: ${target.proteinGrams.round()}g'),
                     Text('脂肪: ${target.fatGrams.round()}g'),
                   ],
                 ),

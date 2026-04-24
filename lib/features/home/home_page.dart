@@ -211,6 +211,7 @@ class _CalorieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final remaining = target - consumed;
+    final hasRecord = consumed > 0 || target > 0;
 
     return Card(
       child: Padding(
@@ -225,70 +226,116 @@ class _CalorieCard extends StatelessWidget {
                   children: [
                     const Text('今日攝入', style: TextStyle(fontSize: 14, color: Colors.grey)),
                     const SizedBox(height: 4),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: consumed.round().toString(),
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.calorieColor,
+                    if (!hasRecord)
+                      const Text(
+                        '尚未記錄',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      )
+                    else
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: consumed.round().toString(),
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.calorieColor,
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: ' / $target kcal',
-                            style: const TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
-                        ],
+                            TextSpan(
+                              text: ' / $target kcal',
+                              style: const TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
-                SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      CircularProgressIndicator(
-                        value: progress.clamp(0.0, 1.0),
-                        strokeWidth: 8,
-                        backgroundColor: Colors.grey.shade200,
-                        valueColor: AlwaysStoppedAnimation(
-                          progress > 1 ? AppTheme.errorColor : AppTheme.primaryColor,
+                if (hasRecord)
+                  SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CircularProgressIndicator(
+                          value: progress.clamp(0.0, 1.0),
+                          strokeWidth: 8,
+                          backgroundColor: Colors.grey.shade200,
+                          valueColor: AlwaysStoppedAnimation(
+                            progress > 1 ? AppTheme.errorColor : AppTheme.primaryColor,
+                          ),
                         ),
-                      ),
-                      Center(
-                        child: Text(
-                          '${(progress * 100).round()}%',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        Center(
+                          child: Text(
+                            '${(progress * 100).round()}%',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  )
+                else
+                  SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CircularProgressIndicator(
+                          value: 0,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.grey.shade200,
+                          valueColor: const AlwaysStoppedAnimation(Colors.grey),
+                        ),
+                        const Center(
+                          child: Icon(Icons.add, color: Colors.grey, size: 32),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: remaining >= 0
-                    ? AppTheme.primaryColor.withOpacity(0.1)
-                    : AppTheme.errorColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                remaining >= 0
-                    ? '還可攝入 ${remaining.round()} kcal'
-                    : '已超出 ${(-remaining).round()} kcal',
-                style: TextStyle(
-                  color: remaining >= 0 ? AppTheme.primaryColor : AppTheme.errorColor,
-                  fontWeight: FontWeight.w500,
+            if (hasRecord)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: remaining >= 0
+                      ? AppTheme.primaryColor.withOpacity(0.1)
+                      : AppTheme.errorColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  remaining >= 0
+                      ? '還可攝入 ${remaining.round()} kcal'
+                      : '已超出 ${(-remaining).round()} kcal',
+                  style: TextStyle(
+                    color: remaining >= 0 ? AppTheme.primaryColor : AppTheme.errorColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+            else
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  '點擊 + 新增餐點',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

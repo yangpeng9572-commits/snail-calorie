@@ -6,14 +6,39 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/date_utils.dart';
 
 /// 圖表分析頁面
-class ChartsPage extends ConsumerWidget {
+class ChartsPage extends ConsumerStatefulWidget {
   const ChartsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final weekLogs = ref.watch(weekLogsProvider);
+  ConsumerState<ChartsPage> createState() => _ChartsPageState();
+}
+
+class _ChartsPageState extends ConsumerState<ChartsPage> {
+  late DateTime _selectedWeekStart;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedWeekStart = AppDateUtils.weekStart(DateTime.now());
+  }
+
+  void _goToPrevWeek() {
+    setState(() {
+      _selectedWeekStart = _selectedWeekStart.subtract(const Duration(days: 7));
+    });
+  }
+
+  void _goToNextWeek() {
+    setState(() {
+      _selectedWeekStart = _selectedWeekStart.add(const Duration(days: 7));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileProvider);
     final target = profileState.target;
+    final weekLogs = _getWeekLogs(_selectedWeekStart);
 
     return Scaffold(
       appBar: AppBar(title: const Text('每週分析')),
@@ -22,6 +47,14 @@ class ChartsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 週導航
+            _WeekNavigator(
+              weekStart: _selectedWeekStart,
+              onPrev: _goToPrevWeek,
+              onNext: _goToNextWeek,
+            ),
+            const SizedBox(height: 24),
+
             // 標題
             const Text('本週熱量趨勢', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -39,11 +72,33 @@ class ChartsPage extends ConsumerWidget {
             // 每日詳情列表
             const Text('每日記錄', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            ...weekLogs.entries.map((e) => _DayCard(dateStr: e.key, log: e.value, target: target)),
+            if (weekLogs.isEmpty)
+              const _EmptyWeekState()
+            else
+              ...weekLogs.entries.map((e) => _DayCard(dateStr: e.key, log: e.value, target: target)),
           ],
         ),
       ),
     );
+  }
+
+  Map<String, dynamic> _getWeekLogs(DateTime weekStart) {
+    final storage = ref.read(localStorageProvider);
+    final logs = <String, dynamic>{};
+    for (int i = 0; i < 7; i++) {
+      final date = weekStart.add(Duration(days: i));
+      final dateStr = AppDateUtils.formatDate(date);
+      final log = storage.getDailyLog(dateStr);
+      if (log != null) {
+        logs[dateStr] = {
+          'totalCalories': log.totalCalories,
+          'totalCarbs': log.totalCarbs,
+          'totalProtein': log.totalProtein,
+          'totalFat': log.totalFat,
+        };
+      }
+    }
+    return logs;
   }
 }
 
@@ -204,8 +259,8 @@ class _MacroPieChart extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _LegendItem(color: AppTheme.carbsColor, label: '碳水', value: '${totalCarbs.round()}g'),
-                      _LegendItem(color: AppTheme.proteinColor, label: '蛋白', value: '${totalProtein.round()}g'),
+                      _LegendItem(color: AppTheme.carbsColor, label: '碳水化合物', value: '${totalCarbs.round()}g'),
+                      _LegendItem(color: AppTheme.proteinColor, label: '蛋白質', value: '${totalProtein.round()}g'),
                       _LegendItem(color: AppTheme.fatColor, label: '脂肪', value: '${totalFat.round()}g'),
                     ],
                   ),
@@ -287,6 +342,76 @@ class _DayCard extends StatelessWidget {
             color: calories > targetCal ? AppTheme.errorColor : AppTheme.primaryColor,
             fontWeight: FontWeight.bold,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WeekNavigator extends StatelessWidget {
+  final DateTime weekStart;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+
+  const _WeekNavigator({
+    required this.weekStart,
+    required this.onPrev,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final weekEnd = weekStart.add(const Duration(days: 6));
+    final displayFormat = '${weekStart.month}月${weekStart.day}日 - ${weekEnd.month}月${weekEnd.day}日';
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: onPrev,
+          icon: const Icon(Icons.chevron_left),
+          style: IconButton.styleFrom(
+            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+          ),
+        ),
+        Text(
+          displayFormat,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        IconButton(
+          onPressed: onNext,
+          icon: const Icon(Icons.chevron_right),
+          style: IconButton.styleFrom(
+            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyWeekState extends StatelessWidget {
+  const _EmptyWeekState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          children: [
+            Icon(Icons.bar_chart, size: 48, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            const Text(
+              '本週尚無記錄',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '開始記錄餐點來查看每週分析',
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
         ),
       ),
     );
