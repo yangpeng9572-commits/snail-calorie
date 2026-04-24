@@ -653,18 +653,24 @@ class _QuickShortcuts extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () {
+              controller.dispose();
+              Navigator.pop(dialogContext);
+            },
             child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
               final weight = double.tryParse(controller.text);
+              controller.dispose();
               if (weight != null && weight > 0) {
                 ref.read(dailyLogProvider.notifier).updateWeight(weight);
                 Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('體重 $weight kg 已記錄')),
                 );
+              } else {
+                Navigator.pop(dialogContext);
               }
             },
             child: const Text('確定'),

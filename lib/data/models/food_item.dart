@@ -73,13 +73,13 @@ class FoodItem {
   };
 
   factory FoodItem.fromJson(Map<String, dynamic> json) => FoodItem(
-    id: json['id'] as String,
-    name: json['name'] as String,
+    id: json['id'] as String? ?? '',
+    name: json['name'] as String? ?? '未知食物',
     brand: json['brand'] as String?,
-    calories: (json['calories'] as num).toDouble(),
-    carbs: (json['carbs'] as num).toDouble(),
-    protein: (json['protein'] as num).toDouble(),
-    fat: (json['fat'] as num).toDouble(),
+    calories: (json['calories'] as num?)?.toDouble() ?? 0,
+    carbs: (json['carbs'] as num?)?.toDouble() ?? 0,
+    protein: (json['protein'] as num?)?.toDouble() ?? 0,
+    fat: (json['fat'] as num?)?.toDouble() ?? 0,
     servingSize: (json['servingSize'] as num?)?.toDouble() ?? 100,
     barcode: json['barcode'] as String?,
     imageUrl: json['imageUrl'] as String?,

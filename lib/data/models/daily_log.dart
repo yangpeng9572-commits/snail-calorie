@@ -66,7 +66,7 @@ class DailyLog {
   factory DailyLog.fromJson(Map<String, dynamic> json) {
     final mealsJson = json['meals'] as Map<String, dynamic>? ?? {};
     return DailyLog(
-      date: json['date'] as String,
+      date: json['date'] as String? ?? DateTime.now().toIso8601String().split('T').first,
       meals: mealsJson.map((k, v) => MapEntry(
         k,
         MealRecord.fromJson(v as Map<String, dynamic>),
