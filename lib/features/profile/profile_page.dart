@@ -265,6 +265,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 );
               },
             ),
+            _LanguageSwitch(),
 
             const SizedBox(height: 24),
 
@@ -568,6 +569,34 @@ class _ThemeSwitch extends StatelessWidget {
           value: value,
           onChanged: onChanged,
           activeColor: isDark ? AppThemeDark.primaryColor : AppTheme.primaryColor,
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageSwitch extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final localeCode = ref.watch(localeProvider);
+    final isZh = localeCode == 'zh';
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(Icons.language, color: isDark ? AppThemeDark.primaryColor : AppTheme.primaryColor),
+        title: const Text('語言'),
+        subtitle: Text(isZh ? '繁體中文' : 'English'),
+        trailing: SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(value: 'zh', label: Text('中文')),
+            ButtonSegment(value: 'en', label: Text('EN')),
+          ],
+          selected: {localeCode},
+          onSelectionChanged: (Set<String> selection) {
+            ref.read(localeProvider.notifier).setLocale(selection.first);
+          },
         ),
       ),
     );

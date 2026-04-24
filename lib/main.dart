@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
+import 'core/l10n/app_localizations.dart';
 import 'data/services/local_storage_service.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/firestore_service.dart';
@@ -47,13 +48,17 @@ class SnailCalorieApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final localeCode = ref.watch(localeProvider);
+    final l10n = AppLocalizations(localeCode);
 
     return MaterialApp(
-      title: '食刻輕卡',
+      title: l10n.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppThemeDark.darkTheme,
       themeMode: themeMode,
+      locale: Locale(localeCode),
+      supportedLocales: const [Locale('zh'), Locale('en')],
       home: const AuthGate(),
       onGenerateRoute: (settings) {
         switch (settings.name) {

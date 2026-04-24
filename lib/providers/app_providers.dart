@@ -10,6 +10,18 @@ import '../data/models/daily_log.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/date_utils.dart';
 
+// ==================== 地區設定 Provider ====================
+
+/// 地區語言 Provider
+final localeProvider = StateNotifierProvider<LocaleNotifier, String>((ref) {
+  return LocaleNotifier();
+});
+
+class LocaleNotifier extends StateNotifier<String> {
+  LocaleNotifier() : super('zh');
+  void setLocale(String code) { state = code; }
+}
+
 // ==================== 主題設定 Provider ====================
 
 /// 主題模式 Provider
