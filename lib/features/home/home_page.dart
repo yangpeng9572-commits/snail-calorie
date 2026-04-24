@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
 import '../../core/widgets/page_transitions.dart';
+import '../../core/widgets/quick_access_tile.dart';
 import '../../data/services/nutrition_calculator.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
@@ -21,9 +22,6 @@ class HomePage extends ConsumerWidget {
     final selectedDate = ref.watch(selectedDateProvider);
 
     final calorieProgress = target.calories > 0 ? log.totalCalories / target.calories : 0.0;
-    final carbsProgress = target.carbsGrams > 0 ? log.totalCarbs / target.carbsGrams : 0.0;
-    final proteinProgress = target.proteinGrams > 0 ? log.totalProtein / target.proteinGrams : 0.0;
-    final fatProgress = target.fatGrams > 0 ? log.totalFat / target.fatGrams : 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -71,40 +69,46 @@ class HomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
-            // 三大營養素進度
-            Row(
+            // 快速捷徑 2x2 網格
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.5,
               children: [
-                Expanded(
-                  child: _MacroProgressCard(
-                    label: '碳水',
-                    current: log.totalCarbs,
-                    target: target.carbsGrams,
-                    progress: carbsProgress.clamp(0.0, 1.0),
-                    color: AppTheme.carbsColor,
-                    unit: 'g',
-                  ),
+                QuickAccessTile(
+                  title: '攝入熱量',
+                  value: log.totalCalories.round().toString(),
+                  unit: 'kcal',
+                  icon: Icons.local_fire_department,
+                  color: AppTheme.calorieColor,
+                  onTap: () {},
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _MacroProgressCard(
-                    label: '蛋白質',
-                    current: log.totalProtein,
-                    target: target.proteinGrams,
-                    progress: proteinProgress.clamp(0.0, 1.0),
-                    color: AppTheme.proteinColor,
-                    unit: 'g',
-                  ),
+                QuickAccessTile(
+                  title: '蛋白質',
+                  value: log.totalProtein.round().toString(),
+                  unit: 'g',
+                  icon: Icons.fitness_center,
+                  color: AppTheme.proteinColor,
+                  onTap: () {},
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _MacroProgressCard(
-                    label: '脂肪',
-                    current: log.totalFat,
-                    target: target.fatGrams,
-                    progress: fatProgress.clamp(0.0, 1.0),
-                    color: AppTheme.fatColor,
-                    unit: 'g',
-                  ),
+                QuickAccessTile(
+                  title: '碳水',
+                  value: log.totalCarbs.round().toString(),
+                  unit: 'g',
+                  icon: Icons.bakery_dining,
+                  color: AppTheme.carbsColor,
+                  onTap: () {},
+                ),
+                QuickAccessTile(
+                  title: '脂肪',
+                  value: log.totalFat.round().toString(),
+                  unit: 'g',
+                  icon: Icons.opacity,
+                  color: AppTheme.fatColor,
+                  onTap: () {},
                 ),
               ],
             ),

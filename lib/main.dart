@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quick_actions/quick_actions.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
@@ -27,6 +28,13 @@ void main() async {
   final authService = AuthService();
   await authService.initGuestMode();
 
+  // 設定快捷動作
+  final QuickActions quickActions = QuickActions();
+  quickActions.setShortcutItems([
+    ShortcutItem(type: 'breakfast', localizedTitle: '新增早餐', localizedSubtitle: '快速記錄早餐', icon: 'ic_launcher'),
+    ShortcutItem(type: 'weight', localizedTitle: '記錄體重', localizedSubtitle: '開啟體重記錄', icon: 'ic_launcher'),
+  ]);
+
   runApp(
     ProviderScope(
       overrides: [
@@ -44,11 +52,68 @@ final authServiceProvider = Provider<AuthService>((ref) {
   throw UnimplementedError('AuthService must be overridden at startup');
 });
 
-class SnailCalorieApp extends ConsumerWidget {
+class SnailCalorieApp extends ConsumerStatefulWidget {
   const SnailCalorieApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SnailCalorieApp> createState() => _SnailCalorieAppState();
+}
+
+class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
+  @override
+  void initState() {
+    super.initState();
+    // 處理快捷動作
+    QuickActions().initialize((String? type) {
+      if (type == 'breakfast') {
+        // 導航到新增早餐頁
+        Navigator.pushNamed(context, '/add-food', arguments: '早餐');
+      } else if (type == 'weight') {
+        // 導航到記錄體重（目前使用現有對話框）
+        _showWeightDialog(context);
+      }
+    });
+  }
+
+  void _showWeightDialog(BuildContext context) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('記錄體重'),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: '體重 (kg)',
+            hintText: '例如：65.5',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              final weight = double.tryParse(controller.text);
+              if (weight != null && weight > 0) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('體重 $weight kg 已記錄')),
+                );
+              }
+            },
+            child: const Text('確定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final localeCode = ref.watch(localeProvider);
     final l10n = AppLocalizations(localeCode);
