@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/services/local_storage_service.dart';
 import '../data/services/open_food_facts_service.dart';
+import '../data/services/firestore_service.dart';
 import '../data/models/meal_record.dart';
 import '../data/models/food_item.dart';
 import '../data/models/daily_log.dart';
@@ -259,3 +260,45 @@ final weekLogsProvider = Provider<Map<String, DailyLog>>((ref) {
   final storage = ref.watch(localStorageProvider);
   return storage.getWeekLogs();
 });
+
+// ==================== 體重追蹤 Providers ====================
+
+/// 體重記錄 Provider
+final weightRecordsProvider = StateNotifierProvider<WeightRecordsNotifier, List<Map<String, dynamic>>>((ref) {
+  final firestore = ref.watch(firestoreServiceProvider);
+  return WeightRecordsNotifier(firestore);
+});
+
+class WeightRecordsNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+  final FirestoreService _firestore;
+
+  WeightRecordsNotifier(this._firestore) : super([]) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final records = await _firestore.getWeightHistory(days: 30);
+    if (mounted) {
+      state = records;
+    }
+  }
+
+  Future<void> addWeight(DateTime date, double weight) async {
+    final dateStr = AppDateUtils.formatDate(date);
+    await _firestore.saveWeightRecord(dateStr, weight);
+    await _load();
+  }
+
+  List<Map<String, dynamic>> getWeightHistory({int days = 30}) {
+    final cutoff = DateTime.now().subtract(Duration(days: days));
+    return state.where((r) {
+      final timestamp = DateTime.parse(r['timestamp'] as String);
+      return timestamp.isAfter(cutoff);
+    }).toList()
+      ..sort((a, b) => (a['timestamp'] as String).compareTo(b['timestamp'] as String));
+  }
+
+  Future<void> refresh() async {
+    await _load();
+  }
+}

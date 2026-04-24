@@ -9,10 +9,16 @@
 // 3. 把本檔案替換為 firebase_pending/firestore_service.dart
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/daily_log.dart';
 import '../models/food_item.dart';
 
 // Library: 本地 SharedPreferences 同步服務
+
+/// Firestore 服務 Provider
+final firestoreServiceProvider = Provider<FirestoreService>((ref) {
+  throw UnimplementedError('FirestoreService must be overridden at startup');
+});
 
 class FirestoreService {
   static const String _keyDailyLogs = 'fs_daily_logs';

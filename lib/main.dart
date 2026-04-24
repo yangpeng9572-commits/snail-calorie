@@ -33,11 +33,6 @@ void main() async {
   );
 }
 
-/// Firestore 服務 Provider（需要手動 override）
-final firestoreServiceProvider = Provider<FirestoreService>((ref) {
-  throw UnimplementedError('FirestoreService must be overridden at startup');
-});
-
 /// Auth 服務 Provider（需要手動 override）
 final authServiceProvider = Provider<AuthService>((ref) {
   throw UnimplementedError('AuthService must be overridden at startup');

@@ -69,6 +69,14 @@ class _ChartsPageState extends ConsumerState<ChartsPage> {
             _MacroPieChart(weekLogs: weekLogs),
             const SizedBox(height: 32),
 
+            // 體重趨勢圖
+            const Text('體重趨勢', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('近30天體重記錄', style: TextStyle(color: Colors.grey, fontSize: 14)),
+            const SizedBox(height: 16),
+            _WeightLineChart(weightRecords: ref.watch(weightRecordsProvider)),
+            const SizedBox(height: 32),
+
             // 每日詳情列表
             const Text('每日記錄', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -268,6 +276,119 @@ class _MacroPieChart extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WeightLineChart extends StatelessWidget {
+  final List<Map<String, dynamic>> weightRecords;
+
+  const _WeightLineChart({required this.weightRecords});
+
+  @override
+  Widget build(BuildContext context) {
+    if (weightRecords.isEmpty) {
+      return Card(
+        child: Container(
+          height: 200,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.monitor_weight_outlined, size: 48, color: Colors.grey.shade400),
+              const SizedBox(height: 12),
+              const Text('尚無體重記錄', style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 4),
+              const Text('在個人設定中記錄體重', style: TextStyle(color: Colors.grey, fontSize: 12)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final spots = weightRecords.asMap().entries.map((entry) {
+      final weight = (entry.value['weight'] as num).toDouble();
+      return FlSpot(entry.key.toDouble(), weight);
+    }).toList();
+
+    final weights = weightRecords.map((r) => (r['weight'] as num).toDouble()).toList();
+    final minWeight = weights.reduce((a, b) => a < b ? a : b);
+    final maxWeight = weights.reduce((a, b) => a > b ? a : b);
+    final padding = (maxWeight - minWeight) * 0.1;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SizedBox(
+          height: 200,
+          child: LineChart(
+            LineChartData(
+              minY: minWeight - padding - 2,
+              maxY: maxWeight + padding + 2,
+              lineBarsData: [
+                LineChartBarData(
+                  spots: spots,
+                  isCurved: true,
+                  color: AppTheme.primaryColor,
+                  barWidth: 3,
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, barData, index) {
+                      return FlDotCirclePainter(
+                        radius: 4,
+                        color: AppTheme.primaryColor,
+                        strokeWidth: 2,
+                        strokeColor: Colors.white,
+                      );
+                    },
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: AppTheme.primaryColor.withOpacity(0.1),
+                  ),
+                ),
+              ],
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (value, meta) => Text(
+                      value.toStringAsFixed(1),
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final idx = value.toInt();
+                      if (idx < 0 || idx >= weightRecords.length) return const Text('');
+                      if (weightRecords.length > 7 && idx % 2 != 0) return const Text('');
+                      final timestamp = weightRecords[idx]['timestamp'] as String;
+                      final date = DateTime.parse(timestamp);
+                      return Text('${date.month}/${date.day}', style: const TextStyle(fontSize: 10));
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                horizontalInterval: 1,
+                getDrawingHorizontalLine: (value) => FlLine(
+                  color: Colors.grey.shade300,
+                  strokeWidth: 1,
+                ),
+              ),
+              borderData: FlBorderData(show: false),
+            ),
+          ),
         ),
       ),
     );

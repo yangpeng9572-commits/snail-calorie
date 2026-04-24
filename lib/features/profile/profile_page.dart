@@ -120,6 +120,31 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     }
   }
 
+  Future<void> _recordWeight() async {
+    final weightStr = _weightController.text.trim();
+    if (weightStr.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('請輸入體重')),
+      );
+      return;
+    }
+
+    final weight = double.tryParse(weightStr);
+    if (weight == null || weight <= 0 || weight > 500) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('請輸入有效的體重值')),
+      );
+      return;
+    }
+
+    await ref.read(weightRecordsProvider.notifier).addWeight(DateTime.now(), weight);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('體重 ${weight.toStringAsFixed(1)} kg 已記錄')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileProvider);
@@ -145,6 +170,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             _TextField(label: '年齡（歲）', controller: _ageController, hint: '25', keyboardType: TextInputType.number),
             _TextField(label: '身高（cm）', controller: _heightController, hint: '170', keyboardType: TextInputType.number),
             _TextField(label: '體重（kg）', controller: _weightController, hint: '65', keyboardType: TextInputType.number),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _recordWeight,
+                icon: const Icon(Icons.monitor_weight),
+                label: const Text('記錄體重'),
+              ),
+            ),
 
             const SizedBox(height: 24),
 
