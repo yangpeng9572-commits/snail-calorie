@@ -1,119 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import '../models/user_profile.dart';
-
-/// Firebase 認證服務
-class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // 從 Firebase Console 取得
-  );
-
-  /// 監聽登入狀態變化
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
-
-  /// 取得目前登入的使用者
-  User? get currentUser => _auth.currentUser;
-
-  /// 是否有登入
-  bool get isSignedIn => _auth.currentUser != null;
-
-  /// 以 Google 帳號登入
-  Future<AuthResult> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        return AuthResult.cancelled;
-      }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await _auth.signInWithCredential(credential);
-      return AuthResult.success;
-    } on FirebaseAuthException catch (e) {
-      return AuthResult.error(e.message ?? '登入失敗');
-    } catch (e) {
-      return AuthResult.error(e.toString());
-    }
-  }
-
-  /// 以 Email + 密碼註冊
-  Future<AuthResult> registerWithEmail(String email, String password) async {
-    try {
-      final credential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return AuthResult.success;
-    } on FirebaseAuthException catch (e) {
-      return AuthResult.error(_mapAuthError(e.code));
-    } catch (e) {
-      return AuthResult.error(e.toString());
-    }
-  }
-
-  /// 以 Email + 密碼登入
-  Future<AuthResult> signInWithEmail(String email, String password) async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return AuthResult.success;
-    } on FirebaseAuthException catch (e) {
-      return AuthResult.error(_mapAuthError(e.code));
-    } catch (e) {
-      return AuthResult.error(e.toString());
-    }
-  }
-
-  /// 傳送密碼重設 Email
-  Future<AuthResult> sendPasswordResetEmail(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-      return AuthResult.success;
-    } on FirebaseAuthException catch (e) {
-      return AuthResult.error(_mapAuthError(e.code));
-    } catch (e) {
-      return AuthResult.error(e.toString());
-    }
-  }
-
-  /// 登出
-  Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
-  }
-
-  /// 的地圖 Auth 錯誤訊息（改為繁體中文）
-  String _mapAuthError(String code) {
-    switch (code) {
-      case 'user-not-found':
-        return '找不到這個帳號';
-      case 'wrong-password':
-        return '密碼錯誤';
-      case 'email-already-in-use':
-        return '這個 Email 已被註冊';
-      case 'invalid-email':
-        return 'Email 格式不正確';
-      case 'weak-password':
-        return '密碼強度太弱（至少需要 6 個字元）';
-      case 'user-disabled':
-        return '此帳號已被停用';
-      case 'too-many-requests':
-        return '嘗試次數過多，請稍後再試';
-      case 'network-request-failed':
-        return '網路連線失敗';
-      default:
-        return '登入失敗：$code';
-    }
-  }
-}
+// Library: Firebase/Guest 認證服務
+/// 目前使用本機 Guest 模式，未來只需：
+/// 1. 取消 pubspec.yaml 的 firebase_* 註解
+/// 2. 放 google-services.json 和 GoogleService-Info.plist
+/// 3. 取消以下 Firebase.initializeApp() 註解
+///
+/// 已預留完整 Firebase Auth 實作在 firebase_pending/auth_service.dart
+///
+/// 目前實作：Guest 模式（不需登入即可使用）
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// 登入結果
 enum AuthResult {
@@ -122,9 +16,110 @@ enum AuthResult {
   error,
 }
 
-/// 擴充方法：取得更詳細的錯誤資訊
+/// 擴充方法
 extension AuthResultExtension on AuthResult {
   bool get isSuccess => this == AuthResult.success;
   bool get isCancelled => this == AuthResult.cancelled;
   bool get isError => this == AuthResult.error;
+}
+
+/// 登入錯誤（攜帶錯誤訊息）
+class AuthError {
+  final String message;
+  const AuthError(this.message);
+
+  @override
+  String toString() => message;
+}
+
+/// Guest 模式下的使用者資料
+class GuestUser {
+  final String id;
+  final String? email;
+  final String? displayName;
+
+  GuestUser({required this.id, this.email, this.displayName});
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'email': email,
+    'displayName': displayName,
+  };
+}
+
+/// 認證服務（目前為 Guest 模式，Firebase 設定後替換 firebase_pending/auth_service.dart）
+class AuthService {
+  static const String _keyGuestId = 'guest_user_id';
+  static const String _keyIsGuest = 'is_guest_mode';
+
+  GuestUser? _currentGuest;
+
+  /// 監聽登入狀態變化（Guest 模式永遠是已登入）
+  Stream<GuestUser?> get authStateChanges async* {
+    yield _currentGuest;
+    // Guest 模式不變，yield 一次就結束
+    // Firebase 模式會變成真的 stream
+  }
+
+  /// 取得目前的使用者
+  GuestUser? get currentUser {
+    if (_currentGuest != null) return _currentGuest;
+    return null; // 尚未初始化
+  }
+
+  /// 是否有登入
+  bool get isSignedIn => _currentGuest != null;
+
+  /// 初始化 Guest 模式（App 啟動時呼叫）
+  Future<GuestUser> initGuestMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? guestId = prefs.getString(_keyGuestId);
+
+    if (guestId == null) {
+      guestId = 'guest_${DateTime.now().millisecondsSinceEpoch}';
+      await prefs.setString(_keyGuestId, guestId);
+      await prefs.setBool(_keyIsGuest, true);
+    }
+
+    _currentGuest = GuestUser(id: guestId);
+    return _currentGuest!;
+  }
+
+  /// Guest 模式：以訪客身份使用（直接成功）
+  Future<AuthResult> signInAsGuest() async {
+    await initGuestMode();
+    return AuthResult.success;
+  }
+
+  /// Google 登入（Firebase 設定後啟用）
+  /// 目前呼叫時直接以 Guest 登入
+  Future<AuthResult> signInWithGoogle() async {
+    // TODO: Firebase 設定後，替換為 firebase_pending/auth_service.dart 的實作
+    return await signInAsGuest();
+  }
+
+  /// Email 登入（Firebase 設定後啟用）
+  Future<AuthResult> signInWithEmail(String email, String password) async {
+    // TODO: Firebase 設定後，替換為 firebase_pending/auth_service.dart 的實作
+    return await signInAsGuest();
+  }
+
+  /// Email 註冊（Firebase 設定後啟用）
+  Future<AuthResult> registerWithEmail(String email, String password) async {
+    // TODO: Firebase 設定後，替換為 firebase_pending/auth_service.dart 的實作
+    return await signInAsGuest();
+  }
+
+  /// 傳送密碼重設 Email（Guest 模式不支援）
+  Future<AuthResult> sendPasswordResetEmail(String email) async {
+    return AuthResult.error; // Guest 模式不支援密碼重設
+  }
+
+  /// 登出（Guest 模式清除本地資料）
+  Future<void> signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyGuestId);
+    await prefs.remove(_keyIsGuest);
+    _currentGuest = null;
+  }
 }

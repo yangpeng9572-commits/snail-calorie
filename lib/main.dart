@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'data/services/local_storage_service.dart';
+import 'data/services/auth_service.dart';
+import 'data/services/firestore_service.dart';
 import 'features/home/home_page.dart';
 import 'features/profile/profile_page.dart';
 import 'features/charts/charts_page.dart';
+import 'features/auth/login_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -12,16 +15,33 @@ void main() async {
 
   // 初始化本地儲存
   final storage = await LocalStorageService.create();
+  final firestore = await FirestoreService.create();
+
+  // 初始化 Guest 模式
+  final authService = AuthService();
+  await authService.initGuestMode();
 
   runApp(
     ProviderScope(
       overrides: [
         localStorageProvider.overrideWithValue(storage),
+        firestoreServiceProvider.overrideWithValue(firestore),
+        authServiceProvider.overrideWithValue(authService),
       ],
       child: const SnailCalorieApp(),
     ),
   );
 }
+
+/// Firestore 服務 Provider（需要手動 override）
+final firestoreServiceProvider = Provider<FirestoreService>((ref) {
+  throw UnimplementedError('FirestoreService must be overridden at startup');
+});
+
+/// Auth 服務 Provider（需要手動 override）
+final authServiceProvider = Provider<AuthService>((ref) {
+  throw UnimplementedError('AuthService must be overridden at startup');
+});
 
 class SnailCalorieApp extends StatelessWidget {
   const SnailCalorieApp({super.key});
@@ -32,10 +52,80 @@ class SnailCalorieApp extends StatelessWidget {
       title: '食刻輕卡',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const MainNavigationPage(),
+      home: const AuthGate(),
       routes: {
         '/profile': (_) => const ProfilePage(),
         '/charts': (_) => const ChartsPage(),
+      },
+    );
+  }
+}
+
+/// 登入閘道（檢查是否已登入，決定顯示 LoginPage 或 MainNavigationPage）
+class AuthGate extends ConsumerStatefulWidget {
+  const AuthGate({super.key});
+
+  @override
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends ConsumerState<AuthGate> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    // Guest 模式直接通過
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (mounted) {
+      setState(() => _isInitialized = true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(
+                Icons.restaurant_menu,
+                size: 80,
+                color: AppTheme.primaryColor,
+              ),
+              SizedBox(height: 24),
+              Text(
+                '食刻輕卡',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              SizedBox(height: 16),
+              CircularProgressIndicator(),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // 目前是 Guest 模式：直接進入 App
+    // 未來根據 AuthService.isSignedIn 判斷是否要顯示 LoginPage
+    final authService = ref.read(authServiceProvider);
+    if (authService.isSignedIn) {
+      return const MainNavigationPage();
+    }
+    return LoginPage(
+      onSignInSuccess: () {
+        setState(() {});
       },
     );
   }

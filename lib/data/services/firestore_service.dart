@@ -1,148 +1,119 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// Library: 本地 SharedPreferences 同步服務
+///
+/// 目前實作：本地 SharedPreferences 模式（完全可正常使用）
+/// Firebase 設定後，替換為 firebase_pending/firestore_service.dart
+///
+/// 切換方式：
+/// 1. 取消 pubspec.yaml 的 cloud_firestore 註解
+/// 2. 放 google-services.json 和 GoogleService-Info.plist
+/// 3. 替換本檔案為 firebase_pending/firestore_service.dart
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/daily_log.dart';
 import '../models/food_item.dart';
-import '../../core/constants/app_constants.dart';
 
-/// Firestore 雲端同步服務
+/// 本地 Firestore 模擬服務（使用 SharedPreferences）
+/// 與真正的 FirestoreService API 完全相容，Firebase 設定後可無痛替換
 class FirestoreService {
-  static const String _usersCollection = 'users';
+  static const String _keyDailyLogs = 'firestore_daily_logs';
+  static const String _keyFavorites = 'firestore_favorites';
+  static const String _keyWeightRecords = 'firestore_weight_records';
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final SharedPreferences _prefs;
 
-  String? get _uid => _auth.currentUser?.uid;
-  bool get isLoggedIn => _uid != null;
+  FirestoreService(this._prefs);
 
-  DocumentReference get _userDoc => _firestore.collection(_usersCollection).doc(_uid!);
-
-  // ==================== 用戶資料同步 ====================
-
-  /// 儲存用戶資料到 Firestore
-  Future<void> saveUserProfile(UserProfile profile) async {
-    if (!isLoggedIn) return;
-    await _userDoc.set({'profile': profile.toJson()}, SetOptions(merge: true));
+  /// 工廠方法（async 初始化）
+  static Future<FirestoreService> create() async {
+    final prefs = await SharedPreferences.getInstance();
+    return FirestoreService(prefs);
   }
 
-  /// 從 Firestore 讀取用戶資料
-  Future<UserProfile?> getUserProfile() async {
-    if (!isLoggedIn) return null;
-    final doc = await _userDoc.get();
-    final data = doc.data() as Map<String, dynamic>?;
-    if (data == null || data['profile'] == null) return null;
-    return UserProfile.fromJson(data['profile'] as Map<String, dynamic>);
-  }
+  bool get isLoggedIn => true; // Guest 模式永遠視為已登入
 
   // ==================== 每日日誌同步 ====================
 
   /// 儲存單日日誌
   Future<void> saveDailyLog(DailyLog log) async {
-    if (!isLoggedIn) return;
-    await _userDoc.collection('daily_logs').doc(log.date).set(
-      log.toJson(),
-      SetOptions(merge: true),
-    );
+    final logs = _getDailyLogsMap();
+    logs[log.date] = log.toJson();
+    await _prefs.setString(_keyDailyLogs, json.encode(logs));
   }
 
   /// 讀取單日日誌
   Future<DailyLog?> getDailyLog(String date) async {
-    if (!isLoggedIn) return null;
-    final doc = await _userDoc.collection('daily_logs').doc(date).get();
-    if (!doc.exists || doc.data() == null) return null;
-    return DailyLog.fromJson(doc.data()!);
+    final logs = _getDailyLogsMap();
+    final data = logs[date];
+    if (data == null) return null;
+    return DailyLog.fromJson(data);
   }
 
-  /// 讀取多日日誌（適用於同步）
+  /// 讀取多日日誌
   Future<Map<String, DailyLog>> getDailyLogs(List<String> dates) async {
-    if (!isLoggedIn) return {};
-
     final logs = <String, DailyLog>{};
-    final futures = dates.map((date) async {
+    for (final date in dates) {
       final log = await getDailyLog(date);
       if (log != null) logs[date] = log;
-    });
-
-    await Future.wait(futures);
+    }
     return logs;
+  }
+
+  Map<String, dynamic> _getDailyLogsMap() {
+    final str = _prefs.getString(_keyDailyLogs);
+    if (str == null) return {};
+    return json.decode(str) as Map<String, dynamic>;
   }
 
   // ==================== 收藏食物同步 ====================
 
   /// 儲存收藏食物列表
   Future<void> saveFavoriteFoods(List<FoodItem> foods) async {
-    if (!isLoggedIn) return;
     final list = foods.map((f) => f.toJson()).toList();
-    await _userDoc.set({'favorites': list}, SetOptions(merge: true));
+    await _prefs.setString(_keyFavorites, json.encode(list));
   }
 
   /// 讀取收藏食物
   Future<List<FoodItem>> getFavoriteFoods() async {
-    if (!isLoggedIn) return [];
-    final doc = await _userDoc.get();
-    final data = doc.data() as Map<String, dynamic>?;
-    if (data == null || data['favorites'] == null) return [];
-    return (data['favorites'] as List)
-        .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final str = _prefs.getString(_keyFavorites);
+    if (str == null) return [];
+    final list = json.decode(str) as List;
+    return list.map((e) => FoodItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   // ==================== 體重歷史同步 ====================
 
   /// 儲存體重記錄
   Future<void> saveWeightRecord(String date, double weight) async {
-    if (!isLoggedIn) return;
-    await _userDoc.collection('weight_records').doc(date).set({
-      'date': date,
-      'weight': weight,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+    final records = _getWeightRecords();
+    records[date] = {'date': date, 'weight': weight, 'timestamp': DateTime.now().toIso8601String()};
+    await _prefs.setString(_keyWeightRecords, json.encode(records));
   }
 
   /// 讀取體重歷史（最近 N 天）
   Future<List<Map<String, dynamic>>> getWeightHistory({int days = 30}) async {
-    if (!isLoggedIn) return [];
+    final records = _getWeightRecords();
+    final cutoff = DateTime.now().subtract(Duration(days: days));
 
-    final now = DateTime.now();
-    final startDate = now.subtract(Duration(days: days));
+    final filtered = records.entries
+        .where((e) => DateTime.parse(e.value['timestamp'] as String).isAfter(cutoff))
+        .map<Map<String, dynamic>>((e) => e.value as Map<String, dynamic>)
+        .toList();
 
-    final snapshot = await _userDoc
-        .collection('weight_records')
-        .where('timestamp', isGreaterThan: Timestamp.fromDate(startDate))
-        .orderBy('timestamp', descending: true)
-        .get();
+    filtered.sort((a, b) => (b['timestamp'] as String).compareTo(a['timestamp'] as String));
+    return filtered;
+  }
 
-    return snapshot.docs.map((doc) => doc.data()).toList();
+  Map<String, dynamic> _getWeightRecords() {
+    final str = _prefs.getString(_keyWeightRecords);
+    if (str == null) return {};
+    return json.decode(str) as Map<String, dynamic>;
   }
 
   // ==================== 衝突處理 ====================
 
-  /// 智能合併：取較新者
-  /// 如果 Firestore 的更新时间比本地新，用 Firestore 的
-  /// 否则保留本地数据
-  Future<DailyLog?> mergeDailyLog(String date, DailyLog localLog) async {
-    if (!isLoggedIn) return localLog;
-
-    final remoteDoc = await _userDoc.collection('daily_logs').doc(date).get();
-    if (!remoteDoc.exists) {
-      // 遠端沒有，上傳本地
-      await saveDailyLog(localLog);
-      return localLog;
-    }
-
-    final remoteData = remoteDoc.data()!;
-    final remoteTimestamp = remoteData['_updatedAt'] as Timestamp?;
-    final localTimestamp = localLog.toJson()['_updatedAt'] as String?;
-
-    if (remoteTimestamp != null && localTimestamp != null) {
-      final remoteTime = remoteTimestamp.toDate();
-      final localTime = DateTime.parse(localTimestamp);
-      if (remoteTime.isAfter(localTime)) {
-        // 遠端較新
-        return DailyLog.fromJson(remoteData);
-      }
-    }
-
-    // 本地較新或相同，上傳本地
+  /// 智能合併（本地模式：永遠保留本地，無衝突）
+  Future<DailyLog> mergeDailyLog(String date, DailyLog localLog) async {
+    // 本地模式：直接用本地資料
     await saveDailyLog(localLog);
     return localLog;
   }
