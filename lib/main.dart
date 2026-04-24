@@ -23,6 +23,7 @@ import 'features/share/share_profile_page.dart';
 import 'features/onboarding/onboarding_page.dart';
 import 'features/splash/splash_page.dart';
 import 'features/settings/privacy_policy_page.dart';
+import 'features/favorites/favorites_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -151,6 +152,8 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
             return SlidePageRoute(page: const SplashPage());
           case '/privacy-policy':
             return SlidePageRoute(page: const PrivacyPolicyPage());
+          case '/favorites':
+            return SlidePageRoute(page: const FavoritesPage());
           default:
             return null;
         }

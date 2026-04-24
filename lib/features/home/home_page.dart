@@ -620,12 +620,7 @@ class _QuickShortcuts extends ConsumerWidget {
         _ShortcutCard(
           icon: Icons.star,
           label: '我的最愛',
-          onTap: () {
-            Navigator.push(
-              context,
-              SlidePageRoute(page: const SearchPage()),
-            );
-          },
+          onTap: () => Navigator.pushNamed(context, '/favorites'),
         ),
         _ShortcutCard(
           icon: Icons.monitor_weight,
