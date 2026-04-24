@@ -94,14 +94,32 @@ class _BarcodeScannerPageState extends ConsumerState<BarcodeScannerPage> {
                   controller: _controller,
                   onDetect: _onDetect,
                 ),
-                // 掃描框裝飾
+                // 掃描框裝飾（增強可見性）
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: 280,
                     height: 180,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.primaryColor, width: 3),
-                      borderRadius: BorderRadius.circular(16),
+                    child: Stack(
+                      children: [
+                        // 半透明背景
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        // 透明掃描區域
+                        Container(
+                          margin: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        // 四角裝飾
+                        const _CornerDecoration(color: AppTheme.primaryColor),
+                      ],
                     ),
                   ),
                 ),
@@ -218,4 +236,137 @@ class _NutrientChip extends StatelessWidget {
       ],
     );
   }
+}
+
+/// 掃描框四角裝飾
+class _CornerDecoration extends StatelessWidget {
+  final Color color;
+
+  const _CornerDecoration({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 280,
+      height: 180,
+      child: Stack(
+        children: [
+          // 左上角
+          Positioned(
+            top: 0,
+            left: 0,
+            child: _CornerShape(
+              color: color,
+              corner: _Corner.topLeft,
+            ),
+          ),
+          // 右上角
+          Positioned(
+            top: 0,
+            right: 0,
+            child: _CornerShape(
+              color: color,
+              corner: _Corner.topRight,
+            ),
+          ),
+          // 左下角
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: _CornerShape(
+              color: color,
+              corner: _Corner.bottomLeft,
+            ),
+          ),
+          // 右下角
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: _CornerShape(
+              color: color,
+              corner: _Corner.bottomRight,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _Corner { topLeft, topRight, bottomLeft, bottomRight }
+
+class _CornerShape extends StatelessWidget {
+  final Color color;
+  final _Corner corner;
+
+  const _CornerShape({
+    required this.color,
+    required this.corner,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: const Size(24.0, 24.0),
+      painter: _CornerPainter(
+        color: color,
+        corner: corner,
+      ),
+    );
+  }
+}
+
+class _CornerPainter extends CustomPainter {
+  final Color color;
+  final _Corner corner;
+
+  _CornerPainter({
+    required this.color,
+    required this.corner,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const cornerLength = 20.0;
+    const strokeWidth = 4.0;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+
+    switch (corner) {
+      case _Corner.topLeft:
+        path.moveTo(0, cornerLength);
+        path.lineTo(0, strokeWidth / 2);
+        path.quadraticBezierTo(0, 0, strokeWidth / 2, 0);
+        path.lineTo(cornerLength, 0);
+        break;
+      case _Corner.topRight:
+        path.moveTo(size.width - cornerLength, 0);
+        path.lineTo(size.width - strokeWidth / 2, 0);
+        path.quadraticBezierTo(size.width, 0, size.width, strokeWidth / 2);
+        path.lineTo(size.width, cornerLength);
+        break;
+      case _Corner.bottomLeft:
+        path.moveTo(0, size.height - cornerLength);
+        path.lineTo(0, size.height - strokeWidth / 2);
+        path.quadraticBezierTo(0, size.height, strokeWidth / 2, size.height);
+        path.lineTo(cornerLength, size.height);
+        break;
+      case _Corner.bottomRight:
+        path.moveTo(size.width - cornerLength, size.height);
+        path.lineTo(size.width - strokeWidth / 2, size.height);
+        path.quadraticBezierTo(size.width, size.height, size.width, size.height - strokeWidth / 2);
+        path.lineTo(size.width, size.height - cornerLength);
+        break;
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

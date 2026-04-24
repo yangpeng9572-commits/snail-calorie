@@ -19,6 +19,81 @@ final openFoodFactsServiceProvider = Provider<OpenFoodFactsService>((ref) {
   return OpenFoodFactsService();
 });
 
+// ==================== 條碼掃描 Providers ====================
+
+/// 條碼掃描狀態
+enum BarcodeScanStatus { idle, scanning, found, notFound }
+
+class BarcodeScanState {
+  final BarcodeScanStatus status;
+  final String? lastBarcode;
+  final FoodItem? foundFood;
+  final String? errorMessage;
+
+  const BarcodeScanState({
+    this.status = BarcodeScanStatus.idle,
+    this.lastBarcode,
+    this.foundFood,
+    this.errorMessage,
+  });
+
+  BarcodeScanState copyWith({
+    BarcodeScanStatus? status,
+    String? lastBarcode,
+    FoodItem? foundFood,
+    String? errorMessage,
+  }) {
+    return BarcodeScanState(
+      status: status ?? this.status,
+      lastBarcode: lastBarcode ?? this.lastBarcode,
+      foundFood: foundFood ?? this.foundFood,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+}
+
+/// 條碼掃描 Provider
+final barcodeScannerProvider = StateNotifierProvider<BarcodeScannerNotifier, BarcodeScanState>((ref) {
+  final service = ref.watch(openFoodFactsServiceProvider);
+  return BarcodeScannerNotifier(service);
+});
+
+class BarcodeScannerNotifier extends StateNotifier<BarcodeScanState> {
+  final OpenFoodFactsService _service;
+
+  BarcodeScannerNotifier(this._service) : super(const BarcodeScanState());
+
+  Future<void> scanBarcode(String barcode) async {
+    if (barcode.isEmpty) return;
+    if (barcode == state.lastBarcode && state.status == BarcodeScanStatus.found) return;
+
+    state = state.copyWith(
+      status: BarcodeScanStatus.scanning,
+      lastBarcode: barcode,
+    );
+
+    final food = await _service.getFoodByBarcode(barcode);
+
+    if (!mounted) return;
+
+    if (food != null) {
+      state = state.copyWith(
+        status: BarcodeScanStatus.found,
+        foundFood: food,
+      );
+    } else {
+      state = state.copyWith(
+        status: BarcodeScanStatus.notFound,
+        errorMessage: '找不到條碼 $barcode 對應的食品',
+      );
+    }
+  }
+
+  void reset() {
+    state = const BarcodeScanState();
+  }
+}
+
 // ==================== 用戶資料 Providers ====================
 
 /// 用戶資料
