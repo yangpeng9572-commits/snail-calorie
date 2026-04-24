@@ -1,0 +1,251 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/app_providers.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
+
+// UserProfile is in app_constants.dart - use it directly
+final _activityLabels = {
+  1.2: '久坐（很少運動）',
+  1.375: '輕度（每週運動1-3天）',
+  1.55: '中度（每週運動3-5天）',
+  1.725: '高度（每週運動6-7天）',
+  1.9: '極度（運動員/體力工作者）',
+};
+
+final _goalLabels = {
+  'lose': '減重',
+  'maintain': '維持',
+  'gain': '增重',
+};
+
+/// 個人設定頁面
+class ProfilePage extends ConsumerStatefulWidget {
+  const ProfilePage({super.key});
+
+  @override
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  late TextEditingController _nameController;
+  late TextEditingController _ageController;
+  late TextEditingController _heightController;
+  late TextEditingController _weightController;
+  late String _gender;
+  late String _goal;
+  late double _activityLevel;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _ageController = TextEditingController();
+    _heightController = TextEditingController();
+    _weightController = TextEditingController();
+    _gender = 'male';
+    _goal = 'maintain';
+    _activityLevel = 1.375;
+
+    // 載入現有資料
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final profileState = ref.read(userProfileProvider);
+      if (profileState.profile != null) {
+        final p = profileState.profile!;
+        _nameController.text = p.name;
+        _ageController.text = p.age.toString();
+        _heightController.text = p.heightCm.toString();
+        _weightController.text = p.weightKg.toString();
+        setState(() {
+          _gender = p.gender;
+          _goal = p.goal;
+          _activityLevel = p.activityLevel;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
+    _heightController.dispose();
+    _weightController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final profile = UserProfile(
+      name: _nameController.text.isEmpty ? '使用者' : _nameController.text,
+      age: int.tryParse(_ageController.text) ?? 25,
+      heightCm: double.tryParse(_heightController.text) ?? 170,
+      weightKg: double.tryParse(_weightController.text) ?? 65,
+      gender: _gender,
+      goal: _goal,
+      activityLevel: _activityLevel,
+    );
+
+    ref.read(userProfileProvider.notifier).updateProfile(profile);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('儲存成功！')),
+    );
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profileState = ref.watch(userProfileProvider);
+    final target = profileState.target;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('個人設定'),
+        actions: [
+          TextButton(onPressed: _save, child: const Text('儲存', style: TextStyle(color: Colors.white))),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 基本資料
+            const Text('基本資料', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            _TextField(label: '名稱', controller: _nameController, hint: '你的名字'),
+            _TextField(label: '年齡', controller: _ageController, hint: '25', keyboardType: TextInputType.number),
+            _TextField(label: '身高 (cm)', controller: _heightController, hint: '170', keyboardType: TextInputType.number),
+            _TextField(label: '體重 (kg)', controller: _weightController, hint: '65', keyboardType: TextInputType.number),
+
+            const SizedBox(height: 24),
+
+            // 性別
+            const Text('性別', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                _RadioChip(label: '男', value: 'male', groupValue: _gender, onChanged: (v) => setState(() => _gender = v!)),
+                const SizedBox(width: 8),
+                _RadioChip(label: '女', value: 'female', groupValue: _gender, onChanged: (v) => setState(() => _gender = v!)),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // 目標
+            const Text('減重目標', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: _goalLabels.entries.map(
+                (e) => ChoiceChip(
+                  label: Text(e.value),
+                  selected: _goal == e.key,
+                  onSelected: (selected) {
+                    if (selected) setState(() => _goal = e.key);
+                  },
+                ),
+              ).toList(),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 活動量
+            const Text('活動量', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            ..._activityLabels.entries.map(
+              (e) => RadioListTile<double>(
+                title: Text(e.value, style: const TextStyle(fontSize: 14)),
+                value: e.key,
+                groupValue: _activityLevel,
+                onChanged: (v) => setState(() => _activityLevel = v!),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 營養目標預覽
+            Card(
+              color: AppTheme.primaryColor.withOpacity(0.1),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('計算後的每日目標', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text('熱量: ${target.calories} kcal'),
+                    Text('碳水: ${target.carbsGrams.round()}g'),
+                    Text('蛋白: ${target.proteinGrams.round()}g'),
+                    Text('脂肪: ${target.fatGrams.round()}g'),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TextField extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final String hint;
+  final TextInputType? keyboardType;
+
+  const _TextField({
+    required this.label,
+    required this.controller,
+    required this.hint,
+    this.keyboardType,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          SizedBox(width: 100, child: Text(label, style: const TextStyle(fontSize: 14))),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              decoration: InputDecoration(hintText: hint, isDense: true),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RadioChip extends StatelessWidget {
+  final String label;
+  final String value;
+  final String groupValue;
+  final ValueChanged<String?> onChanged;
+
+  const _RadioChip({
+    required this.label,
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: groupValue == value,
+      onSelected: (selected) => onChanged(selected ? value : null),
+    );
+  }
+}
