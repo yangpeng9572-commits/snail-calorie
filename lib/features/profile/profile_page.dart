@@ -275,9 +275,197 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               onChanged: (v) => ref.read(notificationSettingsProvider.notifier).toggleDinner(v),
             ),
 
+            const SizedBox(height: 24),
+
+            // 營養目標說明
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.help_outline, color: AppTheme.primaryColor),
+                title: const Text('營養目標說明'),
+                subtitle: const Text('了解熱量與營養素如何計算'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showNutritionInfoDialog(context),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 關於
+            const Text('關於', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.restaurant_menu, color: AppTheme.primaryColor),
+                        ),
+                        const SizedBox(width: 12),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '食刻輕卡',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text('版本 1.0.0', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    const Text(
+                      '開發者：小龍女',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      '一款專為追求健康生活設計的飲食追蹤 App',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 清除本地資料（危險區域）
+            const Text('危險區域', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Card(
+              color: AppTheme.errorColor.withOpacity(0.05),
+              child: ListTile(
+                leading: const Icon(Icons.delete_forever, color: AppTheme.errorColor),
+                title: const Text('清除本地資料', style: TextStyle(color: AppTheme.errorColor)),
+                subtitle: const Text('刪除所有本地存儲的數據', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                onTap: () => _showClearDataDialog(context, ref),
+              ),
+            ),
+
             const SizedBox(height: 32),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showNutritionInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('營養目標說明'),
+        content: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'BMR / Mifflin-St Jeor 公式',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              SizedBox(height: 12),
+              Text(
+                '基礎代謝率（BMR）是指人體在清醒、安靜、不受肌肉活動、環境溫度、食物及精神緊張等因素影響時，維持生命所需消耗的最低熱量。',
+                style: TextStyle(fontSize: 13),
+              ),
+              SizedBox(height: 12),
+              Text(
+                '▸ 男性：BMR = 10 × 體重(kg) + 6.25 × 身高(cm) - 5 × 年齡 + 5',
+                style: TextStyle(fontSize: 13),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '▸ 女性：BMR = 10 × 體重(kg) + 6.25 × 身高(cm) - 5 × 年齡 - 161',
+                style: TextStyle(fontSize: 13),
+              ),
+              SizedBox(height: 16),
+              Text(
+                '每日總消耗熱量（TDEE）= BMR × 活動係數',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '▸ 久坐（很少運動）：× 1.2\n'
+                '▸ 輕度（每週運動1-3天）：× 1.375\n'
+                '▸ 中度（每週運動3-5天）：× 1.55\n'
+                '▸ 高度（每週運動6-7天）：× 1.725\n'
+                '▸ 極度（運動員/體力工作者）：× 1.9',
+                style: TextStyle(fontSize: 13),
+              ),
+              SizedBox(height: 16),
+              Text(
+                '營養素建議比例：',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '▸ 碳水化合物：每日熱量的 45-65%\n'
+                '▸ 蛋白質：每日熱量的 10-35%\n'
+                '▸ 脂肪：每日熱量的 20-35%',
+                style: TextStyle(fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('關閉'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearDataDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('清除本地資料'),
+        content: const Text(
+          '確定要清除所有本地存儲的資料嗎？\n\n'
+          '此操作將刪除：\n'
+          '• 用戶個人資料\n'
+          '• 飲食記錄\n'
+          '• 收藏食物\n'
+          '• 體重記錄\n\n'
+          '此操作無法撤銷！',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.errorColor,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final storage = ref.read(localStorageProvider);
+              await storage.clearAll();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('本地資料已清除，請重新啟動 App')),
+                );
+              }
+            },
+            child: const Text('確認清除'),
+          ),
+        ],
       ),
     );
   }
