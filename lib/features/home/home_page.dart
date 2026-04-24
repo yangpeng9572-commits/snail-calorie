@@ -126,13 +126,80 @@ class HomePage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SearchPage()),
-        ),
+        onPressed: () => _showQuickAddPanel(context, ref),
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _showQuickAddPanel(BuildContext context, WidgetRef ref) {
+    final favorites = ref.read(favoriteFoodsProvider);
+    final topFavorites = favorites.take(5).toList();
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => _QuickAddPanel(
+        favorites: topFavorites,
+        onSelectFood: (food) {
+          Navigator.pop(ctx);
+          _showMealSelectionDialog(context, ref, food);
+        },
+        onAddNew: () {
+          Navigator.pop(ctx);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SearchPage()),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showMealSelectionDialog(BuildContext context, WidgetRef ref, dynamic food) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '新增「${food.name}」到',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...AppConstants.mealTypes.map((mealType) => ListTile(
+              leading: Icon(_getMealIcon(mealType), color: AppTheme.primaryColor),
+              title: Text(mealType),
+              onTap: () {
+                Navigator.pop(ctx);
+                ref.read(dailyLogProvider.notifier).addEntry(mealType, food, food.servingSize);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('已新增 ${food.name} 到 $mealType')),
+                );
+              },
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getMealIcon(String mealType) {
+    switch (mealType) {
+      case '早餐': return Icons.wb_sunny;
+      case '午餐': return Icons.wb_cloudy;
+      case '晚餐': return Icons.nightlight_round;
+      case '點心': return Icons.cookie;
+      default: return Icons.restaurant;
+    }
   }
 
   void _showAddFoodDialog(BuildContext context, WidgetRef ref, String mealType) {
@@ -634,6 +701,103 @@ class _EntryRow extends StatelessWidget {
             icon: const Icon(Icons.remove_circle_outline, size: 20, color: Colors.grey),
             onPressed: onDelete,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 快速新增收藏食物面板
+class _QuickAddPanel extends StatelessWidget {
+  final List<dynamic> favorites;
+  final Function(dynamic) onSelectFood;
+  final VoidCallback onAddNew;
+
+  const _QuickAddPanel({
+    required this.favorites,
+    required this.onSelectFood,
+    required this.onAddNew,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.star, color: AppTheme.accentColor),
+              const SizedBox(width: 8),
+              const Text(
+                '我的最愛',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
+              if (favorites.isEmpty)
+                TextButton(
+                  onPressed: onAddNew,
+                  child: const Text('新增食物'),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (favorites.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Icon(Icons.star_border, size: 48, color: Colors.grey),
+                    SizedBox(height: 8),
+                    Text('尚無收藏食物', style: TextStyle(color: Colors.grey)),
+                    SizedBox(height: 4),
+                    Text(
+                      '搜尋食物並點擊星星收藏',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            ...favorites.map((food) => ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppTheme.accentColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.star, color: AppTheme.accentColor, size: 20),
+              ),
+              title: Text(food.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+              subtitle: Text(
+                '${food.calories.round()} kcal / ${food.servingSize.round()}g',
+                style: const TextStyle(fontSize: 12),
+              ),
+              trailing: const Icon(Icons.add_circle_outline, color: AppTheme.primaryColor),
+              onTap: () => onSelectFood(food),
+            )),
+          if (favorites.isNotEmpty) ...[
+            const Divider(),
+            ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.search, color: AppTheme.primaryColor, size: 20),
+              ),
+              title: const Text('搜尋新食物'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: onAddNew,
+            ),
+          ],
         ],
       ),
     );
