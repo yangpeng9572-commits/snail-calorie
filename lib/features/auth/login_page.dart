@@ -173,7 +173,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // Logo
       const Icon(Icons.restaurant_menu, size: 80, color: AppTheme.primaryColor),
       const SizedBox(height: 16),
-      Text(
+      const Text(
         '食刻輕卡',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -321,8 +321,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           color: Colors.blue.shade50,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Row(
-          children: const [
+        child: const Row(
+          children: [
             Icon(Icons.info_outline, color: Colors.blue, size: 18),
             SizedBox(width: 8),
             Expanded(
