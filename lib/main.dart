@@ -13,6 +13,7 @@ import 'features/charts/charts_page.dart';
 import 'features/auth/login_page.dart';
 import 'features/export/export_page.dart';
 import 'features/share/share_profile_page.dart';
+import 'features/onboarding/onboarding_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -89,6 +90,7 @@ class AuthGate extends ConsumerStatefulWidget {
 
 class _AuthGateState extends ConsumerState<AuthGate> {
   bool _isInitialized = false;
+  bool _showOnboarding = false;
 
   @override
   void initState() {
@@ -100,7 +102,21 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     // Guest 模式直接通過
     await Future.delayed(const Duration(milliseconds: 100));
     if (mounted) {
-      setState(() => _isInitialized = true);
+      // 檢查是否需要顯示首次使用引導
+      final storage = ref.read(localStorageProvider);
+      final hasCompletedOnboarding = storage.hasCompletedOnboarding();
+      setState(() {
+        _showOnboarding = !hasCompletedOnboarding;
+        _isInitialized = true;
+      });
+    }
+  }
+
+  Future<void> _onOnboardingComplete() async {
+    final storage = ref.read(localStorageProvider);
+    await storage.setOnboardingComplete();
+    if (mounted) {
+      setState(() => _showOnboarding = false);
     }
   }
 
@@ -133,6 +149,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           ),
         ),
       );
+    }
+
+    // 顯示首次使用引導
+    if (_showOnboarding) {
+      return OnboardingPage(onComplete: _onOnboardingComplete);
     }
 
     // 使用 authStateProvider 判斷是否已登入

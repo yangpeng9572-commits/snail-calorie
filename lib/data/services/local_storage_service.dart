@@ -161,6 +161,7 @@ class LocalStorageService {
   // ==================== 主題設定 ====================
 
   static const String _keyThemeMode = 'theme_mode';
+  static const String _keyOnboardingComplete = 'onboarding_complete';
 
   /// 儲存主題模式
   Future<void> saveThemeMode(ThemeMode mode) async {
@@ -174,6 +175,18 @@ class LocalStorageService {
     final index = int.tryParse(str);
     if (index == null || index < 0 || index > 2) return ThemeMode.system;
     return ThemeMode.values[index];
+  }
+
+  // ==================== Onboarding ====================
+
+  /// 檢查是否已完成首次使用引導
+  bool hasCompletedOnboarding() {
+    return _prefs.getBool(_keyOnboardingComplete) ?? false;
+  }
+
+  /// 標記首次使用引導已完成
+  Future<void> setOnboardingComplete() async {
+    await _prefs.setBool(_keyOnboardingComplete, true);
   }
 
   Future<void> clearAll() async {
