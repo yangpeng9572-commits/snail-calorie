@@ -4,6 +4,7 @@ import '../../providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
+import '../../core/widgets/page_transitions.dart';
 import '../../data/services/nutrition_calculator.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
@@ -32,7 +33,7 @@ class HomePage extends ConsumerWidget {
             icon: const Icon(Icons.qr_code_scanner),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
+              SlidePageRoute(page: const BarcodeScannerPage()),
             ),
           ),
           IconButton(
@@ -43,7 +44,7 @@ class HomePage extends ConsumerWidget {
             icon: const Icon(Icons.star),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const SearchPage()),
+              SlidePageRoute(page: const SearchPage()),
             ),
           ),
         ],
@@ -160,7 +161,7 @@ class HomePage extends ConsumerWidget {
           Navigator.pop(ctx);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const SearchPage()),
+            SlidePageRoute(page: const SearchPage()),
           );
         },
       ),
@@ -214,9 +215,7 @@ class HomePage extends ConsumerWidget {
   void _showAddFoodDialog(BuildContext context, WidgetRef ref, String mealType) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => AddFoodToMealPage(mealType: mealType),
-      ),
+      SlidePageRoute(page: AddFoodToMealPage(mealType: mealType)),
     );
   }
 }
@@ -394,7 +393,7 @@ class _DateSelector extends StatelessWidget {
 }
 
 /// 熱量卡片
-class _CalorieCard extends StatelessWidget {
+class _CalorieCard extends StatefulWidget {
   final double consumed;
   final int target;
   final double progress;
@@ -406,9 +405,50 @@ class _CalorieCard extends StatelessWidget {
   });
 
   @override
+  State<_CalorieCard> createState() => _CalorieCardState();
+}
+
+class _CalorieCardState extends State<_CalorieCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  double _oldProgress = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0, end: widget.progress).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(_CalorieCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.progress != widget.progress) {
+      _oldProgress = _animation.value;
+      _animation = Tween<double>(begin: _oldProgress, end: widget.progress).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+      );
+      _controller.reset();
+      _controller.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final remaining = target - consumed;
-    final hasRecord = consumed > 0 || target > 0;
+    final remaining = widget.target - widget.consumed;
+    final hasRecord = widget.consumed > 0 || widget.target > 0;
 
     return Card(
       child: Padding(
@@ -437,7 +477,7 @@ class _CalorieCard extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: consumed.round().toString(),
+                              text: widget.consumed.round().toString(),
                               style: const TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,
@@ -445,7 +485,7 @@ class _CalorieCard extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: ' / $target kcal',
+                              text: ' / ${widget.target} kcal',
                               style: const TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                           ],
@@ -460,18 +500,28 @@ class _CalorieCard extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        CircularProgressIndicator(
-                          value: progress.clamp(0.0, 1.0),
-                          strokeWidth: 8,
-                          backgroundColor: Colors.grey.shade200,
-                          valueColor: AlwaysStoppedAnimation(
-                            progress > 1 ? AppTheme.errorColor : AppTheme.primaryColor,
-                          ),
+                        AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return CircularProgressIndicator(
+                              value: _animation.value.clamp(0.0, 1.0),
+                              strokeWidth: 8,
+                              backgroundColor: Colors.grey.shade200,
+                              valueColor: AlwaysStoppedAnimation(
+                                _animation.value > 1 ? AppTheme.errorColor : AppTheme.primaryColor,
+                              ),
+                            );
+                          },
                         ),
                         Center(
-                          child: Text(
-                            '${(progress * 100).round()}%',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          child: AnimatedBuilder(
+                            animation: _animation,
+                            builder: (context, child) {
+                              return Text(
+                                '${(_animation.value * 100).round()}%',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -608,7 +658,7 @@ class _QuickShortcuts extends ConsumerWidget {
           label: '搜尋食物',
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const SearchPage()),
+            SlidePageRoute(page: const SearchPage()),
           ),
         ),
         _ShortcutCard(
@@ -616,7 +666,7 @@ class _QuickShortcuts extends ConsumerWidget {
           label: '掃描條碼',
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
+            SlidePageRoute(page: const BarcodeScannerPage()),
           ),
         ),
         _ShortcutCard(
@@ -625,7 +675,7 @@ class _QuickShortcuts extends ConsumerWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const SearchPage()),
+              SlidePageRoute(page: const SearchPage()),
             );
           },
         ),

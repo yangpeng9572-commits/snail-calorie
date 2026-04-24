@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
+import 'core/widgets/page_transitions.dart';
 import 'data/services/local_storage_service.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/firestore_service.dart';
@@ -54,10 +55,17 @@ class SnailCalorieApp extends ConsumerWidget {
       darkTheme: AppThemeDark.darkTheme,
       themeMode: themeMode,
       home: const AuthGate(),
-      routes: {
-        '/profile': (_) => const ProfilePage(),
-        '/charts': (_) => const ChartsPage(),
-        '/export': (_) => const ExportPage(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/profile':
+            return SlidePageRoute(page: const ProfilePage());
+          case '/charts':
+            return SlidePageRoute(page: const ChartsPage());
+          case '/export':
+            return SlidePageRoute(page: const ExportPage());
+          default:
+            return null;
+        }
       },
     );
   }

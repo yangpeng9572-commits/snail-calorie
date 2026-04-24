@@ -125,7 +125,73 @@ class _SearchResults extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: foods.length,
-      itemBuilder: (context, index) => _FoodListTile(food: foods[index]),
+      itemBuilder: (context, index) => _AnimatedFoodListTile(
+        food: foods[index],
+        index: index,
+      ),
+    );
+  }
+}
+
+class _AnimatedFoodListTile extends StatefulWidget {
+  final FoodItem food;
+  final int index;
+
+  const _AnimatedFoodListTile({required this.food, required this.index});
+
+  @override
+  State<_AnimatedFoodListTile> createState() => _AnimatedFoodListTileState();
+}
+
+class _AnimatedFoodListTileState extends State<_AnimatedFoodListTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    final delay = widget.index * 0.1;
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(delay.clamp(0.0, 0.7), (delay + 0.5).clamp(0.0, 1.0), curve: Curves.easeOut),
+      ),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(delay.clamp(0.0, 0.7), (delay + 0.5).clamp(0.0, 1.0), curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: _FoodListTile(food: widget.food),
+      ),
     );
   }
 }
