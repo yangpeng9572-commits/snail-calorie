@@ -155,6 +155,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       appBar: AppBar(
         title: const Text('個人設定'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+            tooltip: '設定',
+          ),
           TextButton(onPressed: _signOut, child: const Text('登出', style: TextStyle(color: Colors.white))),
           TextButton(onPressed: _save, child: const Text('儲存', style: TextStyle(color: Colors.white))),
         ],
