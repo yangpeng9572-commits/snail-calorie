@@ -168,6 +168,49 @@ cloud_firestore: ^5.6.6
 
 ---
 
+## ✅ 已預先實作的 Firebase 程式碼
+
+Hermes 已經幫你把 Firebase Auth 程式碼寫好了！你不需要從零開始。
+
+### 已建立的檔案
+
+| 檔案 | 用途 |
+|------|------|
+| `lib/data/services/auth_service.dart` | Firebase 認證（Google/Email 登入） |
+| `lib/data/services/firestore_service.dart` | Firestore 雲端同步 |
+| `lib/features/auth/login_page.dart` | 登入頁面 UI |
+
+### 你需要做的
+
+只需要完成以下 3 步，系統就能運作：
+
+**Step 1：取消 pubspec.yaml 註解（Andy 給 Firebase 設定檔後）**
+
+Andy 需要提供 Firebase 設定檔，然後在 `pubspec.yaml` 取消註解：
+```yaml
+firebase_core: ^3.13.0
+firebase_auth: ^5.6.0
+cloud_firestore: ^5.6.6
+google_sign_in: ^6.2.1
+```
+
+**Step 2：放置設定檔**
+- Andy 把 `google-services.json` 放到 `android/app/google-services.json`
+- Andy 把 `GoogleService-Info.plist` 放到 `ios/Runner/GoogleService-Info.plist`
+
+**Step 3：初始化 Firebase（在 main.dart）**
+
+在 `lib/main.dart` 的 `main()` 函式最前面加入：
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();  // ← 加這行
+  // ... 其餘程式碼不變
+}
+```
+
+---
+
 ## ⚠️ 容易踩的坑
 
 ### 坑 1：Firebase Auth 在 iOS 模擬器有限制
