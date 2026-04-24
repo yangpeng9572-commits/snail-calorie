@@ -68,10 +68,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           ? _FavoritesSection(favorites: favorites)
           : results.when(
               data: (foods) => foods.isEmpty
-                  ? const _EmptyState(message: '找不到符合的食物\n試試其他關鍵字')
+                  ? const _EmptyState(
+                      emoji: '🍽️',
+                      message: '找不到食物，試著換個關鍵字',
+                    )
                   : _SearchResults(foods: foods),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => _EmptyState(message: '搜尋失敗：$e'),
+              error: (e, _) => _NetworkError(
+                onRetry: () => _onSearch(_controller.text),
+              ),
             ),
     );
   }
@@ -264,9 +269,10 @@ class _FoodListTile extends ConsumerWidget {
 }
 
 class _EmptyState extends StatelessWidget {
+  final String emoji;
   final String message;
 
-  const _EmptyState({required this.message});
+  const _EmptyState({required this.emoji, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -274,9 +280,38 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.search_off, size: 64, color: Colors.grey),
+          Text(emoji, style: const TextStyle(fontSize: 64)),
           const SizedBox(height: 16),
-          Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
+          Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+}
+
+class _NetworkError extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const _NetworkError({required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
+          const SizedBox(height: 16),
+          const Text(
+            '網路連線失敗，請檢查網路',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onRetry,
+            child: const Text('重試'),
+          ),
         ],
       ),
     );
