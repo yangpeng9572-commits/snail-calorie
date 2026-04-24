@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>食刻輕卡需要使用相機掃描食品條碼</string>
 </dict>
 </plist>
