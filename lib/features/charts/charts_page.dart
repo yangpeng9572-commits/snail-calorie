@@ -65,6 +65,10 @@ class _ChartsPageState extends ConsumerState<ChartsPage> {
             _WeeklyCalorieChart(weekLogs: weekLogs, target: target.calories),
             const SizedBox(height: 32),
 
+            // 4週熱量趨勢
+            _FourWeekTrendChart(fourWeekLogs: _getFourWeekLogs(), target: target.calories),
+            const SizedBox(height: 32),
+
             // 營養素分佈圓餅圖
             _MacroPieChart(weekLogs: weekLogs),
             const SizedBox(height: 32),
@@ -108,6 +112,33 @@ class _ChartsPageState extends ConsumerState<ChartsPage> {
     }
     return logs;
   }
+
+  /// 取得連續4週的數據
+  List<Map<String, dynamic>> _getFourWeekLogs() {
+    final storage = ref.read(localStorageProvider);
+    final today = DateTime.now();
+    final logs = <Map<String, dynamic>>[];
+
+    for (int w = 0; w < 4; w++) {
+      final weekStart = AppDateUtils.weekStart(today.subtract(Duration(days: 7 * (3 - w))));
+      final weekData = <String, dynamic>{};
+      for (int i = 0; i < 7; i++) {
+        final date = weekStart.add(Duration(days: i));
+        final dateStr = AppDateUtils.formatDate(date);
+        final log = storage.getDailyLog(dateStr);
+        if (log != null) {
+          weekData[dateStr] = {
+            'totalCalories': log.totalCalories,
+            'totalCarbs': log.totalCarbs,
+            'totalProtein': log.totalProtein,
+            'totalFat': log.totalFat,
+          };
+        }
+      }
+      logs.add(weekData);
+    }
+    return logs;
+  }
 }
 
 class _WeeklyCalorieChart extends StatelessWidget {
@@ -124,8 +155,8 @@ class _WeeklyCalorieChart extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          height: 200,
+            child: SizedBox(
+          height: 220,
           child: BarChart(
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
@@ -183,8 +214,174 @@ class _WeeklyCalorieChart extends StatelessWidget {
                 ),
               ),
               borderData: FlBorderData(show: false),
+              extraLinesData: ExtraLinesData(
+                horizontalLines: [
+                  HorizontalLine(
+                    y: target.toDouble(),
+                    color: AppTheme.accentColor,
+                    strokeWidth: 2,
+                    dashArray: [8, 4],
+                    label: HorizontalLineLabel(
+                      show: true,
+                      labelResolver: (_) => '目標 $target',
+                      style: const TextStyle(fontSize: 10, color: AppTheme.accentColor),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 4週熱量趨勢圖（連續4週的每日熱量柱狀圖）
+class _FourWeekTrendChart extends StatelessWidget {
+  final List<Map<String, dynamic>> fourWeekLogs;
+  final int target;
+
+  const _FourWeekTrendChart({required this.fourWeekLogs, required this.target});
+
+  @override
+  Widget build(BuildContext context) {
+    // 計算所有數據的最大值
+    double maxY = target.toDouble() * 1.5;
+    final allCalories = <double>[];
+
+    for (final week in fourWeekLogs) {
+      for (final log in week.values) {
+        if (log is Map) {
+          final cal = (log['totalCalories'] ?? 0.0) as double;
+          allCalories.add(cal);
+          if (cal > maxY) maxY = cal * 1.2;
+        }
+      }
+    }
+
+    // 組織數據：4週 x 7天
+    final weeklyGroups = <BarChartGroupData>[];
+    final weekLabels = ['第1週', '第2週', '第3週', '第4週'];
+
+    int groupIndex = 0;
+    for (int w = 0; w < 4; w++) {
+      final weekData = fourWeekLogs[w];
+      final sortedEntries = weekData.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
+
+      for (int d = 0; d < 7; d++) {
+        double calories = 0;
+        if (d < sortedEntries.length) {
+          final log = sortedEntries[d].value;
+          if (log is Map) {
+            calories = (log['totalCalories'] ?? 0.0) as double;
+          }
+        }
+
+        final isOver = calories > target;
+        weeklyGroups.add(
+          BarChartGroupData(
+            x: groupIndex,
+            barRods: [
+              BarChartRodData(
+                toY: calories,
+                color: isOver ? AppTheme.errorColor : AppTheme.primaryColor,
+                width: 8,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+              ),
+            ],
+          ),
+        );
+        groupIndex++;
+      }
+    }
+
+    // X軸標籤：只顯示每週第一天
+    final xLabels = <String>[];
+    for (int w = 0; w < 4; w++) {
+      if (w == 0) {
+        xLabels.add('第1週');
+      } else {
+        xLabels.add('第${w + 1}週');
+      }
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('4週熱量趨勢', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            const Text('每日熱量柱狀圖', style: TextStyle(color: Colors.grey, fontSize: 12)),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: maxY,
+                  barGroups: weeklyGroups,
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) => Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          // 每7個柱子顯示一週標籤
+                          if (value.toInt() % 7 == 0) {
+                            final weekIndex = value.toInt() ~/ 7;
+                            if (weekIndex < weekLabels.length) {
+                              return Text(weekLabels[weekIndex], style: const TextStyle(fontSize: 10));
+                            }
+                          }
+                          return const Text('');
+                        },
+                      ),
+                    ),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    horizontalInterval: target.toDouble(),
+                    getDrawingHorizontalLine: (value) => FlLine(
+                      color: AppTheme.accentColor.withOpacity(0.3),
+                      strokeWidth: 1,
+                      dashArray: [5, 5],
+                    ),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: target.toDouble(),
+                        color: AppTheme.accentColor,
+                        strokeWidth: 2,
+                        dashArray: [8, 4],
+                        label: HorizontalLineLabel(
+                          show: true,
+                          labelResolver: (_) => '目標',
+                          style: const TextStyle(fontSize: 10, color: AppTheme.accentColor),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -229,35 +426,35 @@ class _MacroPieChart extends StatelessWidget {
             const Text('本週營養素攝入比例', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             SizedBox(
-              height: 200,
+              height: 250,
               child: Row(
                 children: [
                   Expanded(
                     child: PieChart(
                       PieChartData(
                         sectionsSpace: 2,
-                        centerSpaceRadius: 40,
+                        centerSpaceRadius: 50,
                         sections: [
                           PieChartSectionData(
                             value: totalCarbs,
                             title: '${(totalCarbs / total * 100).round()}%',
                             color: AppTheme.carbsColor,
-                            radius: 60,
-                            titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                            radius: 70,
+                            titleStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           PieChartSectionData(
                             value: totalProtein,
                             title: '${(totalProtein / total * 100).round()}%',
                             color: AppTheme.proteinColor,
-                            radius: 60,
-                            titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                            radius: 70,
+                            titleStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           PieChartSectionData(
                             value: totalFat,
                             title: '${(totalFat / total * 100).round()}%',
                             color: AppTheme.fatColor,
-                            radius: 60,
-                            titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                            radius: 70,
+                            titleStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
