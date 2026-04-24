@@ -7,6 +7,11 @@ import '../data/models/daily_log.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/date_utils.dart';
 
+// ==================== 認證狀態 Provider ====================
+
+/// 認證狀態 Provider（Guest 模式視為已登入，default = true）
+final authStateProvider = StateProvider<bool>((ref) => true);
+
 // ==================== 服務 Providers ====================
 
 /// 本地存儲服務（全域單例）

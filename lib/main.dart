@@ -117,15 +117,14 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       );
     }
 
-    // 目前是 Guest 模式：直接進入 App
-    // 未來根據 AuthService.isSignedIn 判斷是否要顯示 LoginPage
-    final authService = ref.read(authServiceProvider);
-    if (authService.isSignedIn) {
+    // 使用 authStateProvider 判斷是否已登入
+    final isAuthenticated = ref.watch(authStateProvider);
+    if (isAuthenticated) {
       return const MainNavigationPage();
     }
     return LoginPage(
       onSignInSuccess: () {
-        setState(() {});
+        ref.read(authStateProvider.notifier).state = true;
       },
     );
   }

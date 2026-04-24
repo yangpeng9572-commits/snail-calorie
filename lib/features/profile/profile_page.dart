@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
+import '../../data/services/auth_service.dart';
 
 // UserProfile is in app_constants.dart - use it directly
 final _activityLabels = {
@@ -93,6 +94,32 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     Navigator.pop(context);
   }
 
+  Future<void> _signOut() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('登出'),
+        content: const Text('確定要登出嗎？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('登出'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final authService = AuthService();
+      await authService.signOut();
+      ref.read(authStateProvider.notifier).state = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileProvider);
@@ -102,6 +129,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       appBar: AppBar(
         title: const Text('個人設定'),
         actions: [
+          TextButton(onPressed: _signOut, child: const Text('登出', style: TextStyle(color: Colors.white))),
           TextButton(onPressed: _save, child: const Text('儲存', style: TextStyle(color: Colors.white))),
         ],
       ),
