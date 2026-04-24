@@ -4,6 +4,7 @@ import '../../providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
+import '../../data/services/nutrition_calculator.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
 
@@ -108,6 +109,14 @@ class HomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
+            // 熱量建議區塊
+            _CalorieSuggestionCard(
+              consumed: log.totalCalories,
+              target: target.calories,
+            ),
+
+            const SizedBox(height: 24),
+
             // 快速捷徑
             _QuickShortcuts(),
 
@@ -207,6 +216,115 @@ class HomePage extends ConsumerWidget {
       context,
       MaterialPageRoute(
         builder: (_) => AddFoodToMealPage(mealType: mealType),
+      ),
+    );
+  }
+}
+
+/// 熱量建議卡片
+class _CalorieSuggestionCard extends StatelessWidget {
+  final double consumed;
+  final int target;
+
+  const _CalorieSuggestionCard({
+    required this.consumed,
+    required this.target,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasRecord = consumed > 0 || target > 0;
+    final remaining = target - consumed;
+    final isOver = remaining < 0;
+    final overage = isOver ? -remaining : 0.0;
+
+    if (!hasRecord) {
+      return const SizedBox.shrink();
+    }
+
+    String suggestion;
+    Color suggestionColor;
+    Color backgroundColor;
+
+    if (isOver) {
+      suggestion = '今日熱量已超標 ${overage.round()} kcal';
+      suggestionColor = AppTheme.errorColor;
+      backgroundColor = AppTheme.errorColor.withOpacity(0.1);
+    } else {
+      suggestion = NutritionCalculator.mealSuggestion(remaining);
+      suggestionColor = AppTheme.primaryColor;
+      backgroundColor = AppTheme.primaryColor.withOpacity(0.1);
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isOver ? Icons.warning_amber : Icons.lightbulb_outline,
+                  color: suggestionColor,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '熱量建議',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: suggestionColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isOver)
+                    Text(
+                      suggestion,
+                      style: const TextStyle(
+                        color: AppTheme.errorColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    )
+                  else ...[
+                    Text(
+                      '今日攝入：${consumed.round()} kcal',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '目標：$target kcal',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      suggestion,
+                      style: const TextStyle(
+                        color: AppTheme.primaryColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
