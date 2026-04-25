@@ -33,7 +33,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _OnboardingItem(
       icon: Icons.trending_up,
       title: '追蹤你的進度',
-      desc: '每週分析熱量趨勢\nvisualizza你的成果',
+      desc: '每週分析熱量趨勢\n看見你的成果',
       color: AppTheme.carbsColor,
       bgColor: Color(0xFFE3F2FD),
     ),
