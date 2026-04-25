@@ -4,6 +4,7 @@ import '../../../providers/app_providers.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// 營養素三環圖 widget（蛋白質 / 脂肪 / 碳水化合物）
+/// FatSecret 風格 - 粗環、厚實、數字在環上
 class MacroRingsWidget extends ConsumerWidget {
   const MacroRingsWidget({super.key});
 
@@ -18,7 +19,9 @@ class MacroRingsWidget extends ConsumerWidget {
     final consumedProtein = log.totalProtein;
     final consumedFat = log.totalFat;
     final consumedCarbs = log.totalCarbs;
+    final consumedCalories = log.totalCalories;
     final burnedCalories = log.burnedCalories;
+    final targetCalories = target.calories > 0 ? target.calories : 2000;
 
     // 目標量計算
     double targetProtein;
@@ -28,7 +31,6 @@ class MacroRingsWidget extends ConsumerWidget {
     if (target.proteinGrams > 0) {
       targetProtein = target.proteinGrams;
     } else {
-      // 預設：體重 * 1.6 g，若無體重則預設 60g
       final weight = profile?.weightKg ?? 60;
       targetProtein = weight * 1.6;
     }
@@ -36,64 +38,124 @@ class MacroRingsWidget extends ConsumerWidget {
     if (target.fatGrams > 0) {
       targetFat = target.fatGrams;
     } else {
-      // 預設：熱量目標 * 25% / 9，無資料則預設 50g
       targetFat = 50;
     }
 
     if (target.carbsGrams > 0) {
       targetCarbs = target.carbsGrams;
     } else {
-      // 碳水：(熱量目標 - 蛋白質熱量 - 脂肪熱量) / 4
       final proteinCals = targetProtein * 4;
       final fatCals = targetFat * 9;
-      final calories = target.calories > 0 ? target.calories : 2000;
-      targetCarbs = (calories - proteinCals - fatCals) / 4;
+      targetCarbs = (targetCalories - proteinCals - fatCals) / 4;
     }
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '營養素攝入',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            // 標題列
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '今日營養攝入',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.calorieColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${consumedCalories.round()} / ${targetCalories.round()} kcal',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.calorieColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
+
+            // 巨量環 - FatSecret 風格（粗線條）
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _MacroRing(
+                _MacroRingFat(
+                  label: '熱量',
+                  consumed: consumedCalories.toDouble(),
+                  target: targetCalories.toDouble(),
+                  unit: 'kcal',
+                  color: AppTheme.calorieColor,
+                  size: 88,
+                  strokeWidth: 12,
+                ),
+                _MacroRingFat(
                   label: '蛋白質',
                   consumed: consumedProtein,
                   target: targetProtein,
                   unit: 'g',
                   color: AppTheme.proteinColor,
+                  size: 88,
+                  strokeWidth: 12,
                 ),
-                _MacroRing(
+                _MacroRingFat(
                   label: '脂肪',
                   consumed: consumedFat,
                   target: targetFat,
                   unit: 'g',
                   color: AppTheme.fatColor,
+                  size: 88,
+                  strokeWidth: 12,
                 ),
-                _MacroRing(
+                _MacroRingFat(
                   label: '碳水',
                   consumed: consumedCarbs,
                   target: targetCarbs,
                   unit: 'g',
                   color: AppTheme.carbsColor,
-                ),
-                _MacroRing(
-                  label: '消耗',
-                  consumed: burnedCalories,
-                  target: 500, // 預設目標 500 kcal 消耗
-                  unit: 'kcal',
-                  color: AppTheme.exerciseColor,
-                  showAsText: true,
+                  size: 88,
+                  strokeWidth: 12,
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+
+            // 消耗熱量（分開顯示）
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppTheme.exerciseColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.local_fire_department,
+                    color: AppTheme.exerciseColor,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '今日消耗 ${burnedCalories.round()} kcal',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.exerciseColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -102,81 +164,57 @@ class MacroRingsWidget extends ConsumerWidget {
   }
 }
 
-/// 單一營養素環
-class _MacroRing extends StatelessWidget {
+/// FatSecret 風格巨量環
+class _MacroRingFat extends StatelessWidget {
   final String label;
   final double consumed;
   final double target;
   final String unit;
   final Color color;
-  final bool showAsText; // 是否直接顯示文字（用於消耗熱量）
+  final double size;
+  final double strokeWidth;
 
-  const _MacroRing({
+  const _MacroRingFat({
     required this.label,
     required this.consumed,
     required this.target,
     required this.unit,
     required this.color,
-    this.showAsText = false,
+    this.size = 80,
+    this.strokeWidth = 12,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (showAsText) {
-      // 直接顯示消耗熱量文字
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color.withOpacity(0.15),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.local_fire_department,
-                color: color,
-                size: 28,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '${consumed.round()}$unit',
-            style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600),
-          ),
-        ],
-      );
-    }
-
     final progress = target > 0 ? (consumed / target).clamp(0.0, 1.0) : 0.0;
+    final percent = (progress * 100).round();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 64,
-          height: 64,
+          width: size,
+          height: size,
           child: CustomPaint(
-            painter: _RingPainter(
+            painter: _RingPainterFat(
               progress: progress,
               color: color,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: color.withOpacity(0.12),
+              strokeWidth: strokeWidth,
             ),
             child: Center(
-              child: Text(
-                '${(progress * 100).round()}%',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$percent%',
+                    style: TextStyle(
+                      fontSize: size == 88 ? 16 : 14,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -184,35 +222,44 @@ class _MacroRing extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary,
+          ),
         ),
         const SizedBox(height: 2),
         Text(
-          '${consumed.round()}/${target.round()}$unit',
-          style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+          '${consumed.round()}$unit',
+          style: TextStyle(
+            fontSize: 11,
+            color: color,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );
   }
 }
 
-/// 環形圖 CustomPaint
-class _RingPainter extends CustomPainter {
+/// 環形圖 CustomPaint - FatSecret 厚實風格
+class _RingPainterFat extends CustomPainter {
   final double progress;
   final Color color;
   final Color backgroundColor;
+  final double strokeWidth;
 
-  _RingPainter({
+  _RingPainterFat({
     required this.progress,
     required this.color,
     required this.backgroundColor,
+    required this.strokeWidth,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width - 8) / 2;
-    const strokeWidth = 8.0;
+    final radius = (size.width - strokeWidth) / 2;
 
     // 背景環
     final bgPaint = Paint()
@@ -224,28 +271,32 @@ class _RingPainter extends CustomPainter {
     canvas.drawCircle(center, radius, bgPaint);
 
     // 前景環（進度）
-    final fgPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    if (progress > 0) {
+      final fgPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
 
-    const startAngle = -90 * (3.14159265359 / 180); // 從頂部開始
-    final sweepAngle = 2 * 3.14159265359 * progress;
+      // 從頂部開始（-90度）
+      const startAngle = -90 * (3.14159265359 / 180);
+      final sweepAngle = 2 * 3.14159265359 * progress;
 
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweepAngle,
-      false,
-      fgPaint,
-    );
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweepAngle,
+        false,
+        fgPaint,
+      );
+    }
   }
 
   @override
-  bool shouldRepaint(_RingPainter oldDelegate) {
+  bool shouldRepaint(_RingPainterFat oldDelegate) {
     return oldDelegate.progress != progress ||
         oldDelegate.color != color ||
-        oldDelegate.backgroundColor != backgroundColor;
+        oldDelegate.backgroundColor != backgroundColor ||
+        oldDelegate.strokeWidth != strokeWidth;
   }
 }
