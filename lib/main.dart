@@ -4,10 +4,6 @@ import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-// Firebase Crashlytics
-if (Firebase.apps.isNotEmpty) {
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-}
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
@@ -33,6 +29,14 @@ import 'providers/app_providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase 初始化（google-services.json 已在 android/app/）
+  try {
+    await Firebase.initializeApp();
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  } catch (e) {
+    // Firebase 初始化失敗（正式金鑰尚未設定），繼續離線模式
+  }
 
   // 初始化本地儲存
   final storage = await LocalStorageService.create();
