@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "198427468906",
+    "project_id": "snail-calorie-e87a1",
+    "storage_bucket": "snail-calorie-e87a1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198427468906:android:fdf68438709bcb001a9613",
+        "android_client_info": {
+          "package_name": "com.example.snail"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHZ0JCP-DnO-D1DiLVAjOlEJDpKvR2PJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

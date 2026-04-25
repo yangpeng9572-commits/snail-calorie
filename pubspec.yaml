@@ -54,8 +54,9 @@ dependencies:
   # 網路連線檢測
   connectivity_plus: ^6.1.2
 
-  # Firebase（等 Andy 提供設定檔後啟用，版本已確認相容）
-  # firebase_core: ^3.13.0
+  # Firebase（Andy已下載 google-services.json，已啟用）
+  firebase_core: ^3.13.0
+  firebase_crashlytics: ^4.3.1
   # firebase_auth: ^5.6.0
   # cloud_firestore: ^5.6.6
   # google_sign_in: ^6.2.1

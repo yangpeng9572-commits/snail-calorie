@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// Firebase Crashlytics（等 Andy 提供 Firebase 設定後啟用）
-// import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-// if (Firebase.apps.isNotEmpty) {
-//   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-// }
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+// Firebase Crashlytics
+if (Firebase.apps.isNotEmpty) {
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+}
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
