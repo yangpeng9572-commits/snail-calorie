@@ -532,11 +532,11 @@ class _MacroTag extends StatelessWidget {
 }
 
 /// 熱門台灣食物區（當沒有收藏時顯示）
-class _PopularFoodsSection extends StatelessWidget {
+class _PopularFoodsSection extends ConsumerWidget {
   const _PopularFoodsSection();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final popularFoods = _getPopularFoods();
     return ListView(
       children: [
@@ -556,7 +556,7 @@ class _PopularFoodsSection extends StatelessWidget {
               return ActionChip(
                 avatar: const Text('🍴', style: TextStyle(fontSize: 14)),
                 label: Text(food.name, style: const TextStyle(fontSize: 13)),
-                onPressed: () => _showAddDialogForFood(context, food),
+                onPressed: () => _showAddDialogForFood(context, ref, food),
               );
             }).toList(),
           ),
@@ -578,7 +578,7 @@ class _PopularFoodsSection extends StatelessWidget {
               return ActionChip(
                 avatar: const Text('🧋', style: TextStyle(fontSize: 14)),
                 label: Text(food.name, style: const TextStyle(fontSize: 13)),
-                onPressed: () => _showAddDialogForFood(context, food),
+                onPressed: () => _showAddDialogForFood(context, ref, food),
               );
             }).toList(),
           ),
@@ -625,23 +625,37 @@ class _PopularFoodsSection extends StatelessWidget {
     ];
   }
 
-  void _showAddDialogForFood(BuildContext context, _SimpleFood food) {
+  void _showAddDialogForFood(BuildContext context, WidgetRef ref, _SimpleFood food) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(food.name),
-        content: Text('熱量: ${food.calories} kcal / ${food.serving}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('熱量: ${food.calories} kcal / ${food.serving}'),
+            const SizedBox(height: 4),
+            Text(
+              '營養素：蛋白質/脂肪/碳水未細分',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('關閉'),
           ),
           ...['早餐', '午餐', '晚餐', '點心'].map(
             (meal) => TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(dialogContext);
+                // 實際寫入每日記錄
+                final foodItem = food.toFoodItem();
+                ref.read(dailyLogProvider.notifier).addEntry(meal, foodItem, foodItem.servingSize);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('已新增到 $meal')),
+                  SnackBar(content: Text('已新增 ${food.name} 到 $meal（${food.calories} kcal）')),
                 );
               },
               child: Text(meal),
@@ -658,4 +672,26 @@ class _SimpleFood {
   final int calories;
   final String serving;
   _SimpleFood(this.name, this.calories, this.serving);
+
+  /// 轉換為 FoodItem（用於新增到記錄）
+  FoodItem toFoodItem() {
+    return FoodItem(
+      id: 'popular_${name.hashCode}',
+      name: name,
+      brand: '一般',
+      calories: calories.toDouble(),
+      carbs: 0,
+      protein: 0,
+      fat: 0,
+      servingSize: _parseServing(serving),
+    );
+  }
+
+  double _parseServing(String s) {
+    final match = RegExp(r'(\d+)').firstMatch(s);
+    if (match != null) {
+      return (int.tryParse(match.group(1)!) ?? 100).toDouble();
+    }
+    return 100;
+  }
 }
