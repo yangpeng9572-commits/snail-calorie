@@ -268,61 +268,91 @@ class _EntryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey.shade200),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entry.food.name,
-                  style: const TextStyle(fontSize: 14),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${entry.grams.round()}g',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${entry.calories.round()} kcal',
-                style: const TextStyle(fontWeight: FontWeight.w500),
+    return Dismissible(
+      key: Key(entry.id.toString()),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => onDelete(),
+      confirmDismiss: (_) async {
+        return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('刪除確認'),
+            content: Text('確定要刪除「${entry.food.name}」嗎？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('取消'),
               ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _MacroMini(label: '碳', value: entry.carbs.round()),
-                  const SizedBox(width: 4),
-                  _MacroMini(label: '蛋白', value: entry.protein.round()),
-                  const SizedBox(width: 4),
-                  _MacroMini(label: '脂', value: entry.fat.round()),
-                ],
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('刪除', style: TextStyle(color: AppTheme.errorColor)),
               ),
             ],
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, size: 20, color: Colors.grey),
-            onPressed: () => _showDeleteConfirm(context),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+        ) ?? false;
+      },
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        color: AppTheme.errorColor,
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Colors.grey.shade200),
           ),
-        ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    entry.food.name,
+                    style: const TextStyle(fontSize: 14),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${entry.grams.round()}g',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${entry.calories.round()} kcal',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _MacroMini(label: '碳', value: entry.carbs.round()),
+                    const SizedBox(width: 4),
+                    _MacroMini(label: '蛋白', value: entry.protein.round()),
+                    const SizedBox(width: 4),
+                    _MacroMini(label: '脂', value: entry.fat.round()),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, size: 20, color: Colors.grey),
+              onPressed: () => _showDeleteConfirm(context),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
       ),
     );
   }
