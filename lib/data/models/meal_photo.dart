@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 class MealPhoto {
   final String id;
   final String mealType; // '早餐' | '午餐' | '晚餐' | '點心'
+  final String? entryId; // 關聯的 MealEntry ID（用於更新照片）
   final String? foodId;
   final String foodName; // 食物名稱（顯示用）
   final String photoPath; // 本地檔案路徑
@@ -13,6 +14,7 @@ class MealPhoto {
   MealPhoto({
     String? id,
     required this.mealType,
+    this.entryId,
     this.foodId,
     required this.foodName,
     required this.photoPath,
@@ -24,6 +26,7 @@ class MealPhoto {
   MealPhoto copyWith({
     String? id,
     String? mealType,
+    String? entryId,
     String? foodId,
     String? foodName,
     String? photoPath,
@@ -33,6 +36,7 @@ class MealPhoto {
     return MealPhoto(
       id: id ?? this.id,
       mealType: mealType ?? this.mealType,
+      entryId: entryId ?? this.entryId,
       foodId: foodId ?? this.foodId,
       foodName: foodName ?? this.foodName,
       photoPath: photoPath ?? this.photoPath,
@@ -44,6 +48,7 @@ class MealPhoto {
   Map<String, dynamic> toJson() => {
         'id': id,
         'mealType': mealType,
+        'entryId': entryId,
         'foodId': foodId,
         'foodName': foodName,
         'photoPath': photoPath,
@@ -54,6 +59,7 @@ class MealPhoto {
   factory MealPhoto.fromJson(Map<String, dynamic> json) => MealPhoto(
         id: json['id'] as String,
         mealType: json['mealType'] as String,
+        entryId: json['entryId'] as String?,
         foodId: json['foodId'] as String?,
         foodName: json['foodName'] as String? ?? '未命名食物',
         photoPath: json['photoPath'] as String,

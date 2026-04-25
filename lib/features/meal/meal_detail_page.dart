@@ -39,11 +39,12 @@ class _MealDetailPageState extends ConsumerState<MealDetailPage> {
     final log = ref.read(dailyLogProvider);
     final meal = log.getMeal(widget.mealType);
     final photos = <MealPhoto>[];
-    
+
     for (final entry in meal.entries) {
       if (entry.photoPath != null) {
         photos.add(MealPhoto(
           mealType: widget.mealType,
+          entryId: entry.id, // 關聯 MealEntry ID
           foodId: entry.food.id,
           foodName: entry.food.name,
           photoPath: entry.photoPath!,
@@ -51,7 +52,7 @@ class _MealDetailPageState extends ConsumerState<MealDetailPage> {
         ));
       }
     }
-    
+
     setState(() {
       _photos = photos;
     });
@@ -188,6 +189,17 @@ class _MealDetailPageState extends ConsumerState<MealDetailPage> {
       builder: (ctx) => _PhotoDetailDialog(
         photo: photo,
         warmVividMatrix: _warmVividMatrix,
+        onPhotoUpdated: (newPath) {
+          // 持久化背景移除後的照片
+          if (photo.entryId != null) {
+            ref.read(dailyLogProvider.notifier).updateEntryPhoto(
+              photo.mealType,
+              photo.entryId!,
+              newPath,
+            );
+            _loadPhotos(); // 重新載入照片列表
+          }
+        },
       ),
     );
   }
@@ -1006,10 +1018,12 @@ class _AddFoodWithPhotoDialogState
 class _PhotoDetailDialog extends StatefulWidget {
   final MealPhoto photo;
   final List<double> warmVividMatrix;
+  final void Function(String newPath)? onPhotoUpdated;
 
   const _PhotoDetailDialog({
     required this.photo,
     required this.warmVividMatrix,
+    this.onPhotoUpdated,
   });
 
   @override
@@ -1039,6 +1053,8 @@ class _PhotoDetailDialogState extends State<_PhotoDetailDialog> {
           _processedPhotoPath = result;
           _isRemovingBg = false;
         });
+        // 持久化到 MealEntry
+        widget.onPhotoUpdated?.call(result);
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
