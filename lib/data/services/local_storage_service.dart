@@ -177,6 +177,35 @@ class LocalStorageService {
     return ThemeMode.values[index];
   }
 
+  // ==================== 搜尋歷史 ====================
+  static const String _keySearchHistory = 'search_history';
+  static const int _maxSearchHistory = 10;
+
+  /// 儲存搜尋關鍵字到歷史記錄
+  Future<void> addSearchHistory(String query) async {
+    if (query.trim().length < 2) return;
+    final history = getSearchHistory();
+    // 移除重複
+    history.remove(query);
+    // 加入到最前面
+    history.insert(0, query);
+    // 限制最大數量
+    if (history.length > _maxSearchHistory) {
+      history.removeRange(_maxSearchHistory, history.length);
+    }
+    await _prefs.setStringList(_keySearchHistory, history);
+  }
+
+  /// 讀取搜尋歷史
+  List<String> getSearchHistory() {
+    return _prefs.getStringList(_keySearchHistory) ?? [];
+  }
+
+  /// 清除搜尋歷史
+  Future<void> clearSearchHistory() async {
+    await _prefs.remove(_keySearchHistory);
+  }
+
   // ==================== Onboarding ====================
 
   /// 檢查是否已完成首次使用引導

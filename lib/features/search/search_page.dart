@@ -45,6 +45,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   void _onSearch(String query) {
     ref.read(searchQueryProvider.notifier).state = query;
+    // 儲存搜尋歷史
+    if (query.trim().isNotEmpty) {
+      ref.read(localStorageProvider).addSearchHistory(query);
+    }
   }
 
   void _showVoiceInputDialog() {
@@ -132,6 +136,64 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 
+
+  Widget _buildEmptyState(List<FoodItem> favorites) {
+    final history = ref.read(searchHistoryProvider);
+
+    if (history.isNotEmpty) {
+      return CustomScrollView(
+        slivers: [
+          if (favorites.isNotEmpty) _FavoritesSection(favorites: favorites),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '最近搜尋',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          ref.read(localStorageProvider).clearSearchHistory();
+                        },
+                        child: const Text('清除', style: TextStyle(fontSize: 12)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: history.map((query) => _HistoryChip(
+                      query: query,
+                      onTap: () {
+                        _controller.text = query;
+                        _onSearch(query);
+                      },
+                    )).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return favorites.isEmpty
+        ? const _PopularFoodsSection()
+        : _FavoritesSection(favorites: favorites);
+  }
+
   @override
   Widget build(BuildContext context) {
     final results = ref.watch(searchResultsProvider);
@@ -174,9 +236,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         ],
       ),
       body: _controller.text.isEmpty
-          ? favorites.isEmpty
-              ? const _PopularFoodsSection()
-              : _FavoritesSection(favorites: favorites)
+          ? _buildEmptyState(favorites)
           : results.when(
               data: (foods) => foods.isEmpty
                   ? const _EmptyState(
@@ -789,5 +849,48 @@ class _SimpleFood {
       return (int.tryParse(match.group(1)!) ?? 100).toDouble();
     }
     return 100;
+  }
+}
+
+/// 搜尋歷史 Chip 元件
+class _HistoryChip extends StatelessWidget {
+  final String query;
+  final VoidCallback onTap;
+
+  const _HistoryChip({required this.query, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: AppTheme.primaryColor.withOpacity(0.3),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.history,
+              size: 14,
+              color: AppTheme.primaryColor.withOpacity(0.7),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              query,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -319,6 +319,12 @@ final searchDetailProvider = FutureProvider<FoodSearchResult>((ref) async {
   return service.searchFoods(query);
 });
 
+/// 搜尋歷史 Provider
+final searchHistoryProvider = Provider<List<String>>((ref) {
+  final storage = ref.watch(localStorageProvider);
+  return storage.getSearchHistory();
+});
+
 // ==================== 收藏食物 Providers ====================
 
 final favoriteFoodsProvider = StateNotifierProvider<FavoriteFoodsNotifier, List<FoodItem>>((ref) {
