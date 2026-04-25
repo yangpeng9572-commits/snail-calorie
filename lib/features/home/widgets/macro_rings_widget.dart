@@ -86,7 +86,7 @@ class MacroRingsWidget extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // 巨量環 - FatSecret 風格（粗線條）
+            // 巨量環 - FatSecret 風格（粗線條 + 加大）
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -96,8 +96,8 @@ class MacroRingsWidget extends ConsumerWidget {
                   target: targetCalories.toDouble(),
                   unit: 'kcal',
                   color: AppTheme.calorieColor,
-                  size: 88,
-                  strokeWidth: 12,
+                  size: 96,
+                  strokeWidth: 14,
                 ),
                 _MacroRingFat(
                   label: '蛋白質',
@@ -105,8 +105,8 @@ class MacroRingsWidget extends ConsumerWidget {
                   target: targetProtein,
                   unit: 'g',
                   color: AppTheme.proteinColor,
-                  size: 88,
-                  strokeWidth: 12,
+                  size: 96,
+                  strokeWidth: 14,
                 ),
                 _MacroRingFat(
                   label: '脂肪',
@@ -114,8 +114,8 @@ class MacroRingsWidget extends ConsumerWidget {
                   target: targetFat,
                   unit: 'g',
                   color: AppTheme.fatColor,
-                  size: 88,
-                  strokeWidth: 12,
+                  size: 96,
+                  strokeWidth: 14,
                 ),
                 _MacroRingFat(
                   label: '碳水',
@@ -123,8 +123,8 @@ class MacroRingsWidget extends ConsumerWidget {
                   target: targetCarbs,
                   unit: 'g',
                   color: AppTheme.carbsColor,
-                  size: 88,
-                  strokeWidth: 12,
+                  size: 96,
+                  strokeWidth: 14,
                 ),
               ],
             ),
@@ -209,7 +209,7 @@ class _MacroRingFat extends StatelessWidget {
                   Text(
                     '$percent%',
                     style: TextStyle(
-                      fontSize: size == 88 ? 16 : 14,
+                      fontSize: size == 96 ? 18 : (size == 88 ? 16 : 14),
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),

@@ -289,23 +289,98 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         index: _currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '首頁',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _NavItem(
+                  icon: Icons.home,
+                  label: '首頁',
+                  isSelected: _currentIndex == 0,
+                  onTap: () => setState(() => _currentIndex = 0),
+                ),
+                _NavItem(
+                  icon: Icons.bar_chart,
+                  label: '分析',
+                  isSelected: _currentIndex == 1,
+                  onTap: () => setState(() => _currentIndex = 1),
+                ),
+                _NavItem(
+                  icon: Icons.person,
+                  label: '設定',
+                  isSelected: _currentIndex == 2,
+                  onTap: () => setState(() => _currentIndex = 2),
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: '分析',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '設定',
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 自定義底部導航項目
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primaryColor.withOpacity(0.12) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
