@@ -174,82 +174,20 @@ class _MealDetailPageState extends ConsumerState<MealDetailPage> {
     );
   }
 
+  // 暖色增艷矩陣（模擬增加飽和度+暖色調）
+  static const List<double> _warmVividMatrix = [
+    1.2, 0, 0, 0, 10,   // R 增加
+    0, 1.1, 0, 0, 15,   // G 輕微增加
+    0, 0, 0.9, 0, -10,  // B 輕微減少（暖色效果）
+    0, 0, 0, 1.0, 0,
+  ];
+
   void _viewPhotoDetail(MealPhoto photo) {
     showDialog(
       context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Stack(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(ctx),
-              child: Container(
-                color: Colors.black87,
-                child: Center(
-                  child: Hero(
-                    tag: photo.id,
-                    child: Image.file(
-                      File(photo.photoPath),
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.broken_image,
-                        color: Colors.white,
-                        size: 64,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 40,
-              right: 16,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
-                onPressed: () => Navigator.pop(ctx),
-              ),
-            ),
-            Positioned(
-              bottom: 40,
-              left: 16,
-              right: 16,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      photo.foodName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormat('yyyy-MM-dd HH:mm').format(photo.takenAt),
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
-                    ),
-                    if (photo.notes != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        photo.notes!,
-                        style: const TextStyle(color: Colors.white54, fontSize: 12),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+      builder: (ctx) => _PhotoDetailDialog(
+        photo: photo,
+        warmVividMatrix: _warmVividMatrix,
       ),
     );
   }
@@ -1061,5 +999,266 @@ class _AddFoodWithPhotoDialogState
         ),
       );
     }
+  }
+}
+
+/// 照片詳情對話框（支援美味濾鏡 + 背景移除）
+class _PhotoDetailDialog extends StatefulWidget {
+  final MealPhoto photo;
+  final List<double> warmVividMatrix;
+
+  const _PhotoDetailDialog({
+    required this.photo,
+    required this.warmVividMatrix,
+  });
+
+  @override
+  State<_PhotoDetailDialog> createState() => _PhotoDetailDialogState();
+}
+
+class _PhotoDetailDialogState extends State<_PhotoDetailDialog> {
+  bool _isWarmFilterEnabled = false;
+  bool _isRemovingBg = false;
+  String? _processedPhotoPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _processedPhotoPath = widget.photo.photoPath;
+  }
+
+  Future<void> _removeBackground() async {
+    setState(() {
+      _isRemovingBg = true;
+    });
+
+    try {
+      final result = await _executeRembg(widget.photo.photoPath);
+      if (result != null && mounted) {
+        setState(() {
+          _processedPhotoPath = result;
+          _isRemovingBg = false;
+        });
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('背景移除失敗')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('背景移除錯誤：$e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isRemovingBg = false;
+        });
+      }
+    }
+  }
+
+  Future<String?> _executeRembg(String inputPath) async {
+    final tmpDir = await getTemporaryDirectory();
+    final outputPath = '${tmpDir.path}/nobg_${DateTime.now().millisecondsSinceEpoch}.png';
+    final result = await Process.run('python3', [
+      '/home/a0938/rembg_remove.py',
+      inputPath,
+      outputPath,
+    ]);
+    return result.exitCode == 0 ? outputPath : null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final displayPath = _processedPhotoPath ?? widget.photo.photoPath;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              color: Colors.black87,
+              child: Center(
+                child: Hero(
+                  tag: widget.photo.id,
+                  child: ColorFiltered(
+                    colorFilter: _isWarmFilterEnabled
+                        ? ColorFilter.matrix(widget.warmVividMatrix)
+                        : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+                    child: Image.file(
+                      File(displayPath),
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.broken_image,
+                        color: Colors.white,
+                        size: 64,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // 關閉按鈕
+          Positioned(
+            top: 40,
+            right: 16,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+
+          // 頂部工具列
+          Positioned(
+            top: 40,
+            left: 16,
+            child: Row(
+              children: [
+                // 美味濾鏡按鈕
+                _ToolButton(
+                  icon: _isWarmFilterEnabled ? Icons.filter_alt : Icons.filter_alt_outlined,
+                  label: '美味濾鏡',
+                  isActive: _isWarmFilterEnabled,
+                  onPressed: () {
+                    setState(() {
+                      _isWarmFilterEnabled = !_isWarmFilterEnabled;
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+                // 去背按鈕
+                _ToolButton(
+                  icon: Icons.person_remove_outlined,
+                  label: '去背',
+                  isLoading: _isRemovingBg,
+                  onPressed: _isRemovingBg ? null : _removeBackground,
+                ),
+              ],
+            ),
+          ),
+
+          // 底部資訊列
+          Positioned(
+            bottom: 40,
+            left: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.photo.foodName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    DateFormat('yyyy-MM-dd HH:mm').format(widget.photo.takenAt),
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                  if (widget.photo.notes != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.photo.notes!,
+                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+
+          // Loading 覆蓋層
+          if (_isRemovingBg)
+            Container(
+              color: Colors.black54,
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    SizedBox(height: 16),
+                    Text(
+                      '移除背景中...',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 工具按鈕元件
+class _ToolButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isActive;
+  final bool isLoading;
+  final VoidCallback? onPressed;
+
+  const _ToolButton({
+    required this.icon,
+    required this.label,
+    this.isActive = false,
+    this.isLoading = false,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isActive ? AppTheme.primaryColor.withOpacity(0.8) : Colors.black54,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isLoading)
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              else
+                Icon(icon, color: Colors.white, size: 18),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

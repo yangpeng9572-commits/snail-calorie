@@ -2528,6 +2528,912 @@ class TaiwaneseFoodDatabase {
       calories: 95, protein: 3.5, carbs: 12.0, fat: 4.0,
       servingSize: 120, barcode: null, imageUrl: null,
     ),
+
+    // ===== 素食加強料理 (70項) tw_821-890 =====
+    const FoodItem(
+      id: 'tw_821', name: '素炒米粉', brand: '素食餐廳',
+      calories: 200, protein: 4.0, carbs: 38.0, fat: 3.5,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_822', name: '素燥飯', brand: '素食餐廳',
+      calories: 220, protein: 5.0, carbs: 42.0, fat: 3.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_823', name: '素羹麵', brand: '素食餐廳',
+      calories: 180, protein: 4.0, carbs: 30.0, fat: 4.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_824', name: '素蜆炒麵', brand: '素食餐廳',
+      calories: 210, protein: 6.0, carbs: 32.0, fat: 6.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_825', name: '素肉圓', brand: '素食攤販',
+      calories: 230, protein: 4.0, carbs: 35.0, fat: 8.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_826', name: '素碗粿', brand: '素食餐廳',
+      calories: 180, protein: 3.0, carbs: 30.0, fat: 4.5,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_827', name: '素米糕', brand: '素食餐廳',
+      calories: 200, protein: 4.0, carbs: 38.0, fat: 3.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_828', name: '素筒仔米糕', brand: '素食餐廳',
+      calories: 220, protein: 4.5, carbs: 40.0, fat: 4.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_829', name: '素發糕', brand: '傳統市場',
+      calories: 160, protein: 2.0, carbs: 32.0, fat: 2.5,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_830', name: '素紅龜粿', brand: '傳統市場',
+      calories: 180, protein: 2.5, carbs: 35.0, fat: 3.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_831', name: '素草仔粿', brand: '傳統市場',
+      calories: 170, protein: 2.0, carbs: 33.0, fat: 2.5,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_832', name: '素菜包', brand: '素食餐廳',
+      calories: 190, protein: 4.0, carbs: 30.0, fat: 5.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_833', name: '素芋頭粿', brand: '素食餐廳',
+      calories: 200, protein: 3.0, carbs: 35.0, fat: 4.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_834', name: '素蘿蔔糕', brand: '素食餐廳',
+      calories: 170, protein: 3.0, carbs: 28.0, fat: 4.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_835', name: '素芋粿巧', brand: '素食餐廳',
+      calories: 210, protein: 3.0, carbs: 36.0, fat: 5.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_836', name: '素甜不辣', brand: '素食攤販',
+      calories: 180, protein: 5.0, carbs: 25.0, fat: 6.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_837', name: '素大腸麵線', brand: '素食餐廳',
+      calories: 220, protein: 5.0, carbs: 35.0, fat: 6.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_838', name: '素小腸麵線', brand: '素食餐廳',
+      calories: 200, protein: 5.0, carbs: 32.0, fat: 5.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_839', name: '素蚵仔麵線', brand: '素食餐廳',
+      calories: 190, protein: 5.0, carbs: 30.0, fat: 4.5,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_840', name: '素肉羹', brand: '素食餐廳',
+      calories: 170, protein: 6.0, carbs: 22.0, fat: 5.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_841', name: '素浮水魚羹', brand: '素食餐廳',
+      calories: 160, protein: 5.0, carbs: 20.0, fat: 5.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_842', name: '素花枝羹', brand: '素食餐廳',
+      calories: 165, protein: 5.0, carbs: 21.0, fat: 5.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_843', name: '素土魠魚羹', brand: '素食餐廳',
+      calories: 170, protein: 5.5, carbs: 22.0, fat: 5.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_844', name: '素蝦仁羹', brand: '素食餐廳',
+      calories: 160, protein: 5.0, carbs: 20.0, fat: 4.5,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_845', name: '素鱔魚意麵', brand: '素食餐廳',
+      calories: 230, protein: 6.0, carbs: 35.0, fat: 7.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_846', name: '素擔仔麵', brand: '素食餐廳',
+      calories: 220, protein: 7.0, carbs: 32.0, fat: 7.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_847', name: '素餛飩麵', brand: '素食餐廳',
+      calories: 240, protein: 8.0, carbs: 34.0, fat: 7.5,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_848', name: '素水餃', brand: '素食餐廳',
+      calories: 200, protein: 7.0, carbs: 28.0, fat: 6.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_849', name: '素蒸餃', brand: '素食餐廳',
+      calories: 190, protein: 7.0, carbs: 26.0, fat: 6.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_850', name: '素燒賣', brand: '素食港式',
+      calories: 180, protein: 6.0, carbs: 22.0, fat: 7.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_851', name: '素水晶蝦餃', brand: '素食港式',
+      calories: 170, protein: 5.0, carbs: 24.0, fat: 5.5,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_852', name: '素潮州粉果', brand: '素食港式',
+      calories: 180, protein: 5.0, carbs: 26.0, fat: 6.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_853', name: '素腐皮卷', brand: '素食港式',
+      calories: 190, protein: 7.0, carbs: 20.0, fat: 8.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_854', name: '素荷葉飯', brand: '素食港式',
+      calories: 210, protein: 6.0, carbs: 35.0, fat: 5.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_855', name: '素煲仔飯', brand: '素食港式',
+      calories: 240, protein: 7.0, carbs: 40.0, fat: 6.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_856', name: '素叉燒飯', brand: '素食港式',
+      calories: 260, protein: 10.0, carbs: 42.0, fat: 5.0,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_857', name: '素咖喱魚蛋', brand: '素食港式',
+      calories: 180, protein: 6.0, carbs: 18.0, fat: 8.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_858', name: '素咖喱牛腩', brand: '素食港式',
+      calories: 210, protein: 9.0, carbs: 20.0, fat: 10.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_859', name: '素雲吞麵', brand: '素食港式',
+      calories: 230, protein: 8.0, carbs: 34.0, fat: 7.0,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_860', name: '素星洲米粉', brand: '素食港式',
+      calories: 200, protein: 5.0, carbs: 32.0, fat: 5.5,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_861', name: '素羅漢齋', brand: '素食餐廳',
+      calories: 180, protein: 5.0, carbs: 25.0, fat: 6.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_862', name: '素八寶飯', brand: '素食餐廳',
+      calories: 250, protein: 6.0, carbs: 45.0, fat: 5.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_863', name: '素油飯', brand: '素食餐廳',
+      calories: 230, protein: 5.0, carbs: 42.0, fat: 5.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_864', name: '素米苔目', brand: '素食餐廳',
+      calories: 170, protein: 3.0, carbs: 32.0, fat: 3.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_865', name: '素粄條', brand: '素食餐廳',
+      calories: 180, protein: 3.0, carbs: 34.0, fat: 3.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_866', name: '素粿仔條', brand: '素食餐廳',
+      calories: 175, protein: 3.0, carbs: 33.0, fat: 3.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_867', name: '素冬粉', brand: '素食餐廳',
+      calories: 140, protein: 1.0, carbs: 32.0, fat: 0.5,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_868', name: '素西谷米', brand: '素食甜品',
+      calories: 150, protein: 0.5, carbs: 35.0, fat: 0.2,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_869', name: '素地瓜圓', brand: '素食甜品',
+      calories: 160, protein: 1.0, carbs: 32.0, fat: 2.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_870', name: '素芋圓', brand: '素食甜品',
+      calories: 165, protein: 1.0, carbs: 33.0, fat: 2.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_871', name: '素薑汁湯圓', brand: '素食甜品',
+      calories: 180, protein: 3.0, carbs: 34.0, fat: 3.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_872', name: '素花生湯', brand: '素食甜品',
+      calories: 170, protein: 5.0, carbs: 25.0, fat: 5.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_873', name: '素紅豆湯', brand: '素食甜品',
+      calories: 150, protein: 4.0, carbs: 28.0, fat: 2.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_874', name: '素綠豆湯', brand: '素食甜品',
+      calories: 130, protein: 4.0, carbs: 24.0, fat: 1.5,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_875', name: '素八寶冰', brand: '素食冰品',
+      calories: 200, protein: 3.0, carbs: 42.0, fat: 2.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_876', name: '素豆花', brand: '素食甜品',
+      calories: 100, protein: 4.0, carbs: 14.0, fat: 2.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_877', name: '素杏仁豆腐', brand: '素食甜品',
+      calories: 110, protein: 3.0, carbs: 16.0, fat: 3.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_878', name: '素愛玉', brand: '素食甜品',
+      calories: 60, protein: 0.5, carbs: 14.0, fat: 0.2,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_879', name: '素仙草', brand: '素食甜品',
+      calories: 55, protein: 0.5, carbs: 13.0, fat: 0.1,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_880', name: '素芋頭冰', brand: '素食冰品',
+      calories: 150, protein: 1.5, carbs: 28.0, fat: 3.5,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_881', name: '素鳳梨冰', brand: '素食冰品',
+      calories: 130, protein: 0.5, carbs: 30.0, fat: 0.5,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_882', name: '素番茄梅子冰', brand: '素食冰品',
+      calories: 120, protein: 0.5, carbs: 28.0, fat: 0.2,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_883', name: '素刨冰', brand: '素食冰品',
+      calories: 80, protein: 0.0, carbs: 20.0, fat: 0.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_884', name: '素枝仔冰', brand: '素食冰品',
+      calories: 90, protein: 0.5, carbs: 20.0, fat: 0.5,
+      servingSize: 80, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_885', name: '素臭豆腐', brand: '素食小吃',
+      calories: 220, protein: 10.0, carbs: 20.0, fat: 12.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_886', name: '素炸豆皮', brand: '素食小吃',
+      calories: 250, protein: 15.0, carbs: 12.0, fat: 18.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_887', name: '素炸臭豆腐', brand: '素食小吃',
+      calories: 230, protein: 11.0, carbs: 20.0, fat: 13.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_888', name: '素麻辣豆腐', brand: '素食餐廳',
+      calories: 180, protein: 9.0, carbs: 15.0, fat: 9.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_889', name: '素麻婆豆腐', brand: '素食餐廳',
+      calories: 190, protein: 8.0, carbs: 14.0, fat: 12.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_890', name: '素宮保雞丁', brand: '素食餐廳',
+      calories: 210, protein: 9.0, carbs: 15.0, fat: 13.0,
+      servingSize: 180, barcode: null, imageUrl: null,
+    ),
+
+    // ===== 各縣市特色小吃 (100項) tw_891-990 =====
+    const FoodItem(
+      id: 'tw_891', name: '台南擔仔麵', brand: '台南美食',
+      calories: 230, protein: 12.0, carbs: 28.0, fat: 8.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_892', name: '嘉義雞肉飯', brand: '嘉義美食',
+      calories: 250, protein: 15.0, carbs: 30.0, fat: 9.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_893', name: '花蓮扁食', brand: '花蓮美食',
+      calories: 220, protein: 10.0, carbs: 28.0, fat: 8.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_894', name: '宜蘭糕渣', brand: '宜蘭美食',
+      calories: 200, protein: 5.0, carbs: 28.0, fat: 7.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_895', name: '屏東萬巒豬腳', brand: '屏東美食',
+      calories: 280, protein: 18.0, carbs: 8.0, fat: 20.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_896', name: '台中太陽餅', brand: '台中美食',
+      calories: 280, protein: 5.0, carbs: 40.0, fat: 12.0,
+      servingSize: 80, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_897', name: '南投意麵', brand: '南投美食',
+      calories: 240, protein: 8.0, carbs: 38.0, fat: 7.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_898', name: '高雄木瓜牛奶', brand: '高雄美食',
+      calories: 150, protein: 3.0, carbs: 25.0, fat: 4.0,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_899', name: '新竹貢丸', brand: '新竹美食',
+      calories: 260, protein: 16.0, carbs: 5.0, fat: 20.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_900', name: '基隆天婦羅', brand: '基隆美食',
+      calories: 250, protein: 12.0, carbs: 22.0, fat: 14.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_901', name: '彰化肉圓', brand: '彰化美食',
+      calories: 240, protein: 8.0, carbs: 32.0, fat: 10.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_902', name: '苗栗狗尾雞', brand: '苗栗美食',
+      calories: 180, protein: 20.0, carbs: 8.0, fat: 9.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_903', name: '雲林魷魚粥', brand: '雲林美食',
+      calories: 150, protein: 8.0, carbs: 20.0, fat: 4.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_904', name: '台南棺材板', brand: '台南美食',
+      calories: 280, protein: 9.0, carbs: 30.0, fat: 14.0,
+      servingSize: 180, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_905', name: '台南碗粿', brand: '台南美食',
+      calories: 200, protein: 5.0, carbs: 35.0, fat: 4.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_906', name: '高雄汕頭牛肉鍋', brand: '高雄美食',
+      calories: 220, protein: 22.0, carbs: 10.0, fat: 11.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_907', name: '台北芒果冰', brand: '台北美食',
+      calories: 180, protein: 2.0, carbs: 38.0, fat: 2.5,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_908', name: '士林大香腸', brand: '台北美食',
+      calories: 320, protein: 14.0, carbs: 20.0, fat: 22.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_909', name: '迪化街藥膳', brand: '台北美食',
+      calories: 200, protein: 15.0, carbs: 15.0, fat: 8.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_910', name: '九份芋圓', brand: '新北美食',
+      calories: 170, protein: 2.0, carbs: 34.0, fat: 2.5,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_911', name: '淡水阿給', brand: '新北美食',
+      calories: 220, protein: 6.0, carbs: 32.0, fat: 8.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_912', name: '深坑豆腐', brand: '新北美食',
+      calories: 150, protein: 10.0, carbs: 8.0, fat: 9.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_913', name: '三峽金牛角', brand: '新北美食',
+      calories: 290, protein: 6.0, carbs: 38.0, fat: 13.0,
+      servingSize: 80, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_914', name: '瑞芳芋粿', brand: '新北美食',
+      calories: 190, protein: 3.0, carbs: 33.0, fat: 4.5,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_915', name: '宜蘭卜肉', brand: '宜蘭美食',
+      calories: 250, protein: 12.0, carbs: 22.0, fat: 14.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_916', name: '羅東夜市豆花', brand: '宜蘭美食',
+      calories: 130, protein: 4.0, carbs: 20.0, fat: 3.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_917', name: '蘇澳羊羹', brand: '宜蘭美食',
+      calories: 180, protein: 1.0, carbs: 42.0, fat: 0.5,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_918', name: '花蓮麻糬', brand: '花蓮美食',
+      calories: 200, protein: 3.0, carbs: 40.0, fat: 2.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_919', name: '台東池上便當', brand: '台東美食',
+      calories: 320, protein: 14.0, carbs: 50.0, fat: 8.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_920', name: '台東釋迦', brand: '台東美食',
+      calories: 100, protein: 2.0, carbs: 23.0, fat: 0.5,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_921', name: '墾丁海鮮', brand: '屏東美食',
+      calories: 180, protein: 20.0, carbs: 8.0, fat: 8.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_922', name: '恆春洋蔥', brand: '屏東美食',
+      calories: 40, protein: 1.0, carbs: 9.0, fat: 0.1,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_923', name: '嘉義涼麵', brand: '嘉義美食',
+      calories: 200, protein: 5.0, carbs: 30.0, fat: 6.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_924', name: '新竹米粉', brand: '新竹美食',
+      calories: 180, protein: 4.0, carbs: 36.0, fat: 2.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_925', name: '苗栗客家粄條', brand: '苗栗美食',
+      calories: 190, protein: 4.0, carbs: 35.0, fat: 3.5,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_926', name: '台中大麵羹', brand: '台中美食',
+      calories: 200, protein: 5.0, carbs: 32.0, fat: 5.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_927', name: '彰化爌肉飯', brand: '彰化美食',
+      calories: 320, protein: 16.0, carbs: 40.0, fat: 12.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_928', name: '南投紅茶', brand: '南投美食',
+      calories: 40, protein: 0.0, carbs: 10.0, fat: 0.0,
+      servingSize: 300, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_929', name: '溪頭妖怪村', brand: '南投美食',
+      calories: 250, protein: 5.0, carbs: 40.0, fat: 8.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_930', name: '斗六魷魚羹', brand: '雲林美食',
+      calories: 160, protein: 10.0, carbs: 18.0, fat: 5.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_931', name: '布袋鮮蚵', brand: '嘉義美食',
+      calories: 130, protein: 14.0, carbs: 5.0, fat: 6.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_932', name: '安平蚵仔煎', brand: '台南美食',
+      calories: 230, protein: 10.0, carbs: 25.0, fat: 11.0,
+      servingSize: 180, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_933', name: '台南蝨目魚湯', brand: '台南美食',
+      calories: 140, protein: 18.0, carbs: 5.0, fat: 6.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_934', name: '高雄旗津奶茶', brand: '高雄美食',
+      calories: 120, protein: 3.0, carbs: 22.0, fat: 2.0,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_935', name: '左營汾水餡餅', brand: '高雄美食',
+      calories: 250, protein: 10.0, carbs: 28.0, fat: 12.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_936', name: '金門牛肉乾', brand: '金門特產',
+      calories: 290, protein: 25.0, carbs: 20.0, fat: 12.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_937', name: '馬祖老酒', brand: '馬祖特產',
+      calories: 80, protein: 0.5, carbs: 5.0, fat: 0.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_938', name: '澎湖黑糖糕', brand: '澎湖特產',
+      calories: 280, protein: 3.0, carbs: 55.0, fat: 5.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_939', name: '桃園豆干', brand: '桃園美食',
+      calories: 180, protein: 14.0, carbs: 8.0, fat: 10.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_940', name: '大溪豆干', brand: '桃園美食',
+      calories: 180, protein: 14.0, carbs: 8.0, fat: 10.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_941', name: '龍潭花生糖', brand: '桃園美食',
+      calories: 350, protein: 6.0, carbs: 50.0, fat: 15.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_942', name: '新屋鵝肉', brand: '桃園美食',
+      calories: 220, protein: 20.0, carbs: 5.0, fat: 14.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_943', name: '平鎮臭豆腐', brand: '桃園美食',
+      calories: 210, protein: 10.0, carbs: 18.0, fat: 12.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_944', name: '中壢牛肉麵', brand: '桃園美食',
+      calories: 280, protein: 18.0, carbs: 35.0, fat: 9.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_945', name: '楊梅芋頭冰', brand: '桃園美食',
+      calories: 160, protein: 2.0, carbs: 30.0, fat: 4.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_946', name: '竹北花生醬', brand: '新竹美食',
+      calories: 380, protein: 10.0, carbs: 30.0, fat: 26.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_947', name: '關西仙草', brand: '新竹美食',
+      calories: 50, protein: 0.5, carbs: 12.0, fat: 0.1,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_948', name: '峨眉茶', brand: '新竹美食',
+      calories: 20, protein: 0.0, carbs: 5.0, fat: 0.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_949', name: '北埔擂茶', brand: '新竹美食',
+      calories: 120, protein: 4.0, carbs: 18.0, fat: 4.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_950', name: '內灣野薑花粽', brand: '新竹美食',
+      calories: 210, protein: 5.0, carbs: 35.0, fat: 5.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_951', name: '大湖草莓', brand: '苗栗美食',
+      calories: 50, protein: 1.0, carbs: 12.0, fat: 0.3,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_952', name: '泰安湯包', brand: '苗栗美食',
+      calories: 240, protein: 12.0, carbs: 28.0, fat: 10.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_953', name: '三義木雕街', brand: '苗栗美食',
+      calories: 200, protein: 4.0, carbs: 30.0, fat: 6.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_954', name: '苑裡花椰菜', brand: '苗栗美食',
+      calories: 25, protein: 1.5, carbs: 5.0, fat: 0.2,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_955', name: '通宵煎包', brand: '苗栗美食',
+      calories: 260, protein: 9.0, carbs: 30.0, fat: 12.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_956', name: '公館紅棗', brand: '苗栗美食',
+      calories: 70, protein: 1.0, carbs: 17.0, fat: 0.2,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_957', name: '後龍西瓜', brand: '苗栗美食',
+      calories: 30, protein: 0.6, carbs: 8.0, fat: 0.1,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_958', name: '頭份雞肉飯', brand: '苗栗美食',
+      calories: 250, protein: 14.0, carbs: 30.0, fat: 9.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_959', name: '南庄桂花湯圓', brand: '苗栗美食',
+      calories: 180, protein: 3.0, carbs: 34.0, fat: 3.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_960', name: '卓蘭水果', brand: '苗栗美食',
+      calories: 60, protein: 1.0, carbs: 14.0, fat: 0.3,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_961', name: '台中檸檬愛玉', brand: '台中美食',
+      calories: 80, protein: 0.5, carbs: 18.0, fat: 0.2,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_962', name: '梧棲鮮魚', brand: '台中美食',
+      calories: 150, protein: 20.0, carbs: 4.0, fat: 6.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_963', name: '大甲芋頭', brand: '台中美食',
+      calories: 80, protein: 1.5, carbs: 19.0, fat: 0.1,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_964', name: '清水筒仔米糕', brand: '台中美食',
+      calories: 230, protein: 6.0, carbs: 38.0, fat: 6.0,
+      servingSize: 180, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_965', name: '沙鹿肉包', brand: '台中美食',
+      calories: 260, protein: 9.0, carbs: 35.0, fat: 10.0,
+      servingSize: 120, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_966', name: '忠聖東山鸭頭', brand: '台中美食',
+      calories: 280, protein: 15.0, carbs: 20.0, fat: 16.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_967', name: '潭子臭豆腐', brand: '台中美食',
+      calories: 210, protein: 10.0, carbs: 18.0, fat: 12.0,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_968', name: '豐原排骨酥麵', brand: '台中美食',
+      calories: 280, protein: 14.0, carbs: 32.0, fat: 11.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_969', name: '大里炒麵', brand: '台中美食',
+      calories: 230, protein: 7.0, carbs: 32.0, fat: 8.0,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_970', name: '霧峰香米', brand: '台中美食',
+      calories: 130, protein: 2.5, carbs: 28.0, fat: 0.3,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_971', name: '太平竹筍', brand: '台中美食',
+      calories: 25, protein: 2.0, carbs: 5.0, fat: 0.2,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_972', name: '龍井花生', brand: '台中美食',
+      calories: 320, protein: 12.0, carbs: 22.0, fat: 22.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_973', name: '烏日雞腳凍', brand: '台中美食',
+      calories: 250, protein: 18.0, carbs: 5.0, fat: 18.0,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_974', name: '石岡橘子', brand: '台中美食',
+      calories: 45, protein: 0.8, carbs: 11.0, fat: 0.1,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_975', name: '新社香菇', brand: '台中美食',
+      calories: 30, protein: 2.5, carbs: 5.0, fat: 0.3,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_976', name: '東勢柿子', brand: '台中美食',
+      calories: 60, protein: 0.8, carbs: 16.0, fat: 0.2,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_977', name: '和平甜柿', brand: '台中美食',
+      calories: 55, protein: 0.7, carbs: 14.0, fat: 0.2,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_978', name: '大甲襲粟', brand: '台中美食',
+      calories: 40, protein: 1.0, carbs: 9.0, fat: 0.2,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_979', name: '后里葡萄', brand: '台中美食',
+      calories: 65, protein: 0.6, carbs: 17.0, fat: 0.2,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_980', name: '神岡地瓜', brand: '台中美食',
+      calories: 85, protein: 1.5, carbs: 20.0, fat: 0.1,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_981', name: '大雅紅姬', brand: '台中美食',
+      calories: 60, protein: 0.8, carbs: 15.0, fat: 0.1,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_982', name: '后裏馬場', brand: '台中美食',
+      calories: 180, protein: 15.0, carbs: 8.0, fat: 10.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_983', name: '外埔火鶴花', brand: '台中美食',
+      calories: 20, protein: 0.5, carbs: 4.0, fat: 0.1,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_984', name: '大安葱', brand: '台中美食',
+      calories: 35, protein: 1.0, carbs: 7.0, fat: 0.2,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_985', name: '頭汜坑芒果', brand: '台中美食',
+      calories: 55, protein: 0.8, carbs: 13.0, fat: 0.3,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_986', name: '大肚紅茶', brand: '台中美食',
+      calories: 45, protein: 0.3, carbs: 11.0, fat: 0.1,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_987', name: '沙鹿咖啡', brand: '台中美食',
+      calories: 30, protein: 0.5, carbs: 6.0, fat: 0.3,
+      servingSize: 250, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_988', name: '清泉張梨', brand: '台中美食',
+      calories: 50, protein: 0.5, carbs: 13.0, fat: 0.1,
+      servingSize: 150, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_989', name: '麗寶蚊子', brand: '台中美食',
+      calories: 40, protein: 0.8, carbs: 9.0, fat: 0.2,
+      servingSize: 100, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_990', name: '台中精明一街', brand: '台中美食',
+      calories: 200, protein: 5.0, carbs: 30.0, fat: 6.0,
+      servingSize: 200, barcode: null, imageUrl: null,
+    ),
+
+    // ===== 日式料理 (50項) tw_991-1040 =====
+    const FoodItem(
+      id: 'tw_991', name: '日式味噌拉麵', brand: '日式料理',
+      calories: 380, protein: 15.0, carbs: 50.0, fat: 12.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_992', name: '日式豚骨拉麵', brand: '日式料理',
+      calories: 420, protein: 18.0, carbs: 48.0, fat: 16.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_993', name: '日式醬油拉麵', brand: '日式料理',
+      calories: 360, protein: 14.0, carbs: 48.0, fat: 11.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_994', name: '日式鹽味拉麵', brand: '日式料理',
+      calories: 340, protein: 13.0, carbs: 46.0, fat: 10.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_995', name: '日式沾麵', brand: '日式料理',
+      calories: 400, protein: 18.0, carbs: 52.0, fat: 13.0,
+      servingSize: 450, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_996', name: '日式叉燒拉麵', brand: '日式料理',
+      calories: 450, protein: 22.0, carbs: 50.0, fat: 16.0,
+      servingSize: 450, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_997', name: '日式味噌烏龍麵', brand: '日式料理',
+      calories: 350, protein: 12.0, carbs: 52.0, fat: 10.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_998', name: '日式咖喱烏龍麵', brand: '日式料理',
+      calories: 380, protein: 11.0, carbs: 55.0, fat: 13.0,
+      servingSize: 450, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_999', name: '日式釜山湯麵', brand: '日式料理',
+      calories: 320, protein: 10.0, carbs: 48.0, fat: 9.0,
+      servingSize: 400, barcode: null, imageUrl: null,
+    ),
+    const FoodItem(
+      id: 'tw_1000', name: '日式親子井', brand: '日式料理',
+      calories: 380, protein: 22.0, carbs: 45.0, fat: 12.0,
+      servingSize: 350, barcode: null, imageUrl: null,
+    ),
   ];
 
   /// 搜尋食物（模糊比對）
