@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.snail.snail_calorie"
-    compileSdk = 35
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
