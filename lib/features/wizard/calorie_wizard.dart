@@ -90,18 +90,52 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
 
   Widget _buildAgeStep() => _buildStep(
     title: '你的年齡',
-    subtitle: '年齡會影響基礎代謝率',
+    subtitle: '${_age.toInt()} 歲',
     child: Column(
       children: [
-        Text('${_age.toInt()} 歲', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            '${_age.toInt()} 歲',
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
+          ),
+        ),
         const SizedBox(height: 24),
+        // 數字選擇 Row
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [20, 25, 30, 35, 40, 45, 50].map((v) => _QuickSelectChip(
+            label: '$v',
+            isSelected: _age.toInt() == v,
+            onTap: () => setState(() => _age = v.toDouble()),
+          )).toList(),
+        ),
+        const SizedBox(height: 16),
         Slider(
           value: _age,
           min: 10,
           max: 80,
           divisions: 70,
           activeColor: AppTheme.primaryColor,
+          inactiveColor: AppTheme.primaryColor.withOpacity(0.2),
           onChanged: (v) => setState(() => _age = v),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('10歲', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+            Text('80歲', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+          ],
         ),
       ],
     ),
@@ -109,18 +143,51 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
 
   Widget _buildHeightStep() => _buildStep(
     title: '你的身高',
-    subtitle: '輸入你的身高',
+    subtitle: '${_height.toInt()} cm',
     child: Column(
       children: [
-        Text('${_height.toInt()} cm', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            '${_height.toInt()} cm',
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
+          ),
+        ),
         const SizedBox(height: 24),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [160, 165, 170, 175, 180, 185].map((v) => _QuickSelectChip(
+            label: '$v',
+            isSelected: _height.toInt() == v,
+            onTap: () => setState(() => _height = v.toDouble()),
+          )).toList(),
+        ),
+        const SizedBox(height: 16),
         Slider(
           value: _height,
           min: 120,
           max: 220,
           divisions: 100,
           activeColor: AppTheme.primaryColor,
+          inactiveColor: AppTheme.primaryColor.withOpacity(0.2),
           onChanged: (v) => setState(() => _height = v),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('120cm', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+            Text('220cm', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+          ],
         ),
       ],
     ),
@@ -128,18 +195,51 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
 
   Widget _buildWeightStep() => _buildStep(
     title: '你的體重',
-    subtitle: '輸入你的體重',
+    subtitle: '${_weight.toStringAsFixed(1)} kg',
     child: Column(
       children: [
-        Text('${_weight.toStringAsFixed(1)} kg', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            '${_weight.toStringAsFixed(1)} kg',
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
+          ),
+        ),
         const SizedBox(height: 24),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [50, 55, 60, 65, 70, 75, 80].map((v) => _QuickSelectChip(
+            label: '$v',
+            isSelected: (_weight - v).abs() < 0.5,
+            onTap: () => setState(() => _weight = v.toDouble()),
+          )).toList(),
+        ),
+        const SizedBox(height: 16),
         Slider(
           value: _weight,
           min: 30,
           max: 200,
           divisions: 170,
           activeColor: AppTheme.primaryColor,
+          inactiveColor: AppTheme.primaryColor.withOpacity(0.2),
           onChanged: (v) => setState(() => _weight = v),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('30kg', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+            Text('200kg', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+          ],
         ),
       ],
     ),
@@ -398,6 +498,46 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 快速選擇Chip - FatSecret風格圓角按鈕
+class _QuickSelectChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _QuickSelectChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primaryColor : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryColor : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : AppTheme.textPrimary,
+          ),
+        ),
       ),
     );
   }
