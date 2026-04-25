@@ -5,19 +5,14 @@ import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
 import '../../core/widgets/page_transitions.dart';
-import '../../core/widgets/quick_access_tile.dart';
-import '../../data/services/nutrition_calculator.dart';
 import '../../data/models/meal_record.dart';
 import 'widgets/macro_rings_widget.dart';
-import 'widgets/weekly_trend_widget.dart';
-import 'widgets/monthly_overview_widget.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
-import '../meal/meal_photo_gallery.dart';
 import '../meal/meal_detail_page.dart';
 import 'stats_screen.dart';
 
-/// 首頁儀表板
+/// 首頁儀表板 - FatSecret 風格
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -28,14 +23,19 @@ class HomePage extends ConsumerWidget {
     final target = profileState.target;
     final selectedDate = ref.watch(selectedDateProvider);
 
-    final calorieProgress = target.calories > 0 ? log.totalCalories / target.calories : 0.0;
-
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('食刻輕卡'),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+        elevation: 0,
+        title: const Text(
+          '食刻輕卡',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart),
+            icon: const Icon(Icons.bar_chart_rounded),
             onPressed: () => Navigator.push(
               context,
               SlidePageRoute(page: const StatsScreen()),
@@ -49,130 +49,81 @@ class HomePage extends ConsumerWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Icons.person_outline),
             onPressed: () => Navigator.pushNamed(context, '/profile'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.star),
-            onPressed: () => Navigator.push(
-              context,
-              SlidePageRoute(page: const SearchPage()),
-            ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 日期選擇列
+            // 日期選擇列 - FatSecret 風格
             _DateSelector(
               selectedDate: selectedDate,
               onDateChanged: (date) {
                 ref.read(selectedDateProvider.notifier).state = date;
               },
             ),
-            const SizedBox(height: 16),
 
-            // 熱量卡片
-            _CalorieCard(
-              consumed: log.totalCalories,
-              target: target.calories,
-              progress: calorieProgress.clamp(0.0, 1.0),
-              burnedCalories: log.burnedCalories,
-            ),
-            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Column(
+                children: [
+                  // 熱量卡片
+                  _CalorieCardFat(
+                    consumed: log.totalCalories,
+                    target: target.calories,
+                    burnedCalories: log.burnedCalories,
+                  ),
+                  const SizedBox(height: 16),
 
-            // 營養素三環圖
-            const MacroRingsWidget(),
-            const SizedBox(height: 16),
+                  // 營養素三環圖
+                  const MacroRingsWidget(),
+                  const SizedBox(height: 16),
 
-            // 每週熱量趨勢
-            const WeeklyTrendWidget(),
-            const SizedBox(height: 16),
+                  // 快速捷徑 - FatSecret 2x3 網格
+                  _QuickAccessGrid(log: log),
+                  const SizedBox(height: 16),
 
-            // 每月熱量概覽
-            const MonthlyOverviewWidget(),
-            const SizedBox(height: 16),
-
-            // 快速捷徑 2x2 網格
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.5,
-              children: [
-                QuickAccessTile(
-                  title: '攝入熱量',
-                  value: log.totalCalories.round().toString(),
-                  unit: 'kcal',
-                  icon: Icons.local_fire_department,
-                  color: AppTheme.calorieColor,
-                  onTap: () {},
-                ),
-                QuickAccessTile(
-                  title: '蛋白質',
-                  value: log.totalProtein.round().toString(),
-                  unit: 'g',
-                  icon: Icons.fitness_center,
-                  color: AppTheme.proteinColor,
-                  onTap: () {},
-                ),
-                QuickAccessTile(
-                  title: '碳水',
-                  value: log.totalCarbs.round().toString(),
-                  unit: 'g',
-                  icon: Icons.bakery_dining,
-                  color: AppTheme.carbsColor,
-                  onTap: () {},
-                ),
-                QuickAccessTile(
-                  title: '脂肪',
-                  value: log.totalFat.round().toString(),
-                  unit: 'g',
-                  icon: Icons.opacity,
-                  color: AppTheme.fatColor,
-                  onTap: () {},
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // 熱量建議區塊
-            _CalorieSuggestionCard(
-              consumed: log.totalCalories,
-              target: target.calories,
-            ),
-
-            const SizedBox(height: 24),
-
-            // 快速捷徑
-            _QuickShortcuts(),
-
-            const SizedBox(height: 24),
-
-            // 餐次列表
-            const Text('今日餐次', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            ...AppConstants.mealTypes.map((mealType) => _MealSection(
-              mealType: mealType,
-              meal: log.getMeal(mealType),
-              onAdd: () => _showAddFoodDialog(context, ref, mealType),
-              onRemove: (entryId) => ref.read(dailyLogProvider.notifier).removeEntry(mealType, entryId),
-              onTap: () => Navigator.push(
-                context,
-                SlidePageRoute(page: MealDetailPage(mealType: mealType)),
+                  // 餐次列表
+                  _MealSection(
+                    mealType: '早餐',
+                    meal: log.getMeal('早餐'),
+                    onAdd: () => _showAddFoodDialog(context, ref, '早餐'),
+                    onRemove: (id) => ref.read(dailyLogProvider.notifier).removeEntry('早餐', id),
+                    onTap: () => Navigator.push(context, SlidePageRoute(page: const MealDetailPage(mealType: '早餐'))),
+                  ),
+                  _MealSection(
+                    mealType: '午餐',
+                    meal: log.getMeal('午餐'),
+                    onAdd: () => _showAddFoodDialog(context, ref, '午餐'),
+                    onRemove: (id) => ref.read(dailyLogProvider.notifier).removeEntry('午餐', id),
+                    onTap: () => Navigator.push(context, SlidePageRoute(page: const MealDetailPage(mealType: '午餐'))),
+                  ),
+                  _MealSection(
+                    mealType: '晚餐',
+                    meal: log.getMeal('晚餐'),
+                    onAdd: () => _showAddFoodDialog(context, ref, '晚餐'),
+                    onRemove: (id) => ref.read(dailyLogProvider.notifier).removeEntry('晚餐', id),
+                    onTap: () => Navigator.push(context, SlidePageRoute(page: const MealDetailPage(mealType: '晚餐'))),
+                  ),
+                  _MealSection(
+                    mealType: '點心',
+                    meal: log.getMeal('點心'),
+                    onAdd: () => _showAddFoodDialog(context, ref, '點心'),
+                    onRemove: (id) => ref.read(dailyLogProvider.notifier).removeEntry('點心', id),
+                    onTap: () => Navigator.push(context, SlidePageRoute(page: const MealDetailPage(mealType: '點心'))),
+                  ),
+                ],
               ),
-            )),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTheme.primaryColor,
         onPressed: () => _showQuickAddPanel(context, ref),
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -183,6 +134,7 @@ class HomePage extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -194,10 +146,7 @@ class HomePage extends ConsumerWidget {
         },
         onAddNew: () {
           Navigator.pop(ctx);
-          Navigator.push(
-            context,
-            SlidePageRoute(page: const SearchPage()),
-          );
+          Navigator.push(context, SlidePageRoute(page: const SearchPage()));
         },
       ),
     );
@@ -206,6 +155,7 @@ class HomePage extends ConsumerWidget {
   void _showMealSelectionDialog(BuildContext context, WidgetRef ref, dynamic food) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -227,7 +177,10 @@ class HomePage extends ConsumerWidget {
                 Navigator.pop(ctx);
                 ref.read(dailyLogProvider.notifier).addEntry(mealType, food, food.servingSize);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('已新增 ${food.name} 到 $mealType')),
+                  SnackBar(
+                    content: Text('已新增 ${food.name} 到 $mealType'),
+                    backgroundColor: AppTheme.primaryColor,
+                  ),
                 );
               },
             )),
@@ -248,123 +201,11 @@ class HomePage extends ConsumerWidget {
   }
 
   void _showAddFoodDialog(BuildContext context, WidgetRef ref, String mealType) {
-    Navigator.push(
-      context,
-      SlidePageRoute(page: AddFoodToMealPage(mealType: mealType)),
-    );
+    Navigator.push(context, SlidePageRoute(page: AddFoodToMealPage(mealType: mealType)));
   }
 }
 
-/// 熱量建議卡片
-class _CalorieSuggestionCard extends StatelessWidget {
-  final double consumed;
-  final int target;
-
-  const _CalorieSuggestionCard({
-    required this.consumed,
-    required this.target,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final hasRecord = consumed > 0 || target > 0;
-    final remaining = target - consumed;
-    final isOver = remaining < 0;
-    final overage = isOver ? -remaining : 0.0;
-
-    if (!hasRecord) {
-      return const SizedBox.shrink();
-    }
-
-    String suggestion;
-    Color suggestionColor;
-    Color backgroundColor;
-
-    if (isOver) {
-      suggestion = '今日熱量已超標 ${overage.round()} kcal';
-      suggestionColor = AppTheme.errorColor;
-      backgroundColor = AppTheme.errorColor.withOpacity(0.1);
-    } else {
-      suggestion = NutritionCalculator.mealSuggestion(remaining);
-      suggestionColor = AppTheme.primaryColor;
-      backgroundColor = AppTheme.primaryColor.withOpacity(0.1);
-    }
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  isOver ? Icons.warning_amber : Icons.lightbulb_outline,
-                  color: suggestionColor,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '熱量建議',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: suggestionColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (isOver)
-                    Text(
-                      suggestion,
-                      style: const TextStyle(
-                        color: AppTheme.errorColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    )
-                  else ...[
-                    Text(
-                      '今日攝入：${consumed.round()} kcal',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '目標：$target kcal',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      suggestion,
-                      style: const TextStyle(
-                        color: AppTheme.primaryColor,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// 日期選擇列
+/// 日期選擇列 - FatSecret 風格
 class _DateSelector extends StatelessWidget {
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateChanged;
@@ -376,135 +217,109 @@ class _DateSelector extends StatelessWidget {
     final today = DateTime.now();
     final days = List.generate(7, (i) => today.subtract(Duration(days: 3 - i)));
 
-    return SizedBox(
-      height: 80,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: days.length,
-        itemBuilder: (context, index) {
-          final date = days[index];
-          final isSelected = AppDateUtils.isSameDay(date, selectedDate);
-          final isToday = AppDateUtils.isToday(date);
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: SizedBox(
+        height: 76,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          itemCount: days.length,
+          itemBuilder: (context, index) {
+            final date = days[index];
+            final isSelected = AppDateUtils.isSameDay(date, selectedDate);
+            final isToday = AppDateUtils.isToday(date);
 
-          return GestureDetector(
-            onTap: () => onDateChanged(date),
-            child: Container(
-              width: 56,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                color: isSelected ? AppTheme.primaryColor : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: isToday && !isSelected
-                    ? Border.all(color: AppTheme.primaryColor, width: 2)
-                    : null,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AppDateUtils.weekday(date),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isSelected ? Colors.white70 : Colors.grey,
+            return GestureDetector(
+              onTap: () => onDateChanged(date),
+              child: Container(
+                width: 52,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  border: isToday && !isSelected
+                      ? Border.all(color: AppTheme.primaryColor, width: 2)
+                      : null,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppDateUtils.weekday(date),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: isSelected ? Colors.white70 : Colors.grey,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    date.day.toString(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : Colors.black87,
+                    const SizedBox(height: 4),
+                    Text(
+                      date.day.toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.white : AppTheme.textPrimary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-/// 熱量卡片
-class _CalorieCard extends StatefulWidget {
+/// 熱量卡片 - FatSecret 風格（扁平大卡片）
+class _CalorieCardFat extends StatelessWidget {
   final double consumed;
   final int target;
-  final double progress;
   final double burnedCalories;
 
-  const _CalorieCard({
+  const _CalorieCardFat({
     required this.consumed,
     required this.target,
-    required this.progress,
     required this.burnedCalories,
   });
 
   @override
-  State<_CalorieCard> createState() => _CalorieCardState();
-}
-
-class _CalorieCardState extends State<_CalorieCard> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  double _oldProgress = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _animation = Tween<double>(begin: 0, end: widget.progress).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
-    _controller.forward();
-  }
-
-  @override
-  void didUpdateWidget(_CalorieCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.progress != widget.progress) {
-      _oldProgress = _animation.value;
-      _animation = Tween<double>(begin: _oldProgress, end: widget.progress).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-      );
-      _controller.reset();
-      _controller.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final remaining = widget.target - widget.consumed;
-    final hasRecord = widget.consumed > 0 || widget.target > 0;
+    final remaining = target - consumed;
+    final hasRecord = consumed > 0 || target > 0;
+    final progress = target > 0 ? (consumed / target).clamp(0.0, 1.0) : 0.0;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('今日攝入', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    const Text(
+                      '今日攝入',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     if (!hasRecord)
                       const Text(
                         '尚未記錄',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
                         ),
@@ -514,232 +329,122 @@ class _CalorieCardState extends State<_CalorieCard> with SingleTickerProviderSta
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: widget.consumed.round().toString(),
+                              text: consumed.round().toString(),
                               style: const TextStyle(
-                                fontSize: 36,
+                                fontSize: 40,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.calorieColor,
                               ),
                             ),
                             TextSpan(
-                              text: ' / ${widget.target} kcal',
-                              style: const TextStyle(fontSize: 16, color: Colors.grey),
+                              text: ' / $target',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: AppTheme.textSecondary,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                  ],
-                ),
-                if (hasRecord)
-                  SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return CircularProgressIndicator(
-                              value: _animation.value.clamp(0.0, 1.0),
-                              strokeWidth: 8,
-                              backgroundColor: Colors.grey.shade200,
-                              valueColor: AlwaysStoppedAnimation(
-                                _animation.value > 1 ? AppTheme.errorColor : AppTheme.primaryColor,
-                              ),
-                            );
-                          },
-                        ),
-                        Center(
-                          child: AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Text(
-                                '${(_animation.value * 100).round()}%',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CircularProgressIndicator(
-                          value: 0,
-                          strokeWidth: 8,
-                          backgroundColor: Colors.grey.shade200,
-                          valueColor: const AlwaysStoppedAnimation(Colors.grey),
-                        ),
-                        const Center(
-                          child: Icon(Icons.add, color: Colors.grey, size: 32),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // 今日消耗（運動燃燒）
-            if (widget.burnedCalories > 0)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.exerciseColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.local_fire_department, color: AppTheme.exerciseColor, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      '今日消耗 ${widget.burnedCalories.round()} kcal',
-                      style: const TextStyle(
-                        color: AppTheme.exerciseColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                    const SizedBox(height: 4),
+                    const Text(
+                      'kcal',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 8),
-            if (hasRecord)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: remaining >= 0
-                      ? AppTheme.primaryColor.withOpacity(0.1)
-                      : AppTheme.errorColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  remaining >= 0
-                      ? '還可攝入 ${remaining.round()} kcal'
-                      : '已超出 ${(-remaining).round()} kcal',
-                  style: TextStyle(
-                    color: remaining >= 0 ? AppTheme.primaryColor : AppTheme.errorColor,
-                    fontWeight: FontWeight.w500,
+              // 圓環進度
+              if (hasRecord)
+                SizedBox(
+                  width: 72,
+                  height: 72,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 8,
+                        backgroundColor: Colors.grey.shade200,
+                        valueColor: AlwaysStoppedAnimation(
+                          progress > 1 ? AppTheme.errorColor : AppTheme.primaryColor,
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          '${(progress * 100).round()}%',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              )
-            else
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  '點擊 + 新增餐點',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500,
+            ],
+          ),
+          if (hasRecord) ...[
+            const SizedBox(height: 16),
+            // 狀態標籤
+            Row(
+              children: [
+                if (burnedCalories > 0)
+                  _StatusTag(
+                    icon: Icons.local_fire_department,
+                    text: '消耗 $burnedCalories',
+                    color: AppTheme.exerciseColor,
                   ),
+                const SizedBox(width: 8),
+                _StatusTag(
+                  icon: remaining >= 0 ? Icons.check_circle : Icons.warning,
+                  text: remaining >= 0 ? '還有 $remaining kcal' : '超標 ${-remaining} kcal',
+                  color: remaining >= 0 ? AppTheme.primaryColor : AppTheme.errorColor,
                 ),
-              ),
-          ],
-        ),
+              ],
+            ),
+          ] else
+            const SizedBox(height: 12),
+        ],
       ),
     );
   }
 }
 
-/// 快速捷徑區塊
-class _QuickShortcuts extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _ShortcutCard(
-          icon: Icons.search,
-          label: '搜尋食物',
-          onTap: () => Navigator.push(
-            context,
-            SlidePageRoute(page: const SearchPage()),
-          ),
-        ),
-        _ShortcutCard(
-          icon: Icons.qr_code_scanner,
-          label: '掃描條碼',
-          onTap: () => Navigator.push(
-            context,
-            SlidePageRoute(page: const BarcodeScannerPage()),
-          ),
-        ),
-        _ShortcutCard(
-          icon: Icons.fitness_center,
-          label: '運動記錄',
-          onTap: () => Navigator.pushNamed(context, '/exercise'),
-        ),
-        _ShortcutCard(
-          icon: Icons.star,
-          label: '我的最愛',
-          onTap: () => Navigator.pushNamed(context, '/favorites'),
-        ),
-        _ShortcutCard(
-          icon: Icons.monitor_weight,
-          label: '記錄體重',
-          onTap: () => _showWeightDialog(context, ref),
-        ),
-        _ShortcutCard(
-          icon: Icons.camera_alt,
-          label: '拍照記錄',
-          onTap: () => Navigator.push(
-            context,
-            SlidePageRoute(page: const MealPhotoGallery()),
-          ),
-        ),
-      ],
-    );
-  }
+class _StatusTag extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final Color color;
 
-  void _showWeightDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('記錄體重'),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: '體重 (kg)',
-            hintText: '例如：65.5',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              controller.dispose();
-              Navigator.pop(dialogContext);
-            },
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () {
-              final weight = double.tryParse(controller.text);
-              controller.dispose();
-              if (weight != null && weight > 0) {
-                ref.read(dailyLogProvider.notifier).updateWeight(weight);
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('體重 $weight kg 已記錄')),
-                );
-              } else {
-                Navigator.pop(dialogContext);
-              }
-            },
-            child: const Text('確定'),
+  const _StatusTag({
+    required this.icon,
+    required this.text,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
           ),
         ],
       ),
@@ -747,54 +452,136 @@ class _QuickShortcuts extends ConsumerWidget {
   }
 }
 
-/// 捷徑卡片
-class _ShortcutCard extends StatelessWidget {
+/// 快速存取網格 - FatSecret 2x3
+class _QuickAccessGrid extends StatelessWidget {
+  final dynamic log;
+
+  const _QuickAccessGrid({required this.log});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            '快速記錄',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: _QuickAccessCard(
+                icon: Icons.search,
+                label: '搜尋食物',
+                color: AppTheme.primaryColor,
+                onTap: () => Navigator.push(
+                  context,
+                  SlidePageRoute(page: const SearchPage()),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _QuickAccessCard(
+                icon: Icons.qr_code_scanner,
+                label: '掃描條碼',
+                color: AppTheme.accentColor,
+                onTap: () => Navigator.push(
+                  context,
+                  SlidePageRoute(page: const BarcodeScannerPage()),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _QuickAccessCard(
+                icon: Icons.fitness_center,
+                label: '運動消耗',
+                color: AppTheme.exerciseColor,
+                onTap: () => Navigator.pushNamed(context, '/exercise'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _QuickAccessCard(
+                icon: Icons.monitor_weight,
+                label: '記錄體重',
+                color: AppTheme.carbsColor,
+                onTap: () {},
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickAccessCard extends StatelessWidget {
   final IconData icon;
   final String label;
+  final Color color;
   final VoidCallback onTap;
 
-  const _ShortcutCard({
+  const _QuickAccessCard({
     required this.icon,
     required this.label,
+    required this.color,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
+    return Material(
+      color: Colors.white,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        width: 72,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 22),
               ),
-              child: Icon(icon, color: AppTheme.primaryColor, size: 24),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 11),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// 餐次區塊
+/// 餐次區塊 - FatSecret 風格
 class _MealSection extends StatelessWidget {
   final String mealType;
   final MealRecord meal;
@@ -820,52 +607,94 @@ class _MealSection extends StatelessWidget {
     }
   }
 
+  Color get _mealColor {
+    switch (mealType) {
+      case '早餐': return const Color(0xFFFF9800);
+      case '午餐': return const Color(0xFF4CAF50);
+      case '晚餐': return const Color(0xFF2196F3);
+      case '點心': return const Color(0xFFE91E63);
+      default: return AppTheme.primaryColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Card(
+      child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Icon(_mealIcon, color: AppTheme.primaryColor),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      mealType,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _mealColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(_mealIcon, color: _mealColor, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        mealType,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${meal.totalCalories.round()} kcal',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: meal.totalCalories > 0 ? AppTheme.calorieColor : Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add_circle, color: _mealColor),
+                  onPressed: onAdd,
+                ),
+              ],
+            ),
+            if (meal.entries.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              ...meal.entries.take(3).map((entry) => _EntryRow(
+                entry: entry,
+                onDelete: () => onRemove(entry.id),
+              )),
+              if (meal.entries.length > 3)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '還有 ${meal.entries.length - 3} 項...',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade500,
                     ),
                   ),
-                  Text(
-                    '${meal.totalCalories.round()} kcal',
-                    style: const TextStyle(color: AppTheme.calorieColor, fontWeight: FontWeight.w500),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle, color: AppTheme.primaryColor),
-                    onPressed: onAdd,
-                  ),
-                ],
-              ),
-              if (meal.entries.isNotEmpty) ...[
-                const Divider(),
-                ...meal.entries.map((entry) => _EntryRow(
-                  entry: entry,
-                  onDelete: () => onRemove(entry.id),
-                )),
-              ],
+                ),
             ],
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// 單筆食物列
 class _EntryRow extends StatelessWidget {
   final dynamic entry;
   final VoidCallback onDelete;
@@ -879,24 +708,35 @@ class _EntryRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(entry.food.name, style: const TextStyle(fontSize: 14)),
-                Text(
-                  '${entry.grams.round()}g',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
+            child: Text(
+              entry.food.name,
+              style: const TextStyle(fontSize: 14),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Text(
-            '${entry.calories.round()} kcal',
-            style: const TextStyle(fontWeight: FontWeight.w500),
+            '${entry.grams.round()}g',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '${entry.calories.round()}',
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'kcal',
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
           ),
           IconButton(
-            icon: const Icon(Icons.remove_circle_outline, size: 20, color: Colors.grey),
+            icon: Icon(Icons.close, size: 16, color: Colors.grey.shade400),
             onPressed: onDelete,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
           ),
         ],
       ),
@@ -929,79 +769,61 @@ class _QuickAddPanel extends StatelessWidget {
               const Icon(Icons.star, color: AppTheme.accentColor),
               const SizedBox(width: 8),
               const Text(
-                '我的最愛',
+                '快速新增',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              if (favorites.isEmpty)
-                TextButton(
-                  onPressed: onAddNew,
-                  child: const Text('新增食物'),
-                ),
+              TextButton(
+                onPressed: onAddNew,
+                child: const Text('搜尋更多'),
+              ),
             ],
           ),
           const SizedBox(height: 16),
           if (favorites.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    Icon(Icons.star_border, size: 48, color: Colors.grey),
-                    SizedBox(height: 8),
-                    Text('尚無收藏食物', style: TextStyle(color: Colors.grey)),
-                    SizedBox(height: 4),
-                    Text(
-                      '搜尋食物並點擊星星收藏',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
+                    Icon(Icons.star_border, size: 48, color: Colors.grey.shade300),
+                    const SizedBox(height: 8),
+                    const Text('尚無收藏食物', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
             )
           else
             ...favorites.map((food) => ListTile(
+              contentPadding: EdgeInsets.zero,
               leading: Container(
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: AppTheme.accentColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.star, color: AppTheme.accentColor, size: 20),
               ),
-              title: Text(food.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+              title: Text(
+                food.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               subtitle: Text(
                 '${food.calories.round()} kcal / ${food.servingSize.round()}g',
                 style: const TextStyle(fontSize: 12),
               ),
-              trailing: const Icon(Icons.add_circle_outline, color: AppTheme.primaryColor),
+              trailing: Icon(Icons.add_circle_outline, color: AppTheme.primaryColor),
               onTap: () => onSelectFood(food),
             )),
-          if (favorites.isNotEmpty) ...[
-            const Divider(),
-            ListTile(
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.search, color: AppTheme.primaryColor, size: 20),
-              ),
-              title: const Text('搜尋新食物'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: onAddNew,
-            ),
-          ],
         ],
       ),
     );
   }
 }
 
-/// 新增食物到餐次的頁面（直接使用 SearchPage）
+/// 新增食物到餐次的頁面
 class AddFoodToMealPage extends ConsumerWidget {
   final String mealType;
 
@@ -1009,7 +831,6 @@ class AddFoodToMealPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 延遲跳轉到搜尋頁（帶入預選餐次）
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pushReplacement(
         context,
@@ -1018,9 +839,14 @@ class AddFoodToMealPage extends ConsumerWidget {
         ),
       );
     });
-    // 短暫顯示載入畫面
     return Scaffold(
-      appBar: AppBar(title: Text('新增到 $mealType')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+        elevation: 0,
+        title: Text('新增到 $mealType'),
+      ),
       body: const Center(child: CircularProgressIndicator()),
     );
   }
