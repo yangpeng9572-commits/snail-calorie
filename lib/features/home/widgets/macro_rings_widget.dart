@@ -18,6 +18,7 @@ class MacroRingsWidget extends ConsumerWidget {
     final consumedProtein = log.totalProtein;
     final consumedFat = log.totalFat;
     final consumedCarbs = log.totalCarbs;
+    final burnedCalories = log.burnedCalories;
 
     // 目標量計算
     double targetProtein;
@@ -84,6 +85,14 @@ class MacroRingsWidget extends ConsumerWidget {
                   unit: 'g',
                   color: AppTheme.carbsColor,
                 ),
+                _MacroRing(
+                  label: '消耗',
+                  consumed: burnedCalories,
+                  target: 500, // 預設目標 500 kcal 消耗
+                  unit: 'kcal',
+                  color: AppTheme.exerciseColor,
+                  showAsText: true,
+                ),
               ],
             ),
           ],
@@ -100,6 +109,7 @@ class _MacroRing extends StatelessWidget {
   final double target;
   final String unit;
   final Color color;
+  final bool showAsText; // 是否直接顯示文字（用於消耗熱量）
 
   const _MacroRing({
     required this.label,
@@ -107,10 +117,45 @@ class _MacroRing extends StatelessWidget {
     required this.target,
     required this.unit,
     required this.color,
+    this.showAsText = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (showAsText) {
+      // 直接顯示消耗熱量文字
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withOpacity(0.15),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.local_fire_department,
+                color: color,
+                size: 28,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '${consumed.round()}$unit',
+            style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600),
+          ),
+        ],
+      );
+    }
+
     final progress = target > 0 ? (consumed / target).clamp(0.0, 1.0) : 0.0;
 
     return Column(

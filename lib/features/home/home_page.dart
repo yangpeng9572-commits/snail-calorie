@@ -79,6 +79,7 @@ class HomePage extends ConsumerWidget {
               consumed: log.totalCalories,
               target: target.calories,
               progress: calorieProgress.clamp(0.0, 1.0),
+              burnedCalories: log.burnedCalories,
             ),
             const SizedBox(height: 16),
 
@@ -430,11 +431,13 @@ class _CalorieCard extends StatefulWidget {
   final double consumed;
   final int target;
   final double progress;
+  final double burnedCalories;
 
   const _CalorieCard({
     required this.consumed,
     required this.target,
     required this.progress,
+    required this.burnedCalories,
   });
 
   @override
@@ -582,6 +585,31 @@ class _CalorieCardState extends State<_CalorieCard> with SingleTickerProviderSta
               ],
             ),
             const SizedBox(height: 12),
+            // 今日消耗（運動燃燒）
+            if (widget.burnedCalories > 0)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.exerciseColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.local_fire_department, color: AppTheme.exerciseColor, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      '今日消耗 ${widget.burnedCalories.round()} kcal',
+                      style: const TextStyle(
+                        color: AppTheme.exerciseColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 8),
             if (hasRecord)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

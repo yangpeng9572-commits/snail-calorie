@@ -278,7 +278,19 @@ class DailyLogNotifier extends StateNotifier<DailyLog> {
   }
 
   Future<void> updateWeight(double weight) async {
-    state = DailyLog(date: state.date, meals: state.meals, weight: weight);
+    state = DailyLog(date: state.date, meals: state.meals, weight: weight, exercises: state.exercises);
+    await _storage.saveDailyLog(state);
+  }
+
+  /// 新增運動記錄
+  Future<void> addExercise(ExerciseEntry exercise) async {
+    state = state.addExercise(exercise);
+    await _storage.saveDailyLog(state);
+  }
+
+  /// 移除運動記錄
+  Future<void> removeExercise(String exerciseId) async {
+    state = state.removeExercise(exerciseId);
     await _storage.saveDailyLog(state);
   }
 }

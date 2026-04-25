@@ -15,6 +15,7 @@ class AppTheme {
   static const Color carbsColor = Color(0xFF42A5F5); // 碳水 - 藍
   static const Color proteinColor = Color(0xFF66BB6A); // 蛋白質 - 綠
   static const Color fatColor = Color(0xFFFFCA28); // 脂肪 - 黃
+  static const Color exerciseColor = Color(0xFFFF5722); // 運動 - 深橙
 
   // 背景色彩
   static const Color backgroundColor = Color(0xFFF5F5F5);
