@@ -28,6 +28,11 @@ class ExportService {
     final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/$filename');
     await file.writeAsString(content);
-    await Share.share(content, subject: '食刻輕卡 - 飲食記錄');
+    await SharePlus.instance.share(
+      ShareParams(
+        text: '食刻輕卡 - 飲食記錄',
+        files: [XFile(file.path)],
+      ),
+    );
   }
 }

@@ -38,7 +38,9 @@ class ShareProfilePage extends ConsumerWidget {
             Text(shareText, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => Share.share(shareText),
+              onPressed: () => SharePlus.instance.share(
+                ShareParams(text: shareText),
+              ),
               icon: const Icon(Icons.share),
               label: const Text('分享文字'),
             ),
