@@ -290,7 +290,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppTheme.primaryColor, AppTheme.primaryLight],
+                  colors: const [AppTheme.primaryColor, AppTheme.primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -366,8 +366,8 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
                         Icon(Icons.trending_down, color: _goal == 'lose' ? AppTheme.proteinColor : AppTheme.accentColor, size: 20),
                         const SizedBox(width: 8),
                         Text(
-                          '預計${weeksToGoal}週達成目標',
-                          style: TextStyle(
+                          '預計$weeksToGoal週達成目標',
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textPrimary,
