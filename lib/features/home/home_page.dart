@@ -7,6 +7,7 @@ import '../../core/utils/date_utils.dart';
 import '../../core/widgets/page_transitions.dart';
 import '../../core/widgets/quick_access_tile.dart';
 import '../../data/services/nutrition_calculator.dart';
+import '../../data/models/meal_record.dart';
 import 'widgets/macro_rings_widget.dart';
 import 'widgets/weekly_trend_widget.dart';
 import 'widgets/monthly_overview_widget.dart';
@@ -796,7 +797,7 @@ class _ShortcutCard extends StatelessWidget {
 /// 餐次區塊
 class _MealSection extends StatelessWidget {
   final String mealType;
-  final dynamic meal;
+  final MealRecord meal;
   final VoidCallback onAdd;
   final Function(String) onRemove;
   final VoidCallback onTap;
