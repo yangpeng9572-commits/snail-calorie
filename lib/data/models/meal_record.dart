@@ -7,12 +7,14 @@ class MealEntry {
   final FoodItem food;
   final double grams;
   final DateTime loggedAt;
+  final String? photoPath;
 
   MealEntry({
     String? id,
     required this.food,
     required this.grams,
     DateTime? loggedAt,
+    this.photoPath,
   })  : id = id ?? const Uuid().v4(),
         loggedAt = loggedAt ?? DateTime.now();
 
@@ -21,11 +23,28 @@ class MealEntry {
   double get protein => food.proteinForServing(grams);
   double get fat => food.fatForServing(grams);
 
+  MealEntry copyWith({
+    String? id,
+    FoodItem? food,
+    double? grams,
+    DateTime? loggedAt,
+    String? photoPath,
+  }) {
+    return MealEntry(
+      id: id ?? this.id,
+      food: food ?? this.food,
+      grams: grams ?? this.grams,
+      loggedAt: loggedAt ?? this.loggedAt,
+      photoPath: photoPath ?? this.photoPath,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'food': food.toJson(),
     'grams': grams,
     'loggedAt': loggedAt.toIso8601String(),
+    'photoPath': photoPath,
   };
 
   factory MealEntry.fromJson(Map<String, dynamic> json) => MealEntry(
@@ -33,6 +52,7 @@ class MealEntry {
     food: FoodItem.fromJson(json['food'] as Map<String, dynamic>),
     grams: (json['grams'] as num).toDouble(),
     loggedAt: DateTime.parse(json['loggedAt'] as String),
+    photoPath: json['photoPath'] as String?,
   );
 }
 

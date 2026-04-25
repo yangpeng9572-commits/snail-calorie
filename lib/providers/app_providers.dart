@@ -249,6 +249,27 @@ class DailyLogNotifier extends StateNotifier<DailyLog> {
     await _storage.saveDailyLog(state);
   }
 
+  Future<void> addEntryWithPhoto(String mealType, FoodItem food, double grams, String photoPath) async {
+    final meal = state.getMeal(mealType);
+    final entry = MealEntry(food: food, grams: grams, photoPath: photoPath);
+    final updatedMeal = meal.addEntry(entry);
+    state = state.updateMeal(updatedMeal);
+    await _storage.saveDailyLog(state);
+  }
+
+  Future<void> updateEntryPhoto(String mealType, String entryId, String photoPath) async {
+    final meal = state.getMeal(mealType);
+    final updatedEntries = meal.entries.map((e) {
+      if (e.id == entryId) {
+        return e.copyWith(photoPath: photoPath);
+      }
+      return e;
+    }).toList();
+    final updatedMeal = MealRecord(type: mealType, entries: updatedEntries);
+    state = state.updateMeal(updatedMeal);
+    await _storage.saveDailyLog(state);
+  }
+
   Future<void> removeEntry(String mealType, String entryId) async {
     final meal = state.getMeal(mealType);
     final updatedMeal = meal.removeEntry(entryId);

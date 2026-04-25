@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import '../../providers/app_providers.dart';
 import '../../data/models/food_item.dart';
 import '../../core/theme/app_theme.dart';
@@ -289,73 +292,159 @@ class _FoodListTile extends ConsumerWidget {
 
   void _showAddDialog(BuildContext context, WidgetRef ref, String? preselectedMeal) {
     double grams = 100;
+    String? photoPath;
 
     // 如果有預選餐次，直接新增
     void addToMeal(String meal) {
-      ref.read(dailyLogProvider.notifier).addEntry(meal, food, grams);
+      if (photoPath != null) {
+        ref.read(dailyLogProvider.notifier).addEntryWithPhoto(meal, food, grams, photoPath!);
+      } else {
+        ref.read(dailyLogProvider.notifier).addEntry(meal, food, grams);
+      }
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('已新增到 $meal')),
       );
     }
 
+    Future<void> takePhoto(String mealType, void Function(void Function()) setStateInner) async {
+      try {
+        final picker = ImagePicker();
+        final XFile? image = await picker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 1280,
+          maxHeight: 1280,
+          imageQuality: 85,
+        );
+
+        if (image == null) return;
+
+        // Save to app documents directory
+        final appDir = await getApplicationDocumentsDirectory();
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final fileName = 'meal_${mealType}_$timestamp.jpg';
+        final savedPath = '${appDir.path}/$fileName';
+
+        // Copy image to app directory
+        await File(image.path).copy(savedPath);
+
+        if (context.mounted) {
+          setStateInner(() => photoPath = savedPath);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('照片已拍攝')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('無法開啟相機：$e')),
+          );
+        }
+      }
+    }
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(food.name, style: const TextStyle(fontSize: 18)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('熱量: ${food.calories.round()} kcal / 100g'),
-            Text('碳水化合物: ${food.carbs.round()}g / 100g'),
-            Text('蛋白質: ${food.protein.round()}g / 100g'),
-            Text('脂肪: ${food.fat.round()}g / 100g'),
-            const SizedBox(height: 16),
-            StatefulBuilder(
-              builder: (context, setState) => Column(
-                children: [
-                  Text('份量: ${grams.round()}g'),
-                  Slider(
-                    value: grams,
-                    min: 10,
-                    max: 500,
-                    divisions: 49,
-                    label: '${grams.round()}g',
-                    onChanged: (v) => setState(() => grams = v),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(food.name, style: const TextStyle(fontSize: 18)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('熱量: ${food.calories.round()} kcal / 100g'),
+                Text('碳水化合物: ${food.carbs.round()}g / 100g'),
+                Text('蛋白質: ${food.protein.round()}g / 100g'),
+                Text('脂肪: ${food.fat.round()}g / 100g'),
+                const SizedBox(height: 16),
+                StatefulBuilder(
+                  builder: (context, setSliderState) => Column(
+                    children: [
+                      Text('份量: ${grams.round()}g'),
+                      Slider(
+                        value: grams,
+                        min: 10,
+                        max: 500,
+                        divisions: 49,
+                        label: '${grams.round()}g',
+                        onChanged: (v) => setSliderState(() => grams = v),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '= ${food.caloriesForServing(grams).round()} kcal',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.calorieColor,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Photo section
+                if (photoPath != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      File(photoPath!),
+                      height: 100,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () => takePhoto(preselectedMeal ?? '早餐', setDialogState),
+                        icon: const Icon(Icons.refresh, size: 16),
+                        label: const Text('重新拍攝'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => setDialogState(() => photoPath = null),
+                        icon: const Icon(Icons.delete, size: 16),
+                        label: const Text('移除'),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () => takePhoto(preselectedMeal ?? '早餐', setDialogState),
+                        icon: const Icon(Icons.camera_alt),
+                        label: const Text('拍攝餐點'),
+                      ),
+                    ],
                   ),
                 ],
-              ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              '= ${food.caloriesForServing(grams).round()} kcal',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppTheme.calorieColor,
-                fontSize: 18,
-              ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('取消'),
             ),
+            if (preselectedMeal != null)
+              TextButton(
+                onPressed: () => addToMeal(preselectedMeal),
+                child: Text('加入 $preselectedMeal'),
+              )
+            else
+              ...['早餐', '午餐', '晚餐', '點心'].map(
+                (meal) => TextButton(
+                  onPressed: () => addToMeal(meal),
+                  child: Text(meal),
+                ),
+              ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          if (preselectedMeal != null)
-            TextButton(
-              onPressed: () => addToMeal(preselectedMeal),
-              child: Text('加入 $preselectedMeal'),
-            )
-          else
-            ...['早餐', '午餐', '晚餐', '點心'].map(
-              (meal) => TextButton(
-                onPressed: () => addToMeal(meal),
-                child: Text(meal),
-              ),
-            ),
-        ],
       ),
     );
   }

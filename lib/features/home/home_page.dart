@@ -12,6 +12,8 @@ import 'widgets/weekly_trend_widget.dart';
 import 'widgets/monthly_overview_widget.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
+import '../meal/meal_photo_gallery.dart';
+import 'stats_screen.dart';
 
 /// 首頁儀表板
 class HomePage extends ConsumerWidget {
@@ -30,6 +32,13 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('食刻輕卡'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () => Navigator.push(
+              context,
+              SlidePageRoute(page: const StatsScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.qr_code_scanner),
             onPressed: () => Navigator.push(
@@ -646,6 +655,14 @@ class _QuickShortcuts extends ConsumerWidget {
           icon: Icons.monitor_weight,
           label: '記錄體重',
           onTap: () => _showWeightDialog(context, ref),
+        ),
+        _ShortcutCard(
+          icon: Icons.camera_alt,
+          label: '拍照記錄',
+          onTap: () => Navigator.push(
+            context,
+            SlidePageRoute(page: const MealPhotoGallery()),
+          ),
         ),
       ],
     );
