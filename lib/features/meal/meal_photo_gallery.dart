@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+import '../../data/models/food_item.dart';
 import '../../providers/app_providers.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
@@ -458,7 +459,8 @@ class _AddFoodWithPhotoDialog extends ConsumerStatefulWidget {
 class _AddFoodWithPhotoDialogState
     extends ConsumerState<_AddFoodWithPhotoDialog> {
   String _searchQuery = '';
-  List<dynamic> _searchResults = [];
+  List<FoodItem> _searchResults = [];
+  bool _isSearching = false;
 
   @override
   Widget build(BuildContext context) {
@@ -504,10 +506,15 @@ class _AddFoodWithPhotoDialogState
                     },
                   ),
                   const SizedBox(height: 8),
-                  if (_searchQuery.isNotEmpty && _searchResults.isEmpty)
+                  if (_searchQuery.isNotEmpty && _searchResults.isEmpty && !_isSearching)
                     const Padding(
                       padding: EdgeInsets.all(16),
                       child: Text('找不到食物'),
+                    )
+                  else if (_isSearching)
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: CircularProgressIndicator(),
                     )
                   else
                     SizedBox(
@@ -562,18 +569,26 @@ class _AddFoodWithPhotoDialogState
     );
   }
 
-  void _search() {
+  void _search() async {
     if (_searchQuery.length < 2) {
       setState(() => _searchResults = []);
       return;
     }
-    // Trigger search through provider
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(searchQueryProvider.notifier).state = _searchQuery;
-      final results = ref.read(searchResultsProvider);
-      results.whenData((foods) {
-        setState(() => _searchResults = foods.take(5).toList());
-      });
-    });
+    setState(() => _isSearching = true);
+    ref.read(searchQueryProvider.notifier).state = _searchQuery;
+    // 直接等待 provider 的未來結果
+    try {
+      final results = await ref.read(searchResultsProvider.future);
+      if (mounted) {
+        setState(() {
+          _searchResults = results.take(5).toList();
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSearching = false);
+      }
+    }
   }
 }

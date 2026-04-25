@@ -5,6 +5,7 @@ import '../../providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/date_utils.dart';
 import '../../data/models/daily_log.dart';
+import '../../core/constants/app_constants.dart';
 
 /// 統計數據頁面 - 顯示每週/每月趨勢圖表
 class StatsScreen extends ConsumerStatefulWidget {
@@ -618,7 +619,7 @@ class _MonthlyCalorieBarChart extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            '${day}日',
+                            '$day日',
                             style: const TextStyle(fontSize: 10, color: Colors.grey),
                           ),
                         );
@@ -952,7 +953,6 @@ class _MonthSummaryCard extends StatelessWidget {
     double totalProtein = 0;
     double totalFat = 0;
     int daysWithData = 0;
-
     for (final log in monthLogs.values) {
       if (log.totalCalories > 0) {
         daysWithData++;
@@ -1011,6 +1011,35 @@ class _MonthSummaryCard extends StatelessWidget {
                     label: '總攝入熱量',
                     value: '${totalCalories.round()} kcal',
                     color: AppTheme.accentColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _SummaryItem(
+                    icon: Icons.egg,
+                    label: '蛋白質',
+                    value: '${totalProtein.round()}g',
+                    color: Colors.blue,
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryItem(
+                    icon: Icons.water_drop,
+                    label: '脂肪',
+                    value: '${totalFat.round()}g',
+                    color: Colors.orange,
+                  ),
+                ),
+                Expanded(
+                  child: _SummaryItem(
+                    icon: Icons.grain,
+                    label: '碳水',
+                    value: '${totalCarbs.round()}g',
+                    color: Colors.green,
                   ),
                 ),
               ],

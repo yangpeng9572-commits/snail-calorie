@@ -13,6 +13,7 @@ import 'widgets/monthly_overview_widget.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
 import '../meal/meal_photo_gallery.dart';
+import '../meal/meal_detail_page.dart';
 import 'stats_screen.dart';
 
 /// 首頁儀表板
@@ -159,6 +160,10 @@ class HomePage extends ConsumerWidget {
               meal: log.getMeal(mealType),
               onAdd: () => _showAddFoodDialog(context, ref, mealType),
               onRemove: (entryId) => ref.read(dailyLogProvider.notifier).removeEntry(mealType, entryId),
+              onTap: () => Navigator.push(
+                context,
+                SlidePageRoute(page: MealDetailPage(mealType: mealType)),
+              ),
             )),
           ],
         ),
@@ -766,12 +771,14 @@ class _MealSection extends StatelessWidget {
   final dynamic meal;
   final VoidCallback onAdd;
   final Function(String) onRemove;
+  final VoidCallback onTap;
 
   const _MealSection({
     required this.mealType,
     required this.meal,
     required this.onAdd,
     required this.onRemove,
+    required this.onTap,
   });
 
   IconData get _mealIcon {
@@ -786,36 +793,43 @@ class _MealSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Icon(_mealIcon, color: AppTheme.primaryColor),
-                const SizedBox(width: 8),
-                Text(mealType, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                const Spacer(),
-                Text(
-                  '${meal.totalCalories.round()} kcal',
-                  style: const TextStyle(color: AppTheme.calorieColor, fontWeight: FontWeight.w500),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle, color: AppTheme.primaryColor),
-                  onPressed: onAdd,
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Icon(_mealIcon, color: AppTheme.primaryColor),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      mealType,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    '${meal.totalCalories.round()} kcal',
+                    style: const TextStyle(color: AppTheme.calorieColor, fontWeight: FontWeight.w500),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle, color: AppTheme.primaryColor),
+                    onPressed: onAdd,
+                  ),
+                ],
+              ),
+              if (meal.entries.isNotEmpty) ...[
+                const Divider(),
+                ...meal.entries.map((entry) => _EntryRow(
+                  entry: entry,
+                  onDelete: () => onRemove(entry.id),
+                )),
               ],
-            ),
-            if (meal.entries.isNotEmpty) ...[
-              const Divider(),
-              ...meal.entries.map((entry) => _EntryRow(
-                entry: entry,
-                onDelete: () => onRemove(entry.id),
-              )),
             ],
-          ],
+          ),
         ),
       ),
     );
