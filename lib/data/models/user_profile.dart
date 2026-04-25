@@ -3,9 +3,10 @@ class UserProfile {
   final String name;
   final String gender; // 'male' or 'female'
   final int age;
-  final double height; // cm
-  final double weight; // kg
+  final double height; // cm (heightCm 相容)
+  final double weight; // kg (weightKg 相容)
   final String activityLevel; // 'sedentary', 'light', 'moderate', 'active', 'very_active'
+  final String goal; // 'lose', 'maintain', 'gain'
 
   UserProfile({
     required this.name,
@@ -14,7 +15,29 @@ class UserProfile {
     required this.height,
     required this.weight,
     required this.activityLevel,
+    this.goal = 'maintain',
   });
+
+  /// 工廠方法：從 CalorieWizard 的欄位名稱建立
+  factory UserProfile.fromWizard({
+    required String name,
+    required int age,
+    required double heightCm,
+    required double weightKg,
+    required String gender,
+    required String goal,
+    required String activityLevel,
+  }) {
+    return UserProfile(
+      name: name,
+      age: age,
+      height: heightCm,
+      weight: weightKg,
+      gender: gender,
+      activityLevel: activityLevel,
+      goal: goal,
+    );
+  }
 
   /// 基礎代謝率 (BMR) - Mifflin-St Jeor Equation
   double get bmr {
@@ -45,4 +68,10 @@ class UserProfile {
 
   /// 每日總消耗熱量 (TDEE)
   double get tdee => bmr * activityFactor;
+
+  /// 目標熱量（每日攝取目標，考慮減重/增重）
+  double get targetCalories {
+    final goalAdjust = {'lose': -500.0, 'maintain': 0.0, 'gain': 300.0};
+    return tdee + (goalAdjust[goal] ?? 0.0);
+  }
 }
