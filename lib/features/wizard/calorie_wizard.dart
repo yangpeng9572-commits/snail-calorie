@@ -269,85 +269,155 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
     final goalAdjust = {'lose': -500.0, 'maintain': 0.0, 'gain': 300.0}[_goal]!;
     final tdee = bmr * activityMult;
     final targetCal = tdee + goalAdjust;
-    // 巨量營養素建議
-    final targetProtein = _weight * 1.6; // 蛋白質：體重 × 1.6g
-    final targetFat = (targetCal * 0.25) / 9; // 脂肪：熱量 × 25% ÷ 9
-    final targetCarbs = (targetCal - (targetProtein * 4) - (targetFat * 9)) / 4; // 碳水：剩餘熱量 ÷ 4
+    final targetProtein = _weight * 1.6;
+    final targetFat = (targetCal * 0.25) / 9;
+    final targetCarbs = (targetCal - (targetProtein * 4) - (targetFat * 9)) / 4;
+
+    // 體重預測（每週減/增 0.5kg）
+    final weeklyChange = _goal == 'lose' ? -0.5 : (_goal == 'gain' ? 0.5 : 0.0);
+    final weeksToGoal = weeklyChange != 0 ? ((_weight * 0.9 - _weight) / weeklyChange).abs().round() : 52;
 
     return _buildStep(
       title: '你的每日熱量目標',
       subtitle: '根據你的資料計算',
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  '${targetCal.toInt()}',
-                  style: const TextStyle(
-                    fontSize: 56,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
-                  ),
+      isLastStep: true,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 主要熱量卡片
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.primaryColor, AppTheme.primaryLight],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                const Text(
-                  'kcal / 每日',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            '蛋白質: ${(targetProtein * 1.6).round()}g  ·  脂肪: ${targetFat.round()}g  ·  碳水: ${(targetCarbs).round()}g',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: ElevatedButton(
-              onPressed: () {
-                final profile = UserProfile(
-                  name: '使用者',
-                  age: _age.toInt(),
-                  heightCm: _height,
-                  weightKg: _weight,
-                  gender: _gender,
-                  goal: _goal,
-                  activityLevel: _getActivityLevel(_activity),
-                );
-                ref.read(userProfileProvider.notifier).updateProfile(profile);
-                Navigator.of(context).pop();
-                widget.onComplete();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                '確認開始使用',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Column(
+                children: [
+                  Text(
+                    '${targetCal.toInt()}',
+                    style: const TextStyle(
+                      fontSize: 56,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Text(
+                    'kcal / 每日',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+
+            // 巨量營養素卡片
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '建議攝取',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _MacroCircle(label: '蛋白質', value: '${targetProtein.round()}g', color: AppTheme.proteinColor),
+                      _MacroCircle(label: '脂肪', value: '${targetFat.round()}g', color: AppTheme.fatColor),
+                      _MacroCircle(label: '碳水', value: '${targetCarbs.round()}g', color: AppTheme.carbsColor),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 體重預測卡片
+            if (_goal != 'maintain')
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.trending_down, color: _goal == 'lose' ? AppTheme.proteinColor : AppTheme.accentColor, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          '預計${weeksToGoal}週達成目標',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // 簡化曲線視圖
+                    _WeightPredictionCurve(weeks: weeksToGoal, goal: _goal, currentWeight: _weight),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 20),
+
+            // 確認按鈕
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: () {
+                  final profile = UserProfile(
+                    name: '使用者',
+                    age: _age.toInt(),
+                    heightCm: _height,
+                    weightKg: _weight,
+                    gender: _gender,
+                    goal: _goal,
+                    activityLevel: _getActivityLevel(_activity),
+                  );
+                  ref.read(userProfileProvider.notifier).updateProfile(profile);
+                  Navigator.of(context).pop();
+                  widget.onComplete();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  '確認開始使用',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -416,7 +486,14 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
     );
   }
 
-  Widget _buildStep({required String title, String? subtitle, required Widget child}) {
+  Widget _buildStep({required String title, String? subtitle, required Widget child, bool isLastStep = false}) {
+    // 最後一步（總結）不顯示步進條
+    if (isLastStep) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: child,
+      );
+    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
       child: Column(
@@ -541,4 +618,124 @@ class _QuickSelectChip extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 巨量營養素圓形指示器
+class _MacroCircle extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _MacroCircle({required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withOpacity(0.15),
+          ),
+          child: Center(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppTheme.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// 體重預測曲線視圖
+class _WeightPredictionCurve extends StatelessWidget {
+  final int weeks;
+  final String goal;
+  final double currentWeight;
+
+  const _WeightPredictionCurve({required this.weeks, required this.goal, required this.currentWeight});
+
+  @override
+  Widget build(BuildContext context) {
+    final isLose = goal == 'lose';
+    final targetWeight = isLose ? currentWeight * 0.85 : currentWeight * 1.08;
+    final points = List.generate(weeks + 1, (i) {
+      final t = i / weeks;
+      return Offset(t, 1 - t);
+    });
+
+    return SizedBox(
+      height: 80,
+      child: CustomPaint(
+        painter: _CurvePainter(
+          points: points,
+          color: isLose ? AppTheme.proteinColor : AppTheme.accentColor,
+          targetWeight: targetWeight,
+        ),
+        size: const Size(double.infinity, 80),
+      ),
+    );
+  }
+}
+
+class _CurvePainter extends CustomPainter {
+  final List<Offset> points;
+  final Color color;
+  final double targetWeight;
+
+  _CurvePainter({required this.points, required this.color, required this.targetWeight});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (points.length < 2) return;
+
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final fillPaint = Paint()
+      ..color = color.withOpacity(0.1)
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    final fillPath = Path();
+
+    path.moveTo(0, points.first.dy * size.height);
+    fillPath.moveTo(0, size.height);
+    fillPath.lineTo(0, points.first.dy * size.height);
+
+    for (int i = 1; i < points.length; i++) {
+      final x = points[i].dx * size.width;
+      final y = points[i].dy * size.height;
+      path.lineTo(x, y);
+      fillPath.lineTo(x, y);
+    }
+
+    fillPath.lineTo(size.width, size.height);
+    fillPath.close();
+
+    canvas.drawPath(fillPath, fillPaint);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
