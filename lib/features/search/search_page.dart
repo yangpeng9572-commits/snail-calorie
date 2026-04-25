@@ -51,6 +51,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     }
   }
 
+  void _showComingSoonSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('語音輸入功能開發中，敬請期待！🎤'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   void _showVoiceInputDialog() {
     showModalBottomSheet(
       context: context,
@@ -112,11 +121,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // TODO: 整合語音辨識 API（如 Android SpeechRecognizer）
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('語音輸入功能即將上線')),
-                    );
+                    // 語音輸入功能开发中，稍後上線
+                    _showComingSoonSnackbar();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
