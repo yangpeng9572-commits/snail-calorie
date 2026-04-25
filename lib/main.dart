@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_actions/quick_actions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // Firebase Crashlytics（等 Andy 提供 Firebase 設定後啟用）
 // import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 // if (Firebase.apps.isNotEmpty) {
@@ -14,6 +15,7 @@ import 'core/l10n/app_localizations.dart';
 import 'data/services/local_storage_service.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/firestore_service.dart';
+import 'data/services/exercise_service.dart';
 import 'features/home/home_page.dart';
 import 'features/profile/profile_page.dart';
 import 'features/charts/charts_page.dart';
@@ -25,6 +27,7 @@ import 'features/splash/splash_page.dart';
 import 'features/settings/privacy_policy_page.dart';
 import 'features/settings/settings_page.dart';
 import 'features/favorites/favorites_page.dart';
+import 'features/exercise/exercise_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -33,10 +36,14 @@ void main() async {
   // 初始化本地儲存
   final storage = await LocalStorageService.create();
   final firestore = await FirestoreService.create();
+  final prefs = await SharedPreferences.getInstance();
 
   // 初始化 Guest 模式
   final authService = AuthService();
   await authService.initGuestMode();
+
+  // 初始化運動服務
+  final exerciseService = ExerciseService(prefs);
 
   // 設定快捷動作
   // ignore: prefer_const_constructors (QuickActions from quick_actions package)
@@ -52,6 +59,7 @@ void main() async {
         localStorageProvider.overrideWithValue(storage),
         firestoreServiceProvider.overrideWithValue(firestore),
         authServiceProvider.overrideWithValue(authService),
+        exerciseServiceProvider.overrideWithValue(exerciseService),
       ],
       child: const SnailCalorieApp(),
     ),
@@ -157,6 +165,8 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
             return SlidePageRoute(page: const SettingsPage());
           case '/favorites':
             return SlidePageRoute(page: const FavoritesPage());
+          case '/exercise':
+            return SlidePageRoute(page: const ExercisePage());
           default:
             return null;
         }

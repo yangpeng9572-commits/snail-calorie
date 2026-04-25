@@ -5,9 +5,11 @@ import '../data/services/open_food_facts_service.dart';
 import '../data/services/food_search_service.dart';
 import '../data/services/firestore_service.dart';
 import '../data/services/notification_service.dart';
+import '../data/services/exercise_service.dart';
 import '../data/models/meal_record.dart';
 import '../data/models/food_item.dart';
 import '../data/models/daily_log.dart';
+import '../data/models/exercise_entry.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/date_utils.dart';
 
@@ -474,5 +476,47 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
         minute: 0,
       );
     }
+  }
+}
+
+// ==================== 運動記錄 Providers ====================
+
+/// 運動服務 Provider
+final exerciseServiceProvider = Provider<ExerciseService>((ref) {
+  // ExerciseService 需要 SharedPreferences，但 LocalStorageService 包裝了它
+  // 這裡我們直接用 SharedPreferences
+  throw UnimplementedError('ExerciseService must be overridden at startup');
+});
+
+/// 運動記錄列表 Provider
+final exerciseLogProvider = StateNotifierProvider<ExerciseLogNotifier, List<ExerciseEntry>>((ref) {
+  final service = ref.watch(exerciseServiceProvider);
+  return ExerciseLogNotifier(service);
+});
+
+class ExerciseLogNotifier extends StateNotifier<List<ExerciseEntry>> {
+  final ExerciseService _service;
+
+  ExerciseLogNotifier(this._service) : super([]);
+
+  Future<void> loadExercises(String date) async {
+    final entries = await _service.getExercisesByDate(date);
+    state = entries;
+  }
+
+  Future<void> addEntry(ExerciseEntry entry) async {
+    await _service.saveExercise(entry);
+    // 重新載入以確保狀態同步
+    final entries = await _service.getExercisesByDate(entry.date);
+    state = entries;
+  }
+
+  Future<void> removeEntry(String entryId) async {
+    // 找到條目以獲取日期
+    final entry = state.firstWhere((e) => e.id == entryId, orElse: () => throw Exception('Entry not found'));
+    await _service.deleteExercise(entry.date, entryId);
+    // 重新載入
+    final entries = await _service.getExercisesByDate(entry.date);
+    state = entries;
   }
 }

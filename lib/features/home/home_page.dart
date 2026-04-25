@@ -618,6 +618,11 @@ class _QuickShortcuts extends ConsumerWidget {
           ),
         ),
         _ShortcutCard(
+          icon: Icons.fitness_center,
+          label: '運動記錄',
+          onTap: () => Navigator.pushNamed(context, '/exercise'),
+        ),
+        _ShortcutCard(
           icon: Icons.star,
           label: '我的最愛',
           onTap: () => Navigator.pushNamed(context, '/favorites'),
