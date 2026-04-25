@@ -814,7 +814,7 @@ class _QuickAddPanel extends StatelessWidget {
                 '${food.calories.round()} kcal / ${food.servingSize.round()}g',
                 style: const TextStyle(fontSize: 12),
               ),
-              trailing: Icon(Icons.add_circle_outline, color: AppTheme.primaryColor),
+              trailing: const Icon(Icons.add_circle_outline, color: AppTheme.primaryColor),
               onTap: () => onSelectFood(food),
             )),
         ],

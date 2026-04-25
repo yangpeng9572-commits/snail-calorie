@@ -289,8 +289,8 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: const [AppTheme.primaryColor, AppTheme.primaryLight],
+                gradient: const LinearGradient(
+                  colors: [AppTheme.primaryColor, AppTheme.primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
