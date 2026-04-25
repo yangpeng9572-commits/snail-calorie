@@ -921,17 +921,27 @@ class _QuickAddPanel extends StatelessWidget {
   }
 }
 
-/// 新增食物到餐次的頁面（跳轉用）
-class AddFoodToMealPage extends StatelessWidget {
+/// 新增食物到餐次的頁面（直接使用 SearchPage）
+class AddFoodToMealPage extends ConsumerWidget {
   final String mealType;
 
   const AddFoodToMealPage({super.key, required this.mealType});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 延遲跳轉到搜尋頁（帶入預選餐次）
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchPage(preselectedMeal: mealType),
+        ),
+      );
+    });
+    // 短暫顯示載入畫面
     return Scaffold(
       appBar: AppBar(title: Text('新增到 $mealType')),
-      body: const Center(child: Text('選擇食物')),
+      body: const Center(child: CircularProgressIndicator()),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/services/local_storage_service.dart';
 import '../data/services/open_food_facts_service.dart';
+import '../data/services/food_search_service.dart';
 import '../data/services/firestore_service.dart';
 import '../data/services/notification_service.dart';
 import '../data/models/meal_record.dart';
@@ -68,6 +69,12 @@ final localStorageProvider = Provider<LocalStorageService>((ref) {
 /// Open Food Facts API 服務
 final openFoodFactsServiceProvider = Provider<OpenFoodFactsService>((ref) {
   return OpenFoodFactsService();
+});
+
+/// 合併食物搜尋服務（本地資料庫 + API）
+final foodSearchServiceProvider = Provider<FoodSearchService>((ref) {
+  final apiService = ref.watch(openFoodFactsServiceProvider);
+  return FoodSearchService(apiService: apiService);
 });
 
 // ==================== 條碼掃描 Providers ====================
@@ -258,12 +265,22 @@ class DailyLogNotifier extends StateNotifier<DailyLog> {
 /// 搜尋關鍵字
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-/// 搜尋結果
+/// 搜尋結果（本地 + API 合併）
 final searchResultsProvider = FutureProvider<List<FoodItem>>((ref) async {
   final query = ref.watch(searchQueryProvider);
   if (query.trim().length < 2) return [];
 
-  final service = ref.read(openFoodFactsServiceProvider);
+  final service = ref.read(foodSearchServiceProvider);
+  final result = await service.searchFoods(query);
+  return result.all;
+});
+
+/// 搜尋結果（詳細拆分 - 本地/ API 分開顯示）
+final searchDetailProvider = FutureProvider<FoodSearchResult>((ref) async {
+  final query = ref.watch(searchQueryProvider);
+  if (query.trim().length < 2) return FoodSearchResult.empty();
+
+  final service = ref.read(foodSearchServiceProvider);
   return service.searchFoods(query);
 });
 

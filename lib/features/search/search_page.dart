@@ -6,7 +6,9 @@ import '../../core/theme/app_theme.dart';
 
 /// 食物搜尋頁面
 class SearchPage extends ConsumerStatefulWidget {
-  const SearchPage({super.key});
+  final String? preselectedMeal;
+
+  const SearchPage({super.key, this.preselectedMeal});
 
   @override
   ConsumerState<SearchPage> createState() => _SearchPageState();
@@ -73,14 +75,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         ],
       ),
       body: _controller.text.isEmpty
-          ? _FavoritesSection(favorites: favorites)
+          ? favorites.isEmpty
+              ? const _PopularFoodsSection()
+              : _FavoritesSection(favorites: favorites)
           : results.when(
               data: (foods) => foods.isEmpty
                   ? const _EmptyState(
                       emoji: '🍽️',
                       message: '找不到食物，試著換個關鍵字',
                     )
-                  : _SearchResults(foods: foods),
+                  : _SearchResults(
+                      foods: foods,
+                      preselectedMeal: widget.preselectedMeal,
+                    ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => _NetworkError(
                 onRetry: () => _onSearch(_controller.text),
@@ -126,8 +133,9 @@ class _FavoritesSection extends StatelessWidget {
 
 class _SearchResults extends StatelessWidget {
   final List<FoodItem> foods;
+  final String? preselectedMeal;
 
-  const _SearchResults({required this.foods});
+  const _SearchResults({required this.foods, this.preselectedMeal});
 
   @override
   Widget build(BuildContext context) {
@@ -136,6 +144,7 @@ class _SearchResults extends StatelessWidget {
       itemBuilder: (context, index) => _AnimatedFoodListTile(
         food: foods[index],
         index: index,
+        preselectedMeal: preselectedMeal,
       ),
     );
   }
@@ -144,8 +153,9 @@ class _SearchResults extends StatelessWidget {
 class _AnimatedFoodListTile extends StatefulWidget {
   final FoodItem food;
   final int index;
+  final String? preselectedMeal;
 
-  const _AnimatedFoodListTile({required this.food, required this.index});
+  const _AnimatedFoodListTile({required this.food, required this.index, this.preselectedMeal});
 
   @override
   State<_AnimatedFoodListTile> createState() => _AnimatedFoodListTileState();
@@ -198,7 +208,7 @@ class _AnimatedFoodListTileState extends State<_AnimatedFoodListTile>
       opacity: _fadeAnimation,
       child: SlideTransition(
         position: _slideAnimation,
-        child: _FoodListTile(food: widget.food),
+        child: _FoodListTile(food: widget.food, preselectedMeal: widget.preselectedMeal),
       ),
     );
   }
@@ -207,8 +217,9 @@ class _AnimatedFoodListTileState extends State<_AnimatedFoodListTile>
 class _FoodListTile extends ConsumerWidget {
   final FoodItem food;
   final bool isFavorite;
+  final String? preselectedMeal;
 
-  const _FoodListTile({required this.food, this.isFavorite = false});
+  const _FoodListTile({required this.food, this.isFavorite = false, this.preselectedMeal});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -271,13 +282,22 @@ class _FoodListTile extends ConsumerWidget {
               color: isFav ? AppTheme.accentColor : Colors.grey),
           onPressed: () => ref.read(favoriteFoodsProvider.notifier).toggleFavorite(food),
         ),
-        onTap: () => _showAddDialog(context, ref),
+        onTap: () => _showAddDialog(context, ref, preselectedMeal),
       ),
     );
   }
 
-  void _showAddDialog(BuildContext context, WidgetRef ref) {
+  void _showAddDialog(BuildContext context, WidgetRef ref, String? preselectedMeal) {
     double grams = 100;
+
+    // 如果有預選餐次，直接新增
+    void addToMeal(String meal) {
+      ref.read(dailyLogProvider.notifier).addEntry(meal, food, grams);
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('已新增到 $meal')),
+      );
+    }
 
     showDialog(
       context: context,
@@ -323,19 +343,18 @@ class _FoodListTile extends ConsumerWidget {
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),
           ),
-          const Text('新增到：'),
-          ...['早餐', '午餐', '晚餐', '點心'].map(
-            (meal) => TextButton(
-              onPressed: () {
-                ref.read(dailyLogProvider.notifier).addEntry(meal, food, grams);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('已新增到 $meal')),
-                );
-              },
-              child: Text(meal),
+          if (preselectedMeal != null)
+            TextButton(
+              onPressed: () => addToMeal(preselectedMeal),
+              child: Text('加入 $preselectedMeal'),
+            )
+          else
+            ...['早餐', '午餐', '晚餐', '點心'].map(
+              (meal) => TextButton(
+                onPressed: () => addToMeal(meal),
+                child: Text(meal),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -421,4 +440,133 @@ class _MacroTag extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 熱門台灣食物區（當沒有收藏時顯示）
+class _PopularFoodsSection extends StatelessWidget {
+  const _PopularFoodsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final popularFoods = _getPopularFoods();
+    return ListView(
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            '🍜 熱門台灣美食',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: popularFoods.map((food) {
+              return ActionChip(
+                avatar: const Text('🍴', style: TextStyle(fontSize: 14)),
+                label: Text(food.name, style: const TextStyle(fontSize: 13)),
+                onPressed: () => _showAddDialogForFood(context, food),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Text(
+            '🥤 手搖飲料',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _getDrinkFoods().map((food) {
+              return ActionChip(
+                avatar: const Text('🧋', style: TextStyle(fontSize: 14)),
+                label: Text(food.name, style: const TextStyle(fontSize: 13)),
+                onPressed: () => _showAddDialogForFood(context, food),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 24),
+        const Center(
+          child: Text(
+            '輸入關鍵字搜尋更多食物 🔍',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  List<_SimpleFood> _getPopularFoods() {
+    return [
+      _SimpleFood('雞腿便當', 680, '1盒'),
+      _SimpleFood('排骨便當', 720, '1盒'),
+      _SimpleFood('滷肉飯', 290, '1碗'),
+      _SimpleFood('牛肉麵', 550, '1碗'),
+      _SimpleFood('鹹酥雞', 290, '100g'),
+      _SimpleFood('小籠包', 250, '100g'),
+      _SimpleFood('蚵仔煎', 225, '1份'),
+      _SimpleFood('鍋貼', 230, '100g'),
+      _SimpleFood('水餃', 200, '100g'),
+      _SimpleFood('臭豆腐', 150, '100g'),
+      _SimpleFood('肉圓', 200, '1顆'),
+      _SimpleFood('豆花', 95, '1碗'),
+    ];
+  }
+
+  List<_SimpleFood> _getDrinkFoods() {
+    return [
+      _SimpleFood('珍珠奶茶', 350, '500ml'),
+      _SimpleFood('波霸奶茶', 350, '500ml'),
+      _SimpleFood('冬瓜茶', 120, '500ml'),
+      _SimpleFood('鮮奶茶', 200, '500ml'),
+      _SimpleFood('檸檬愛玉', 100, '500ml'),
+      _SimpleFood('青茶（無糖）', 5, '500ml'),
+      _SimpleFood('豆漿（無糖）', 130, '500ml'),
+      _SimpleFood('米漿', 220, '500ml'),
+    ];
+  }
+
+  void _showAddDialogForFood(BuildContext context, _SimpleFood food) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(food.name),
+        content: Text('熱量: ${food.calories} kcal / ${food.serving}'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('關閉'),
+          ),
+          ...['早餐', '午餐', '晚餐', '點心'].map(
+            (meal) => TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('已新增到 $meal')),
+                );
+              },
+              child: Text(meal),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SimpleFood {
+  final String name;
+  final int calories;
+  final String serving;
+  _SimpleFood(this.name, this.calories, this.serving);
 }
