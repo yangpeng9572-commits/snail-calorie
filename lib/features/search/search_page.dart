@@ -53,16 +53,21 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final favorites = ref.watch(favoriteFoodsProvider);
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+        elevation: 0,
         title: TextField(
           controller: _controller,
           focusNode: _focusNode,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
+          style: const TextStyle(color: AppTheme.textPrimary),
+          decoration: InputDecoration(
             hintText: '搜尋食物...',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: Colors.grey.shade500),
             border: InputBorder.none,
             filled: false,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           ),
           onChanged: _onSearch,
         ),
