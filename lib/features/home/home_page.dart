@@ -7,6 +7,7 @@ import '../../core/utils/date_utils.dart';
 import '../../core/widgets/page_transitions.dart';
 import '../../core/widgets/quick_access_tile.dart';
 import '../../data/services/nutrition_calculator.dart';
+import 'widgets/macro_rings_widget.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
 
@@ -67,6 +68,10 @@ class HomePage extends ConsumerWidget {
               target: target.calories,
               progress: calorieProgress.clamp(0.0, 1.0),
             ),
+            const SizedBox(height: 16),
+
+            // 營養素三環圖
+            const MacroRingsWidget(),
             const SizedBox(height: 16),
 
             // 快速捷徑 2x2 網格
