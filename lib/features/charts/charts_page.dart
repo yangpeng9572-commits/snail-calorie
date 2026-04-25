@@ -206,6 +206,7 @@ class _WeeklyCalorieChart extends StatelessWidget {
               ),
               gridData: FlGridData(
                 show: true,
+                drawVerticalLine: false,
                 horizontalInterval: target.toDouble(),
                 getDrawingHorizontalLine: (value) => FlLine(
                   color: AppTheme.accentColor.withOpacity(0.5),
@@ -379,6 +380,8 @@ class _FourWeekTrendChart extends StatelessWidget {
                     ],
                   ),
                 ),
+                swapAnimationDuration: const Duration(milliseconds: 800),
+                swapAnimationCurve: Curves.easeInOut,
               ),
             ),
           ],
