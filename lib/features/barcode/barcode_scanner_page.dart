@@ -72,7 +72,10 @@ class _BarcodeScannerPageState extends ConsumerState<BarcodeScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('掃描條碼'),
+        title: const Text('掃描條碼', style: TextStyle(fontWeight: FontWeight.w700)),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(_isScanning ? Icons.flash_off : Icons.flash_on),
