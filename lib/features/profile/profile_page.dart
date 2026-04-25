@@ -152,16 +152,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final target = profileState.target;
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('個人設定'),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+        elevation: 0,
+        title: const Text('個人設定', style: TextStyle(fontWeight: FontWeight.w700)),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, '/settings'),
             tooltip: '設定',
           ),
-          TextButton(onPressed: _signOut, child: const Text('登出', style: TextStyle(color: Colors.white))),
-          TextButton(onPressed: _save, child: const Text('儲存', style: TextStyle(color: Colors.white))),
+          TextButton(onPressed: _signOut, child: const Text('登出')),
+          TextButton(onPressed: _save, child: const Text('儲存')),
         ],
       ),
       body: SingleChildScrollView(
