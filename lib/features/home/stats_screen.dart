@@ -67,8 +67,12 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     final target = profileState.target;
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('統計數據'),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimary,
+        elevation: 0,
+        title: const Text('統計數據', style: TextStyle(fontWeight: FontWeight.w700)),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
