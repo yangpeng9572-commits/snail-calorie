@@ -26,6 +26,7 @@ import 'features/settings/privacy_policy_page.dart';
 import 'features/settings/settings_page.dart';
 import 'features/favorites/favorites_page.dart';
 import 'features/exercise/exercise_page.dart';
+import 'features/search/search_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -34,6 +35,7 @@ void main() async {
   // Firebase 初始化（google-services.json 已在 android/app/）
   try {
     await Firebase.initializeApp();
+    // 僅在 Firebase 成功初始化後才設定 Crashlytics handler
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   } catch (e) {
     // Firebase 初始化失敗（正式金鑰尚未設定），繼續離線模式
@@ -203,6 +205,10 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
                   return SlidePageRoute(page: const FavoritesPage());
                 case '/exercise':
                   return SlidePageRoute(page: const ExercisePage());
+                case '/add-food':
+                  // QuickActions 捷徑：帶著餐次參數開啟搜尋頁
+                  final mealType = settings.arguments as String? ?? '早餐';
+                  return SlidePageRoute(page: SearchPage(preselectedMeal: mealType));
                 default:
                   return null;
               }

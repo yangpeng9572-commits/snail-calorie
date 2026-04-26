@@ -51,8 +51,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _fadeController.forward();
     _scaleController.forward();
     
-    // 2.5 秒後自動跳轉
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // 1.5 秒後自動跳轉（優化等待時間）
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         _navigateToHome();
       }
@@ -89,10 +89,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF4CAF50),
-              Color(0xFF2E7D32),
-              Color(0xFF1B5E20),
+              Color(0xFFB1B9FF), // 薰衣草淺紫
+              Color(0xFF9FA8FF), // 粉紫
+              Color(0xFF4285F4), // Google Blue
+              Color(0xFF02569B), // 深藍
             ],
+            stops: [0.0, 0.3, 0.7, 1.0],
           ),
         ),
         child: Center(
@@ -113,23 +115,23 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 發光效果的螞蟻圖示
+                // 發光效果的蝸牛圖示（放在白色圓形容器中）
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.white.withOpacity(0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
+                        color: Colors.black12,
+                        blurRadius: 20,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
                   child: const Text(
                     '🐌',
-                    style: TextStyle(fontSize: 80),
+                    style: TextStyle(fontSize: 72),
                   ),
                 ),
                 const SizedBox(height: 32),
