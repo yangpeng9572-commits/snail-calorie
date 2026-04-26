@@ -180,6 +180,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }
 
 class _OnboardingItem extends StatelessWidget {

@@ -589,6 +589,12 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 }
 
 /// 快速選擇Chip - FatSecret風格圓角按鈕
