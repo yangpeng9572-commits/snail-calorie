@@ -19,7 +19,6 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
   bool _isProcessing = false;
   String? _errorMessage;
   GeminiFoodResult? _analysisResult;
-  XFile? _capturedPhoto;
   double _portionGrams = 100;
 
   /// 四大餐選項
@@ -39,7 +38,6 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
     if (!mounted) return;
 
     setState(() {
-      _capturedPhoto = photo;
       _isProcessing = true;
       _errorMessage = null;
       _analysisResult = null;
@@ -115,7 +113,6 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
               onPressed: () {
                 setState(() {
                   _analysisResult = null;
-                  _capturedPhoto = null;
                   _errorMessage = null;
                 });
                 _takePhoto();
@@ -208,7 +205,7 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
