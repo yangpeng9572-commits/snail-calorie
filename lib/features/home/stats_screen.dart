@@ -841,13 +841,13 @@ class _WeekSummaryCard extends StatelessWidget {
 
   const _WeekSummaryCard({required this.weekLogs, required this.target});
 
+
   @override
   Widget build(BuildContext context) {
     double totalCalories = 0;
     double totalCarbs = 0;
     double totalProtein = 0;
     double totalFat = 0;
-    double totalWaterMl = 0;
     int daysWithData = 0;
 
     for (final log in weekLogs.values) {
@@ -857,7 +857,6 @@ class _WeekSummaryCard extends StatelessWidget {
         totalCarbs += log.totalCarbs;
         totalProtein += log.totalProtein;
         totalFat += log.totalFat;
-        totalWaterMl += log.totalWaterMl;
       }
     }
 
