@@ -91,15 +91,18 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
   @override
   void initState() {
     super.initState();
-    // ignore: prefer_const_constructors (QuickActions from quick_actions package)
-    QuickActions().initialize((String? type) {
-      if (type == 'breakfast') {
-        // 導航到新增早餐頁
-        Navigator.pushNamed(context, '/add-food', arguments: '早餐');
-      } else if (type == 'weight') {
-        // 導航到記錄體重（目前使用現有對話框）
-        _showWeightDialog(context);
-      }
+    // QuickActions 回調延後到首 frame 完成後執行，確保 MaterialApp 已完全 mount
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ignore: prefer_const_constructors (QuickActions from quick_actions package)
+      QuickActions().initialize((String? type) {
+        if (type == 'breakfast') {
+          // 導航到新增早餐頁
+          Navigator.pushNamed(context, '/add-food', arguments: '早餐');
+        } else if (type == 'weight') {
+          // 導航到記錄體重（目前使用現有對話框）
+          _showWeightDialog(context);
+        }
+      });
     });
   }
 
