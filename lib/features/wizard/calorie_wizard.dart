@@ -97,7 +97,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
@@ -128,7 +128,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
           max: 80,
           divisions: 70,
           activeColor: AppTheme.primaryColor,
-          inactiveColor: AppTheme.primaryColor.withOpacity(0.2),
+          inactiveColor: AppTheme.primaryColor.withValues(alpha: 0.2),
           onChanged: (v) => setState(() => _age = v),
         ),
         Row(
@@ -150,7 +150,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
@@ -180,7 +180,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
           max: 220,
           divisions: 100,
           activeColor: AppTheme.primaryColor,
-          inactiveColor: AppTheme.primaryColor.withOpacity(0.2),
+          inactiveColor: AppTheme.primaryColor.withValues(alpha: 0.2),
           onChanged: (v) => setState(() => _height = v),
         ),
         Row(
@@ -207,7 +207,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
@@ -237,7 +237,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
           max: 200,
           divisions: 170,
           activeColor: AppTheme.primaryColor,
-          inactiveColor: AppTheme.primaryColor.withOpacity(0.2),
+          inactiveColor: AppTheme.primaryColor.withValues(alpha: 0.2),
           onChanged: (v) => setState(() => _weight = v),
         ),
         Row(
@@ -455,7 +455,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
             width: selected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(14),
-          color: selected ? AppTheme.primaryColor.withOpacity(0.08) : Colors.white,
+          color: selected ? AppTheme.primaryColor.withValues(alpha: 0.08) : Colors.white,
         ),
         child: Row(
           children: [
@@ -464,7 +464,7 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
               height: 44,
               decoration: BoxDecoration(
                 color: selected
-                    ? AppTheme.primaryColor.withOpacity(0.15)
+                    ? AppTheme.primaryColor.withValues(alpha: 0.15)
                     : Colors.grey.shade100,
                 shape: BoxShape.circle,
               ),
@@ -654,7 +654,7 @@ class _MacroCircle extends StatelessWidget {
           height: 64,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
           ),
           child: Center(
             child: Text(
@@ -729,7 +729,7 @@ class _CurvePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final fillPaint = Paint()
-      ..color = color.withOpacity(0.1)
+      ..color = color.withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     final path = Path();

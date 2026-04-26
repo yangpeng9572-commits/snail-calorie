@@ -135,8 +135,8 @@ class _TotalOverview extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: isOver
-                    ? AppTheme.errorColor.withOpacity(0.1)
-                    : AppTheme.primaryColor.withOpacity(0.1),
+                    ? AppTheme.errorColor.withValues(alpha: 0.1)
+                    : AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -199,8 +199,8 @@ class _MealSummaryCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: isOverTarget
-                  ? AppTheme.errorColor.withOpacity(0.05)
-                  : AppTheme.primaryColor.withOpacity(0.05),
+                  ? AppTheme.errorColor.withValues(alpha: 0.05)
+                  : AppTheme.primaryColor.withValues(alpha: 0.05),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
             ),
             child: Row(

@@ -148,7 +148,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   '輕鬆記錄 · 健康生活',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     letterSpacing: 1,
                   ),
                 ),
@@ -160,7 +160,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   height: 40,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withOpacity(0.8),
+                      Colors.white.withValues(alpha: 0.8),
                     ),
                     strokeWidth: 3,
                   ),

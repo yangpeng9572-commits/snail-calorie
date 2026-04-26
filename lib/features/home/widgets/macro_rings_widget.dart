@@ -70,7 +70,7 @@ class MacroRingsWidget extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.calorieColor.withOpacity(0.1),
+                    color: AppTheme.calorieColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -134,7 +134,7 @@ class MacroRingsWidget extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: AppTheme.exerciseColor.withOpacity(0.1),
+                color: AppTheme.exerciseColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -199,7 +199,7 @@ class _MacroRingFat extends StatelessWidget {
             painter: _RingPainterFat(
               progress: progress,
               color: color,
-              backgroundColor: color.withOpacity(0.12),
+              backgroundColor: color.withValues(alpha: 0.12),
               strokeWidth: strokeWidth,
             ),
             child: Center(

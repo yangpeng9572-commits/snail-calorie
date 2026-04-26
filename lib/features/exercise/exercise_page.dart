@@ -143,7 +143,7 @@ class _ExercisePageState extends ConsumerState<ExercisePage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.primaryColor.withOpacity(0.2) : Colors.grey[100],
+                      color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.2) : Colors.grey[100],
                       borderRadius: BorderRadius.circular(12),
                       border: isSelected
                           ? Border.all(color: AppTheme.primaryColor, width: 2)
@@ -196,7 +196,7 @@ class _ExercisePageState extends ConsumerState<ExercisePage> {
                       }
                     }
                   },
-                  selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+                  selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
                     color: isSelected ? AppTheme.primaryColor : Colors.black87,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -242,7 +242,7 @@ class _ExercisePageState extends ConsumerState<ExercisePage> {
             // 卡路里計算結果
             if (_selectedExercise != null)
               Card(
-                color: AppTheme.calorieColor.withOpacity(0.1),
+                color: AppTheme.calorieColor.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -328,7 +328,7 @@ class _ExercisePageState extends ConsumerState<ExercisePage> {
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
               child: Text(
                 exercise?.icon ?? '🏃',
                 style: const TextStyle(fontSize: 20),

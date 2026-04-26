@@ -483,7 +483,7 @@ class _MacroChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -560,7 +560,7 @@ class _PhotoThumbnail extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.6),
+                        Colors.black.withValues(alpha: 0.6),
                       ],
                     ),
                   ),
@@ -1204,7 +1204,7 @@ class _PhotoDetailDialogState extends State<_PhotoDetailDialog> {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -1279,7 +1279,7 @@ class _ToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isActive ? AppTheme.primaryColor.withOpacity(0.8) : Colors.black54,
+      color: isActive ? AppTheme.primaryColor.withValues(alpha: 0.8) : Colors.black54,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onPressed,

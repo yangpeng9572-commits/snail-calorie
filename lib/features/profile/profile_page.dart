@@ -264,7 +264,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
             // 營養目標預覽
             Card(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -382,7 +382,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.1),
+                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(Icons.restaurant_menu, color: AppTheme.primaryColor),
@@ -438,7 +438,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             const Text('危險區域', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Card(
-              color: AppTheme.errorColor.withOpacity(0.05),
+              color: AppTheme.errorColor.withValues(alpha: 0.05),
               child: ListTile(
                 leading: const Icon(Icons.delete_forever, color: AppTheme.errorColor),
                 title: const Text('清除本地資料', style: TextStyle(color: AppTheme.errorColor)),

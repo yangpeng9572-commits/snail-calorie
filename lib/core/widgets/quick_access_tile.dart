@@ -26,9 +26,9 @@ class QuickAccessTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +45,7 @@ class QuickAccessTile extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(text: value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
-                  TextSpan(text: ' $unit', style: TextStyle(fontSize: 14, color: color.withOpacity(0.7))),
+                  TextSpan(text: ' $unit', style: TextStyle(fontSize: 14, color: color.withValues(alpha: 0.7))),
                 ],
               ),
             ),

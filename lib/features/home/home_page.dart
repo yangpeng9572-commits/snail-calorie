@@ -430,7 +430,7 @@ class _StatusTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -557,7 +557,7 @@ class _QuickAccessCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),
@@ -636,7 +636,7 @@ class _MealSection extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _mealColor.withOpacity(0.1),
+                    color: _mealColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(_mealIcon, color: _mealColor, size: 20),
@@ -715,28 +715,37 @@ class _EntryRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            '${entry.grams.round()}g',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
           const SizedBox(width: 8),
-          Text(
-            '${entry.calories.round()}',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+          SizedBox(
+            width: 45,
+            child: Text(
+              '${entry.grams.round()}g',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              textAlign: TextAlign.right,
             ),
           ),
           const SizedBox(width: 4),
-          Text(
-            'kcal',
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+          SizedBox(
+            width: 38,
+            child: Text(
+              '${entry.calories.round()}',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.right,
+            ),
           ),
-          IconButton(
-            icon: Icon(Icons.close, size: 16, color: Colors.grey.shade400),
-            onPressed: onDelete,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+          const SizedBox(width: 2),
+          SizedBox(
+            width: 24,
+            height: 24,
+            child: IconButton(
+              icon: Icon(Icons.close, size: 16, color: Colors.grey.shade400),
+              onPressed: onDelete,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
           ),
         ],
       ),
@@ -812,7 +821,7 @@ class _QuickAddPanel extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppTheme.accentColor.withOpacity(0.1),
+                  color: AppTheme.accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.star, color: AppTheme.accentColor, size: 20),

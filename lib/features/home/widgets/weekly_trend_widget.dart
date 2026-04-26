@@ -55,7 +55,7 @@ class WeeklyTrendWidget extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -102,7 +102,7 @@ class WeeklyTrendWidget extends ConsumerWidget {
                       ),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppTheme.calorieColor.withOpacity(0.15),
+                        color: AppTheme.calorieColor.withValues(alpha: 0.15),
                       ),
                     ),
                   ],
@@ -145,7 +145,7 @@ class WeeklyTrendWidget extends ConsumerWidget {
                     show: true,
                     horizontalInterval: (maxY / 4).ceilToDouble(),
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       strokeWidth: 1,
                     ),
                     drawVerticalLine: false,

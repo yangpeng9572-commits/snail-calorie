@@ -294,13 +294,13 @@ class _WeekNavigator extends StatelessWidget {
           onPressed: onPrev,
           icon: const Icon(Icons.chevron_left),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -312,7 +312,7 @@ class _WeekNavigator extends StatelessWidget {
           onPressed: onNext,
           icon: const Icon(Icons.chevron_right),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
       ],
@@ -345,13 +345,13 @@ class _MonthNavigator extends StatelessWidget {
           onPressed: onPrev,
           icon: const Icon(Icons.chevron_left),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -363,7 +363,7 @@ class _MonthNavigator extends StatelessWidget {
           onPressed: onNext,
           icon: const Icon(Icons.chevron_right),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
       ],
@@ -467,7 +467,7 @@ class _WeeklyCalorieBarChart extends StatelessWidget {
                 show: true,
                 horizontalInterval: (maxY / 4).ceilToDouble(),
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   strokeWidth: 1,
                 ),
                 drawVerticalLine: false,
@@ -639,7 +639,7 @@ class _MonthlyCalorieBarChart extends StatelessWidget {
                 show: true,
                 horizontalInterval: (maxY / 4).ceilToDouble(),
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   strokeWidth: 1,
                 ),
                 drawVerticalLine: false,
@@ -1077,7 +1077,7 @@ class _SummaryItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 20),

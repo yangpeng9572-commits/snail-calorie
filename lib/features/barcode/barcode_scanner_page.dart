@@ -108,7 +108,7 @@ class _BarcodeScannerPageState extends ConsumerState<BarcodeScannerPage> {
                         // 半透明背景
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
@@ -117,7 +117,7 @@ class _BarcodeScannerPageState extends ConsumerState<BarcodeScannerPage> {
                           margin: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             color: Colors.transparent,
-                            border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),

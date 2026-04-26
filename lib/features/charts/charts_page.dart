@@ -209,7 +209,7 @@ class _WeeklyCalorieChart extends StatelessWidget {
                 drawVerticalLine: false,
                 horizontalInterval: target.toDouble(),
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: AppTheme.accentColor.withOpacity(0.5),
+                  color: AppTheme.accentColor.withValues(alpha: 0.5),
                   strokeWidth: 2,
                   dashArray: [5, 5],
                 ),
@@ -358,7 +358,7 @@ class _FourWeekTrendChart extends StatelessWidget {
                     show: true,
                     horizontalInterval: target.toDouble(),
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: AppTheme.accentColor.withOpacity(0.3),
+                      color: AppTheme.accentColor.withValues(alpha: 0.3),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     ),
@@ -546,7 +546,7 @@ class _WeightLineChart extends StatelessWidget {
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   ),
                 ),
               ],
@@ -637,7 +637,7 @@ class _DayCard extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           alignment: Alignment.center,
@@ -692,7 +692,7 @@ class _WeekNavigator extends StatelessWidget {
           onPressed: onPrev,
           icon: const Icon(Icons.chevron_left),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
         Text(
@@ -703,7 +703,7 @@ class _WeekNavigator extends StatelessWidget {
           onPressed: onNext,
           icon: const Icon(Icons.chevron_right),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
       ],

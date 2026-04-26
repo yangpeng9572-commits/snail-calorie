@@ -180,7 +180,7 @@ class _ExportPageState extends ConsumerState<ExportPage> {
           children: [
             // 說明卡片
             Card(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
