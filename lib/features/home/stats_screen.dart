@@ -1024,18 +1024,18 @@ class _MonthSummaryCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _SummaryItem(
-                    icon: Icons.egg,
+                    icon: Icons.fitness_center,
                     label: '蛋白質',
                     value: '${totalProtein.round()}g',
-                    color: Colors.blue,
+                    color: AppTheme.proteinColor,
                   ),
                 ),
                 Expanded(
                   child: _SummaryItem(
-                    icon: Icons.water_drop,
+                    icon: Icons.local_fire_department,
                     label: '脂肪',
                     value: '${totalFat.round()}g',
-                    color: Colors.orange,
+                    color: AppTheme.fatColor,
                   ),
                 ),
                 Expanded(
@@ -1043,7 +1043,7 @@ class _MonthSummaryCard extends StatelessWidget {
                     icon: Icons.grain,
                     label: '碳水',
                     value: '${totalCarbs.round()}g',
-                    color: Colors.green,
+                    color: AppTheme.carbsColor,
                   ),
                 ),
               ],
