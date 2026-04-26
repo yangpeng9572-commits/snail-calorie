@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../providers/app_providers.dart';
 import '../../data/models/food_item.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
 
 /// 條碼掃描頁面
 class BarcodeScannerPage extends ConsumerStatefulWidget {
@@ -194,7 +195,7 @@ class _FoodResultCard extends ConsumerWidget {
             const SizedBox(height: 16),
             Wrap(
               spacing: 8,
-              children: ['早餐', '午餐', '晚餐', '點心'].map(
+              children: AppConstants.mealTypes.map(
                 (meal) => ElevatedButton(
                   onPressed: () {
                     ref.read(dailyLogProvider.notifier).addEntry(meal, food, 100);

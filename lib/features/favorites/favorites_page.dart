@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/app_providers.dart';
-import '../../data/models/food_item.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
+import '../../data/models/food_item.dart';
+import '../../providers/app_providers.dart';
 import '../search/search_page.dart';
 
 /// 我的最愛（收藏食物）頁面
@@ -322,12 +323,12 @@ class _FavoriteFoodCardState extends ConsumerState<_FavoriteFoodCard> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ...['早餐', '午餐', '晚餐', '點心'].map((mealType) => ListTile(
+            ...AppConstants.mealTypes.map((mealType) => ListTile(
               leading: Icon(_getMealIcon(mealType), color: AppTheme.primaryColor),
               title: Text(mealType),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(ctx);
-                ref.read(dailyLogProvider.notifier).addEntry(
+                await ref.read(dailyLogProvider.notifier).addEntry(
                   mealType,
                   widget.food,
                   _servingSize,

@@ -534,8 +534,8 @@ class _AddFoodWithPhotoDialogState
                                 food.servingSize,
                                 widget.photoPath,
                               );
+                              // Only pop once - the dialog closes and returns to gallery
                               Navigator.pop(context);
-                              Navigator.pop(context); // Close gallery
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('已新增 ${food.name} 到 ${widget.mealType}')),
                               );
