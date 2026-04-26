@@ -85,6 +85,27 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
         _buildOption('male', '♂ 男性', Icons.male),
         const SizedBox(height: 16),
         _buildOption('female', '♀ 女性', Icons.female),
+        const Spacer(),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                setState(() => _step = 1);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+              ),
+              child: const Text('下一步', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ),
       ],
     ),
   );

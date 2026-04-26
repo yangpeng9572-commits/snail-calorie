@@ -38,6 +38,9 @@ dependencies:
   # ML Kit 文字辨識（拍照搜尋）
   google_mlkit_text_recognition: ^0.14.0
 
+  # Gemini AI 視覺分析
+  google_generative_ai: ^0.2.2
+
   # 本地通知
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
