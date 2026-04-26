@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 class AppThemeDark {
   AppThemeDark._();
 
-  // 品牌色彩（藍紫深色版）
-  static const Color primaryColor = Color(0xFF82B1FF); // 淺藍
-  static const Color secondaryColor = Color(0xFFB39DDB); // 淺紫
-  static const Color accentColor = Color(0xFFFFAB91); // 淺橙
-  static const Color errorColor = Color(0xFFEF5350);
+  // 品牌色彩（淡藍運動深色版）
+  static const Color primaryColor = Color(0xFF4DD0E5); // 運動淺藍
+  static const Color secondaryColor = Color(0xFF80CBC4); // 淺青
+  static const Color accentColor = Color(0xFFFFAB40); // 活力橙
+  static const Color errorColor = Color(0xFFFF5252);
 
   // 營養素色彩（深色版）
-  static const Color calorieColor = Color(0xFFFF8A65);
-  static const Color carbsColor = Color(0xFFB39DDB); // 紫
-  static const Color proteinColor = Color(0xFF82B1FF); // 藍
-  static const Color fatColor = Color(0xFFFFD54F); // 琥珀
+  static const Color calorieColor = Color(0xFFFFAB40); // 橙
+  static const Color carbsColor = Color(0xFF4DD0E5); // 藍
+  static const Color proteinColor = Color(0xFF69F0AE); // 綠
+  static const Color fatColor = Color(0xFFFFD740); // 琥珀
 
   // 深色背景色彩（參考 FatSecret 深色主題 #1C1C1E）
   static const Color backgroundColor = Color(0xFF1C1C1E); // 改為 #1C1C1E 更護眼

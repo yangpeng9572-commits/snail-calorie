@@ -86,15 +86,14 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFB1B9FF), // 薰衣草淺紫
-              Color(0xFF9FA8FF), // 粉紫
-              Color(0xFF4285F4), // Google Blue
-              Color(0xFF02569B), // 深藍
+              Color(0xFFE3F2FD), // 淡天藍
+              Color(0xFF00B4DB), // 運動藍
+              Color(0xFF0091EA), // 深藍
             ],
-            stops: [0.0, 0.3, 0.7, 1.0],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: Center(
