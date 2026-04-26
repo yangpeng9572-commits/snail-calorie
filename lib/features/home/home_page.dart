@@ -773,9 +773,10 @@ class _QuickAddPanel extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              TextButton(
+              TextButton.icon(
                 onPressed: onAddNew,
-                child: const Text('搜尋更多'),
+                icon: const Icon(Icons.search, size: 18),
+                label: const Text('搜尋更多'),
               ),
             ],
           ),
@@ -789,6 +790,17 @@ class _QuickAddPanel extends StatelessWidget {
                     Icon(Icons.star_border, size: 48, color: Colors.grey.shade300),
                     const SizedBox(height: 8),
                     const Text('尚無收藏食物', style: TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: onAddNew,
+                      icon: const Icon(Icons.search, size: 18),
+                      label: const Text('搜尋食物'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                    ),
                   ],
                 ),
               ),

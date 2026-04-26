@@ -4,6 +4,7 @@ import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
@@ -141,42 +142,74 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
     final themeMode = ref.watch(themeModeProvider);
     final localeCode = ref.watch(localeProvider);
     final l10n = AppLocalizations(localeCode);
+    final connectivity = ref.watch(connectivityProvider);
 
-    return OfflineBanner(
-      child: MaterialApp(
-      title: l10n.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppThemeDark.darkTheme,
-      themeMode: themeMode,
-      locale: Locale(localeCode),
-      supportedLocales: const [Locale('zh'), Locale('en')],
-      home: const SplashPage(),
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/profile':
-            return SlidePageRoute(page: const ProfilePage());
-          case '/charts':
-            return SlidePageRoute(page: const ChartsPage());
-          case '/export':
-            return SlidePageRoute(page: const ExportPage());
-          case '/share-profile':
-            return SlidePageRoute(page: const ShareProfilePage());
-          case '/splash':
-            return SlidePageRoute(page: const SplashPage());
-          case '/privacy-policy':
-            return SlidePageRoute(page: const PrivacyPolicyPage());
-          case '/settings':
-            return SlidePageRoute(page: const SettingsPage());
-          case '/favorites':
-            return SlidePageRoute(page: const FavoritesPage());
-          case '/exercise':
-            return SlidePageRoute(page: const ExercisePage());
-          default:
-            return null;
-        }
-      },
-      ),
+    return Column(
+      children: [
+        // 離線提示橫幅（在 MaterialApp 內，MaterialLocalizations 可用）
+        connectivity.when(
+          data: (results) {
+            final hasInternet = !results.contains(ConnectivityResult.none);
+            if (!hasInternet) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                color: Colors.orange.shade700,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.wifi_off, color: Colors.white, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      '目前離線，請檢查網路連線',
+                      style: TextStyle(color: Colors.white, fontSize: 13),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
+        Expanded(
+          child: MaterialApp(
+            title: l10n.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppThemeDark.darkTheme,
+            themeMode: themeMode,
+            locale: Locale(localeCode),
+            supportedLocales: const [Locale('zh'), Locale('en')],
+            home: const SplashPage(),
+            onGenerateRoute: (settings) {
+              switch (settings.name) {
+                case '/profile':
+                  return SlidePageRoute(page: const ProfilePage());
+                case '/charts':
+                  return SlidePageRoute(page: const ChartsPage());
+                case '/export':
+                  return SlidePageRoute(page: const ExportPage());
+                case '/share-profile':
+                  return SlidePageRoute(page: const ShareProfilePage());
+                case '/splash':
+                  return SlidePageRoute(page: const SplashPage());
+                case '/privacy-policy':
+                  return SlidePageRoute(page: const PrivacyPolicyPage());
+                case '/settings':
+                  return SlidePageRoute(page: const SettingsPage());
+                case '/favorites':
+                  return SlidePageRoute(page: const FavoritesPage());
+                case '/exercise':
+                  return SlidePageRoute(page: const ExercisePage());
+                default:
+                  return null;
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
