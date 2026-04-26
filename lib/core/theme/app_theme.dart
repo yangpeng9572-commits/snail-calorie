@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // 品牌色彩 - 飽和健康綠
-  static const Color primaryColor = Color(0xFF2E7D32); // 深健康綠
-  static const Color primaryLight = Color(0xFF4CAF50); // 活力綠
-  static const Color primaryVibrant = Color(0xFF00C853); // 螢光綠（用於強調）
-  static const Color secondaryColor = Color(0xFF00BCD4); // 活力藍綠
-  static const Color accentColor = Color(0xFFFF9800); // 熱情橙
+  // 品牌色彩 - 藍紫色系（參考 Splash Logo）
+  static const Color primaryColor = Color(0xFF4285F4); // Google Blue
+  static const Color primaryLight = Color(0xFF9FA8FF); // 粉紫
+  static const Color primaryVibrant = Color(0xFF40D0FD); // 螢光藍（用於強調）
+  static const Color secondaryColor = Color(0xFF7E57C2); // 紫色
+  static const Color accentColor = Color(0xFFFF7043); // 熱情橙
   static const Color errorColor = Color(0xFFE53935); // 警示紅
 
-  // 營養素色彩 - 飽和色
-  static const Color calorieColor = Color(0xFFFF5722); // 熱量 - 橙紅
-  static const Color carbsColor = Color(0xFF1976D2); // 碳水 - 藍
-  static const Color proteinColor = Color(0xFF2E7D32); // 蛋白質 - 綠
-  static const Color fatColor = Color(0xFFFFA000); // 脂肪 - 琥珀
-  static const Color exerciseColor = Color(0xFFFF7043); // 運動 - 深橙
+  // 營養素色彩 - 紫藍色調協調
+  static const Color calorieColor = Color(0xFFFF7043); // 熱量 - 橙紅
+  static const Color carbsColor = Color(0xFF7E57C2); // 碳水 - 紫
+  static const Color proteinColor = Color(0xFF4285F4); // 蛋白質 - 藍
+  static const Color fatColor = Color(0xFFFFA726); // 脂肪 - 琥珀
+  static const Color exerciseColor = Color(0xFFEC407A); // 運動 - 粉紅
 
   // 背景色彩
   static const Color backgroundColor = Color(0xFFF5F5F5);
