@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
+import '../../widgets/info_box.dart';
 
 class CalorieWizard extends ConsumerStatefulWidget {
   final VoidCallback onComplete;
@@ -189,6 +190,11 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
             Text('220cm', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
           ],
         ),
+        const SizedBox(height: 16),
+        const InfoBox(
+          text: '身高會影響你每天消耗的能量，正確的身高能讓熱量計算更準確。',
+          icon: Icons.info_outline,
+        ),
       ],
     ),
   );
@@ -240,6 +246,11 @@ class _CalorieWizardState extends ConsumerState<CalorieWizard> {
             Text('30kg', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
             Text('200kg', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
           ],
+        ),
+        const SizedBox(height: 16),
+        const InfoBox(
+          text: '這有助我們根據你的目前狀況來計算減重的熱量目標，不確定？填寫一個估算值即可。',
+          icon: Icons.info_outline,
         ),
       ],
     ),
