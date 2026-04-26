@@ -44,3 +44,6 @@ app.*.map.json
 *.apk
 build/
 .dart_tool/
+
+# API Keys（請勿上傳）
+lib/core/config/api_keys.dart

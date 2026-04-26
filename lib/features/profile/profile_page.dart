@@ -685,7 +685,7 @@ class _TextField extends StatelessWidget {
             child: TextField(
               controller: controller,
               keyboardType: keyboardType,
-              decoration: InputDecoration(hintText: hint, isDense: true),
+              decoration: InputDecoration(hintText: hint, isDense: true, border: const OutlineInputBorder()),
             ),
           ),
         ],
