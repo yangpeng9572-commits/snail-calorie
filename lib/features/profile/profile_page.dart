@@ -77,11 +77,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   void _save() {
+    // 驗證輸入，範圍不合理時顯示警告而非靜默使用預設值
+    final age = int.tryParse(_ageController.text);
+    final height = double.tryParse(_heightController.text);
+    final weight = double.tryParse(_weightController.text);
+    if (age == null || age < 10 || age > 120) {
+      _showValidationError('請輸入有效的年齡（10-120歲）');
+      return;
+    }
+    if (height == null || height < 100 || height > 250) {
+      _showValidationError('請輸入有效的身高（100-250cm）');
+      return;
+    }
+    if (weight == null || weight < 30 || weight > 300) {
+      _showValidationError('請輸入有效的體重（30-300kg）');
+      return;
+    }
     final profile = UserProfile(
       name: _nameController.text.isEmpty ? '使用者' : _nameController.text,
-      age: int.tryParse(_ageController.text) ?? 25,
-      heightCm: double.tryParse(_heightController.text) ?? 170,
-      weightKg: double.tryParse(_weightController.text) ?? 65,
+      age: age,
+      heightCm: height,
+      weightKg: weight,
       gender: _gender,
       goal: _goal,
       activityLevel: _activityLevel,
@@ -93,6 +109,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       const SnackBar(content: Text('儲存成功！')),
     );
     Navigator.pop(context);
+  }
+
+  void _showValidationError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
   }
 
   Future<void> _signOut() async {

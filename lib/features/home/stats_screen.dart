@@ -847,6 +847,7 @@ class _WeekSummaryCard extends StatelessWidget {
     double totalCarbs = 0;
     double totalProtein = 0;
     double totalFat = 0;
+    double totalWaterMl = 0;
     int daysWithData = 0;
 
     for (final log in weekLogs.values) {
@@ -856,6 +857,7 @@ class _WeekSummaryCard extends StatelessWidget {
         totalCarbs += log.totalCarbs;
         totalProtein += log.totalProtein;
         totalFat += log.totalFat;
+        totalWaterMl += log.totalWaterMl;
       }
     }
 
@@ -863,6 +865,7 @@ class _WeekSummaryCard extends StatelessWidget {
     final avgCarbs = daysWithData > 0 ? totalCarbs / daysWithData : 0.0;
     final avgProtein = daysWithData > 0 ? totalProtein / daysWithData : 0.0;
     final avgFat = daysWithData > 0 ? totalFat / daysWithData : 0.0;
+    final avgWaterMl = daysWithData > 0 ? totalWaterMl / daysWithData : 0.0;
 
     final targetMetDays = weekLogs.values.where((log) => log.totalCalories >= target && target > 0).length;
 

@@ -383,7 +383,9 @@ class _MealSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = target > 0 ? (totalCalories / (target / 4)).clamp(0.0, 1.5) : 0.0;
+    // 單餐目標 = 每日目標 / 4（四餐制：早餐/午餐/晚餐/點心）
+    final mealTarget = target / 4;
+    final progress = mealTarget > 0 ? (totalCalories / mealTarget).clamp(0.0, 1.5) : 0.0;
 
     return Card(
       child: Padding(

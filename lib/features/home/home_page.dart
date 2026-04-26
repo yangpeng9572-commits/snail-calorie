@@ -201,7 +201,7 @@ class HomePage extends ConsumerWidget {
   }
 
   void _showAddFoodDialog(BuildContext context, WidgetRef ref, String mealType) {
-    Navigator.push(context, SlidePageRoute(page: AddFoodToMealPage(mealType: mealType)));
+    Navigator.push(context, SlidePageRoute(page: SearchPage(preselectedMeal: mealType)));
   }
 }
 
@@ -518,7 +518,7 @@ class _QuickAccessGrid extends StatelessWidget {
                 icon: Icons.monitor_weight,
                 label: '記錄體重',
                 color: AppTheme.carbsColor,
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, '/stats'),
               ),
             ),
           ],

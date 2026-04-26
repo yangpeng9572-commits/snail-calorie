@@ -894,9 +894,10 @@ class _SimpleFood {
       name: name,
       brand: '一般',
       calories: calories.toDouble(),
-      carbs: 0,
-      protein: 0,
-      fat: 0,
+      // 依熱量比例估算三大營養素（保守估算）
+      carbs: (calories * 0.50 / 4).roundToDouble(),
+      protein: (calories * 0.25 / 4).roundToDouble(),
+      fat: (calories * 0.25 / 9).roundToDouble(),
       servingSize: _parseServing(serving),
     );
   }
