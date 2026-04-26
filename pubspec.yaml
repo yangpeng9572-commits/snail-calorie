@@ -78,6 +78,13 @@ flutter:
     - assets/images/
     - assets/icons/
 
+  fonts:
+    - family: NotoSansTC
+      fonts:
+        - asset: assets/fonts/NotoSansTC-Regular.otf
+        - asset: assets/fonts/NotoSansTC-Bold.otf
+          weight: 700
+
   # App Icon 設定
   # flutter_icons:
   #   android: true
