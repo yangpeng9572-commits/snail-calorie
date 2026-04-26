@@ -774,7 +774,7 @@ class _PopularFoodsSection extends ConsumerWidget {
             children: popularFoods.map((food) {
               return ActionChip(
                 avatar: const Text('🍴', style: TextStyle(fontSize: 14)),
-                label: Text(food.name, style: const TextStyle(fontSize: 13)),
+                label: Text(food.name, style: const TextStyle(fontSize: 13, color: Color(0xFF212121))),
                 onPressed: () => _showAddDialogForFood(context, ref, food),
               );
             }).toList(),
@@ -796,7 +796,7 @@ class _PopularFoodsSection extends ConsumerWidget {
             children: _getDrinkFoods().map((food) {
               return ActionChip(
                 avatar: const Text('🧋', style: TextStyle(fontSize: 14)),
-                label: Text(food.name, style: const TextStyle(fontSize: 13)),
+                label: Text(food.name, style: const TextStyle(fontSize: 13, color: Color(0xFF212121))),
                 onPressed: () => _showAddDialogForFood(context, ref, food),
               );
             }).toList(),
@@ -848,37 +848,48 @@ class _PopularFoodsSection extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(food.name),
+        title: Text(food.name, style: const TextStyle(color: Color(0xFF212121))),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('熱量: ${food.calories} kcal / ${food.serving}'),
+            Text('熱量: ${food.calories} kcal / ${food.serving}', style: const TextStyle(color: Color(0xFF212121))),
             const SizedBox(height: 4),
             Text(
               '營養素：蛋白質/脂肪/碳水未細分',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            const Text('新增到：', style: TextStyle(color: Color(0xFF212121), fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ['早餐', '午餐', '晚餐', '點心'].map(
+                (meal) => ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    final foodItem = food.toFoodItem();
+                    ref.read(dailyLogProvider.notifier).addEntry(meal, foodItem, foodItem.servingSize);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('已新增 ${food.name} 到 $meal（${food.calories} kcal）')),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  ),
+                  child: Text(meal),
+                ),
+              ).toList(),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('關閉'),
-          ),
-          ...['早餐', '午餐', '晚餐', '點心'].map(
-            (meal) => TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                // 實際寫入每日記錄
-                final foodItem = food.toFoodItem();
-                ref.read(dailyLogProvider.notifier).addEntry(meal, foodItem, foodItem.servingSize);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('已新增 ${food.name} 到 $meal（${food.calories} kcal）')),
-                );
-              },
-              child: Text(meal),
-            ),
+            child: const Text('取消', style: TextStyle(color: Colors.grey)),
           ),
         ],
       ),
