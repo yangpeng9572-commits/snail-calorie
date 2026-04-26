@@ -12,6 +12,7 @@ class LocalStorageService {
   static const String _keyNutritionTarget = 'nutrition_target';
   static const String _keyDailyLogPrefix = 'daily_log_';
   static const String _keyFavoriteFoods = 'favorite_foods';
+  static const String _keyLocale = 'app_locale';
 
   final SharedPreferences _prefs;
 
@@ -220,5 +221,17 @@ class LocalStorageService {
 
   Future<void> clearAll() async {
     await _prefs.clear();
+  }
+
+  // ==================== 地區設定 ====================
+
+  /// 取得儲存的語系（預設 'zh'）
+  String getLocale() {
+    return _prefs.getString(_keyLocale) ?? 'zh';
+  }
+
+  /// 儲存語系
+  Future<void> saveLocale(String code) async {
+    await _prefs.setString(_keyLocale, code);
   }
 }

@@ -201,7 +201,7 @@ class HomePage extends ConsumerWidget {
   }
 
   void _showAddFoodDialog(BuildContext context, WidgetRef ref, String mealType) {
-    Navigator.push(context, SlidePageRoute(page: AddFoodToMealPage(mealType: mealType)));
+    Navigator.push(context, SlidePageRoute(page: SearchPage(preselectedMeal: mealType)));
   }
 }
 
@@ -430,7 +430,7 @@ class _StatusTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -518,7 +518,7 @@ class _QuickAccessGrid extends StatelessWidget {
                 icon: Icons.monitor_weight,
                 label: '記錄體重',
                 color: AppTheme.carbsColor,
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, '/stats'),
               ),
             ),
           ],
@@ -557,7 +557,7 @@ class _QuickAccessCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),
@@ -636,7 +636,7 @@ class _MealSection extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _mealColor.withOpacity(0.1),
+                    color: _mealColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(_mealIcon, color: _mealColor, size: 20),
@@ -715,28 +715,37 @@ class _EntryRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            '${entry.grams.round()}g',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
           const SizedBox(width: 8),
-          Text(
-            '${entry.calories.round()}',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+          SizedBox(
+            width: 45,
+            child: Text(
+              '${entry.grams.round()}g',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              textAlign: TextAlign.right,
             ),
           ),
           const SizedBox(width: 4),
-          Text(
-            'kcal',
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+          SizedBox(
+            width: 38,
+            child: Text(
+              '${entry.calories.round()}',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.right,
+            ),
           ),
-          IconButton(
-            icon: Icon(Icons.close, size: 16, color: Colors.grey.shade400),
-            onPressed: onDelete,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+          const SizedBox(width: 2),
+          SizedBox(
+            width: 24,
+            height: 24,
+            child: IconButton(
+              icon: Icon(Icons.close, size: 16, color: Colors.grey.shade400),
+              onPressed: onDelete,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
           ),
         ],
       ),
@@ -773,9 +782,10 @@ class _QuickAddPanel extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              TextButton(
+              TextButton.icon(
                 onPressed: onAddNew,
-                child: const Text('搜尋更多'),
+                icon: const Icon(Icons.search, size: 18),
+                label: const Text('搜尋更多'),
               ),
             ],
           ),
@@ -789,6 +799,17 @@ class _QuickAddPanel extends StatelessWidget {
                     Icon(Icons.star_border, size: 48, color: Colors.grey.shade300),
                     const SizedBox(height: 8),
                     const Text('尚無收藏食物', style: TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: onAddNew,
+                      icon: const Icon(Icons.search, size: 18),
+                      label: const Text('搜尋食物'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -800,7 +821,7 @@ class _QuickAddPanel extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppTheme.accentColor.withOpacity(0.1),
+                  color: AppTheme.accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.star, color: AppTheme.accentColor, size: 20),

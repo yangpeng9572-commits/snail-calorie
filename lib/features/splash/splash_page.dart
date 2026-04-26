@@ -51,8 +51,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _fadeController.forward();
     _scaleController.forward();
     
-    // 2.5 秒後自動跳轉
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // 1.5 秒後自動跳轉（優化等待時間）
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         _navigateToHome();
       }
@@ -86,13 +86,14 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF4CAF50),
-              Color(0xFF2E7D32),
-              Color(0xFF1B5E20),
+              Color(0xFFE3F2FD), // 淡天藍
+              Color(0xFF00B4DB), // 運動藍
+              Color(0xFF0091EA), // 深藍
             ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: Center(
@@ -113,23 +114,23 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 發光效果的螞蟻圖示
+                // 發光效果的蝸牛圖示（放在白色圓形容器中）
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.white.withOpacity(0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
+                        color: Colors.black12,
+                        blurRadius: 20,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
                   child: const Text(
                     '🐌',
-                    style: TextStyle(fontSize: 80),
+                    style: TextStyle(fontSize: 72),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -147,7 +148,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   '輕鬆記錄 · 健康生活',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     letterSpacing: 1,
                   ),
                 ),
@@ -159,7 +160,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   height: 40,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withOpacity(0.8),
+                      Colors.white.withValues(alpha: 0.8),
                     ),
                     strokeWidth: 3,
                   ),

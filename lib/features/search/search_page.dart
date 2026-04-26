@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:async';
 import 'dart:io';
 import '../../providers/app_providers.dart';
 import '../../data/models/food_item.dart';
@@ -20,6 +21,7 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -38,17 +40,20 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
   void _onSearch(String query) {
-    ref.read(searchQueryProvider.notifier).state = query;
-    // 儲存搜尋歷史
-    if (query.trim().isNotEmpty) {
-      ref.read(localStorageProvider).addSearchHistory(query);
-    }
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      ref.read(searchQueryProvider.notifier).state = query;
+      if (query.trim().isNotEmpty) {
+        ref.read(localStorageProvider).addSearchHistory(query);
+      }
+    });
   }
 
   void _showComingSoonSnackbar() {
@@ -85,7 +90,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -631,7 +636,7 @@ class _EmptyState extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.08),
+                color: AppTheme.primaryColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Center(child: Text(emoji, style: const TextStyle(fontSize: 48))),
@@ -730,7 +735,7 @@ class _MacroTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -894,9 +899,10 @@ class _SimpleFood {
       name: name,
       brand: '一般',
       calories: calories.toDouble(),
-      carbs: 0,
-      protein: 0,
-      fat: 0,
+      // 依熱量比例估算三大營養素（保守估算）
+      carbs: (calories * 0.50 / 4).roundToDouble(),
+      protein: (calories * 0.25 / 4).roundToDouble(),
+      fat: (calories * 0.25 / 9).roundToDouble(),
       servingSize: _parseServing(serving),
     );
   }
@@ -924,10 +930,10 @@ class _HistoryChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.primaryColor.withOpacity(0.1),
+          color: AppTheme.primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: AppTheme.primaryColor.withOpacity(0.3),
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -936,7 +942,7 @@ class _HistoryChip extends StatelessWidget {
             Icon(
               Icons.history,
               size: 14,
-              color: AppTheme.primaryColor.withOpacity(0.7),
+              color: AppTheme.primaryColor.withValues(alpha: 0.7),
             ),
             const SizedBox(width: 6),
             Text(

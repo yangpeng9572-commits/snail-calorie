@@ -130,7 +130,7 @@ class MonthlyOverviewWidget extends ConsumerWidget {
                     show: true,
                     horizontalInterval: (maxY / 4).ceilToDouble(),
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       strokeWidth: 1,
                     ),
                     drawVerticalLine: false,

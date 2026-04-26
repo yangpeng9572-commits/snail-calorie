@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // 品牌色彩 - 飽和健康綠
-  static const Color primaryColor = Color(0xFF2E7D32); // 深健康綠
-  static const Color primaryLight = Color(0xFF4CAF50); // 活力綠
-  static const Color primaryVibrant = Color(0xFF00C853); // 螢光綠（用於強調）
-  static const Color secondaryColor = Color(0xFF00BCD4); // 活力藍綠
-  static const Color accentColor = Color(0xFFFF9800); // 熱情橙
-  static const Color errorColor = Color(0xFFE53935); // 警示紅
+  // 品牌色彩 - 淡藍運動風格
+  static const Color primaryColor = Color(0xFF00B4DB); // 運動藍
+  static const Color primaryLight = Color(0xFF80D8FF); // 淺藍
+  static const Color primaryVibrant = Color(0xFF00E5FF); // 霓虹藍（用於強調）
+  static const Color secondaryColor = Color(0xFF00ACC1); // 深青
+  static const Color accentColor = Color(0xFFFF6D00); // 活力橙
+  static const Color errorColor = Color(0xFFD50000); // 警示紅
 
-  // 營養素色彩 - 飽和色
-  static const Color calorieColor = Color(0xFFFF5722); // 熱量 - 橙紅
-  static const Color carbsColor = Color(0xFF1976D2); // 碳水 - 藍
-  static const Color proteinColor = Color(0xFF2E7D32); // 蛋白質 - 綠
-  static const Color fatColor = Color(0xFFFFA000); // 脂肪 - 琥珀
-  static const Color exerciseColor = Color(0xFFFF7043); // 運動 - 深橙
+  // 營養素色彩 - 清新運動風
+  static const Color calorieColor = Color(0xFFFF6D00); // 熱量 - 活力橙
+  static const Color carbsColor = Color(0xFF00B4DB); // 碳水 - 運動藍
+  static const Color proteinColor = Color(0xFF00E676); // 蛋白質 - 清新綠
+  static const Color fatColor = Color(0xFFFF9100); // 脂肪 - 明亮橙
+  static const Color exerciseColor = Color(0xFFE040FB); // 運動 - 活力紫
 
   // 背景色彩
   static const Color backgroundColor = Color(0xFFF5F5F5);
@@ -31,6 +31,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'NotoSansTC',
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         primary: primaryColor,
@@ -53,7 +54,7 @@ class AppTheme {
         ),
       ),
       // 卡片主題 - 扁平化設計
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -132,7 +133,7 @@ class AppTheme {
       // Chip/ActionChip 樣式
       chipTheme: ChipThemeData(
         backgroundColor: Colors.grey.shade100,
-        selectedColor: primaryColor.withOpacity(0.15),
+        selectedColor: primaryColor.withValues(alpha: 0.15),
         labelStyle: const TextStyle(fontSize: 13),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(

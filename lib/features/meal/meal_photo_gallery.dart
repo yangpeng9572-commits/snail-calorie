@@ -327,7 +327,7 @@ class _PhotoTile extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
                     ),
                   ),
@@ -407,7 +407,7 @@ class _PhotoTile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -534,8 +534,8 @@ class _AddFoodWithPhotoDialogState
                                 food.servingSize,
                                 widget.photoPath,
                               );
+                              // Only pop once - the dialog closes and returns to gallery
                               Navigator.pop(context);
-                              Navigator.pop(context); // Close gallery
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('已新增 ${food.name} 到 ${widget.mealType}')),
                               );

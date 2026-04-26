@@ -47,7 +47,7 @@ class OptionCard extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   color: isSelected 
-                      ? AppTheme.primaryColor.withOpacity(0.15)
+                      ? AppTheme.primaryColor.withValues(alpha: 0.15)
                       : Colors.grey.shade100,
                   shape: BoxShape.circle,
                 ),

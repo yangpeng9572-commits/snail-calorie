@@ -34,7 +34,10 @@ class FirestoreService {
     return FirestoreService(prefs);
   }
 
-  bool get isLoggedIn => true;
+  bool get isLoggedIn {
+    // 檢查 SharedPreferences 中是否有登入狀態標記
+    return _prefs.getBool('is_logged_in') ?? false;
+  }
 
   Future<void> saveDailyLog(DailyLog log) async {
     final logs = _getDailyLogsMap();

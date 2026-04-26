@@ -301,6 +301,7 @@ class _MealDetailPageState extends ConsumerState<MealDetailPage> {
                           entry: entry,
                           mealType: widget.mealType,
                           onPhotoUpdated: () => _loadPhotos(),
+                          onRemove: () => ref.read(dailyLogProvider.notifier).removeEntry(widget.mealType, entry.id),
                         )),
                 ],
               ),
@@ -383,7 +384,9 @@ class _MealSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = target > 0 ? (totalCalories / (target / 4)).clamp(0.0, 1.5) : 0.0;
+    // 單餐目標 = 每日目標 / 4（四餐制：早餐/午餐/晚餐/點心）
+    final mealTarget = target / 4;
+    final progress = mealTarget > 0 ? (totalCalories / mealTarget).clamp(0.0, 1.5) : 0.0;
 
     return Card(
       child: Padding(
@@ -480,7 +483,7 @@ class _MacroChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -557,7 +560,7 @@ class _PhotoThumbnail extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.6),
+                        Colors.black.withValues(alpha: 0.6),
                       ],
                     ),
                   ),
@@ -642,23 +645,54 @@ class _EmptyMealState extends StatelessWidget {
   }
 }
 
-/// 食物 entry 卡片（支援照片顯示）
+/// 食物 entry 卡片（支援照片顯示 + 刪除）
 class _FoodEntryCard extends StatelessWidget {
   final dynamic entry;
   final String mealType;
   final VoidCallback onPhotoUpdated;
+  final VoidCallback onRemove;
 
   const _FoodEntryCard({
     required this.entry,
     required this.mealType,
     required this.onPhotoUpdated,
+    required this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
     final hasPhoto = entry.photoPath != null;
 
-    return Card(
+    return Dismissible(
+      key: Key(entry.id.toString()),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 16),
+        color: Colors.red.shade400,
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      confirmDismiss: (_) async {
+        return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('確認刪除'),
+            content: Text('確定要刪除「${entry.food.name}」嗎？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('刪除', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ?? false;
+      },
+      onDismissed: (_) => onRemove(),
+      child: Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -761,11 +795,11 @@ class _FoodEntryCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
 
-/// 迷你營養素標籤
 class _MiniMacro extends StatelessWidget {
   final String label;
   final int value;
@@ -1170,7 +1204,7 @@ class _PhotoDetailDialogState extends State<_PhotoDetailDialog> {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -1245,7 +1279,7 @@ class _ToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isActive ? AppTheme.primaryColor.withOpacity(0.8) : Colors.black54,
+      color: isActive ? AppTheme.primaryColor.withValues(alpha: 0.8) : Colors.black54,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onPressed,

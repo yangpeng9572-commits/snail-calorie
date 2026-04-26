@@ -36,7 +36,10 @@ dependencies:
   image_picker: ^1.1.2
 
   # ML Kit 文字辨識（拍照搜尋）
-  google_mlkit_text_recognition: ^0.14.0
+  google_mlkit_text_recognition: ^0.15.1
+
+  # ML Kit 圖片標籤
+  google_mlkit_image_labeling: ^0.14.0
 
   # 本地通知
   flutter_local_notifications: ^18.0.1
@@ -77,6 +80,13 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
+  fonts:
+    - family: NotoSansTC
+      fonts:
+        - asset: assets/fonts/NotoSansTC-Regular.otf
+        - asset: assets/fonts/NotoSansTC-Bold.otf
+          weight: 700
 
   # App Icon 設定
   # flutter_icons:

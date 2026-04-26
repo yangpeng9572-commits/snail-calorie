@@ -4,6 +4,7 @@ import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_dark.dart';
 import 'core/widgets/page_transitions.dart';
@@ -14,6 +15,7 @@ import 'data/services/auth_service.dart';
 import 'data/services/firestore_service.dart';
 import 'data/services/exercise_service.dart';
 import 'features/home/home_page.dart';
+import 'features/home/stats_screen.dart';
 import 'features/profile/profile_page.dart';
 import 'features/charts/charts_page.dart';
 import 'features/auth/login_page.dart';
@@ -25,6 +27,7 @@ import 'features/settings/privacy_policy_page.dart';
 import 'features/settings/settings_page.dart';
 import 'features/favorites/favorites_page.dart';
 import 'features/exercise/exercise_page.dart';
+import 'features/search/search_page.dart';
 import 'providers/app_providers.dart';
 
 void main() async {
@@ -33,6 +36,7 @@ void main() async {
   // Firebase 初始化（google-services.json 已在 android/app/）
   try {
     await Firebase.initializeApp();
+    // 僅在 Firebase 成功初始化後才設定 Crashlytics handler
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   } catch (e) {
     // Firebase 初始化失敗（正式金鑰尚未設定），繼續離線模式
@@ -87,15 +91,18 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
   @override
   void initState() {
     super.initState();
-    // ignore: prefer_const_constructors (QuickActions from quick_actions package)
-    QuickActions().initialize((String? type) {
-      if (type == 'breakfast') {
-        // 導航到新增早餐頁
-        Navigator.pushNamed(context, '/add-food', arguments: '早餐');
-      } else if (type == 'weight') {
-        // 導航到記錄體重（目前使用現有對話框）
-        _showWeightDialog(context);
-      }
+    // QuickActions 回調延後到首 frame 完成後執行，確保 MaterialApp 已完全 mount
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ignore: prefer_const_constructors (QuickActions from quick_actions package)
+      QuickActions().initialize((String? type) {
+        if (type == 'breakfast') {
+          // 導航到新增早餐頁
+          Navigator.pushNamed(context, '/add-food', arguments: '早餐');
+        } else if (type == 'weight') {
+          // 導航到記錄體重（目前使用現有對話框）
+          _showWeightDialog(context);
+        }
+      });
     });
   }
 
@@ -141,42 +148,80 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
     final themeMode = ref.watch(themeModeProvider);
     final localeCode = ref.watch(localeProvider);
     final l10n = AppLocalizations(localeCode);
+    final connectivity = ref.watch(connectivityProvider);
 
-    return OfflineBanner(
-      child: MaterialApp(
-      title: l10n.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppThemeDark.darkTheme,
-      themeMode: themeMode,
-      locale: Locale(localeCode),
-      supportedLocales: const [Locale('zh'), Locale('en')],
-      home: const SplashPage(),
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/profile':
-            return SlidePageRoute(page: const ProfilePage());
-          case '/charts':
-            return SlidePageRoute(page: const ChartsPage());
-          case '/export':
-            return SlidePageRoute(page: const ExportPage());
-          case '/share-profile':
-            return SlidePageRoute(page: const ShareProfilePage());
-          case '/splash':
-            return SlidePageRoute(page: const SplashPage());
-          case '/privacy-policy':
-            return SlidePageRoute(page: const PrivacyPolicyPage());
-          case '/settings':
-            return SlidePageRoute(page: const SettingsPage());
-          case '/favorites':
-            return SlidePageRoute(page: const FavoritesPage());
-          case '/exercise':
-            return SlidePageRoute(page: const ExercisePage());
-          default:
-            return null;
-        }
-      },
-      ),
+    return Column(
+      children: [
+        // 離線提示橫幅（在 MaterialApp 內，MaterialLocalizations 可用）
+        connectivity.when(
+          data: (results) {
+            final hasInternet = !results.contains(ConnectivityResult.none);
+            if (!hasInternet) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                color: Colors.orange.shade700,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.wifi_off, color: Colors.white, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      '目前離線，請檢查網路連線',
+                      style: TextStyle(color: Colors.white, fontSize: 13),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
+        Expanded(
+          child: MaterialApp(
+            title: l10n.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppThemeDark.darkTheme,
+            themeMode: themeMode,
+            locale: Locale(localeCode),
+            supportedLocales: const [Locale('zh'), Locale('en')],
+            home: const SplashPage(),
+            onGenerateRoute: (settings) {
+              switch (settings.name) {
+                case '/profile':
+                  return SlidePageRoute(page: const ProfilePage());
+                case '/charts':
+                  return SlidePageRoute(page: const ChartsPage());
+                case '/export':
+                  return SlidePageRoute(page: const ExportPage());
+                case '/share-profile':
+                  return SlidePageRoute(page: const ShareProfilePage());
+                case '/splash':
+                  return SlidePageRoute(page: const SplashPage());
+                case '/privacy-policy':
+                  return SlidePageRoute(page: const PrivacyPolicyPage());
+                case '/settings':
+                  return SlidePageRoute(page: const SettingsPage());
+                case '/favorites':
+                  return SlidePageRoute(page: const FavoritesPage());
+                case '/exercise':
+                  return SlidePageRoute(page: const ExercisePage());
+                case '/stats':
+                  return SlidePageRoute(page: const StatsScreen());
+                case '/add-food':
+                  // QuickActions 捷徑：帶著餐次參數開啟搜尋頁
+                  final mealType = settings.arguments as String? ?? '早餐';
+                  return SlidePageRoute(page: SearchPage(preselectedMeal: mealType));
+                default:
+                  return null;
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -299,7 +344,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -362,7 +407,7 @@ class _NavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor.withOpacity(0.12) : Colors.transparent,
+          color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(

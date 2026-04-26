@@ -159,7 +159,7 @@ class _WeeklyStatsView extends StatelessWidget {
           const SizedBox(height: 8),
           Text('每日熱量與目標比較', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
           const SizedBox(height: 16),
-          _WeeklyCalorieBarChart(weekLogs: weekLogs, target: target.calories),
+          _WeeklyCalorieBarChart(weekLogs: weekLogs, target: target.calories, weekStart: weekStart),
           const SizedBox(height: 32),
 
           // 營養素分佈圓餅圖
@@ -167,7 +167,7 @@ class _WeeklyStatsView extends StatelessWidget {
           const SizedBox(height: 8),
           Text('蛋白質 / 脂肪 / 碳水化合物', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
           const SizedBox(height: 16),
-          _MacroPieChart(weekLogs: weekLogs),
+          _MacroPieChart(logs: weekLogs),
           const SizedBox(height: 32),
 
           // 週摘要統計
@@ -234,7 +234,7 @@ class _MonthlyStatsView extends StatelessWidget {
           const SizedBox(height: 8),
           Text('每日熱量分布', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
           const SizedBox(height: 16),
-          _MonthlyCalorieBarChart(monthLogs: monthLogs, target: target.calories),
+          _MonthlyCalorieBarChart(monthLogs: monthLogs, target: target.calories, month: month, year: year),
           const SizedBox(height: 32),
 
           // 營養素分佈圓餅圖
@@ -242,7 +242,7 @@ class _MonthlyStatsView extends StatelessWidget {
           const SizedBox(height: 8),
           Text('蛋白質 / 脂肪 / 碳水化合物', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
           const SizedBox(height: 16),
-          _MacroPieChart(weekLogs: monthLogs),
+          _MacroPieChart(logs: monthLogs),
           const SizedBox(height: 32),
 
           // 月度摘要統計
@@ -294,13 +294,13 @@ class _WeekNavigator extends StatelessWidget {
           onPressed: onPrev,
           icon: const Icon(Icons.chevron_left),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -312,7 +312,7 @@ class _WeekNavigator extends StatelessWidget {
           onPressed: onNext,
           icon: const Icon(Icons.chevron_right),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
       ],
@@ -345,13 +345,13 @@ class _MonthNavigator extends StatelessWidget {
           onPressed: onPrev,
           icon: const Icon(Icons.chevron_left),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -363,7 +363,7 @@ class _MonthNavigator extends StatelessWidget {
           onPressed: onNext,
           icon: const Icon(Icons.chevron_right),
           style: IconButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           ),
         ),
       ],
@@ -375,17 +375,28 @@ class _MonthNavigator extends StatelessWidget {
 class _WeeklyCalorieBarChart extends StatelessWidget {
   final Map<String, DailyLog> weekLogs;
   final int target;
+  final DateTime weekStart;
 
-  const _WeeklyCalorieBarChart({required this.weekLogs, required this.target});
+  const _WeeklyCalorieBarChart({
+    required this.weekLogs,
+    required this.target,
+    required this.weekStart,
+  });
 
   @override
   Widget build(BuildContext context) {
     final entries = weekLogs.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
 
-    // 構建柱狀圖數據
+    // 動態計算星期抬頭，從 weekStart 當天開始
     final barGroups = <BarChartGroupData>[];
-    final weekdays = ['一', '二', '三', '四', '五', '六', '日'];
+    final weekdays = <String>[];
+    for (int i = 0; i < 7; i++) {
+      final day = weekStart.add(Duration(days: i));
+      final weekday = day.weekday; // 1=Mon, 7=Sun
+      final labels = ['', '一', '二', '三', '四', '五', '六', '日'];
+      weekdays.add(labels[weekday]);
+    }
 
     for (int i = 0; i < 7; i++) {
       double calories = 0;
@@ -467,7 +478,7 @@ class _WeeklyCalorieBarChart extends StatelessWidget {
                 show: true,
                 horizontalInterval: (maxY / 4).ceilToDouble(),
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   strokeWidth: 1,
                 ),
                 drawVerticalLine: false,
@@ -515,8 +526,15 @@ class _WeeklyCalorieBarChart extends StatelessWidget {
 class _MonthlyCalorieBarChart extends StatelessWidget {
   final Map<String, DailyLog> monthLogs;
   final int target;
+  final int month;
+  final int year;
 
-  const _MonthlyCalorieBarChart({required this.monthLogs, required this.target});
+  const _MonthlyCalorieBarChart({
+    required this.monthLogs,
+    required this.target,
+    required this.month,
+    required this.year,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -551,33 +569,32 @@ class _MonthlyCalorieBarChart extends StatelessWidget {
     final sortedEntries = monthLogs.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
 
-    // 構建柱狀圖數據（只顯示有資料的天）
+    // 建立 day -> log 的 map，確保所有天都有對應 bar（無資料日高度 0）
+    final logMap = {for (var e in sortedEntries) int.tryParse(e.key.split('-').last) ?? 0: e.value};
     final barGroups = <BarChartGroupData>[];
-    final touchedDays = <int>{};
+    final daysInMonth = DateTime(month, month + 1, 0).day;
 
-    for (final entry in sortedEntries) {
-      final day = int.tryParse(entry.key.split('-').last) ?? 0;
-      if (day > 0) {
-        touchedDays.add(day);
-        final isOver = target > 0 && entry.value.totalCalories > target;
-        barGroups.add(
-          BarChartGroupData(
-            x: day - 1, // 0-indexed
-            barRods: [
-              BarChartRodData(
-                toY: entry.value.totalCalories,
-                color: isOver ? AppTheme.errorColor : AppTheme.calorieColor,
-                width: 8,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
-              ),
-            ],
-          ),
-        );
-      }
+    for (int day = 1; day <= daysInMonth; day++) {
+      final log = logMap[day];
+      final calories = log?.totalCalories ?? 0.0;
+      final isOver = target > 0 && calories > target;
+      barGroups.add(
+        BarChartGroupData(
+          x: day - 1,
+          barRods: [
+            BarChartRodData(
+              toY: calories,
+              color: isOver ? AppTheme.errorColor : AppTheme.calorieColor,
+              width: 8,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+            ),
+          ],
+        ),
+      );
     }
 
-    // 如果沒有資料
-    if (barGroups.isEmpty) {
+    // 如果沒有資料（改檢查 monthLogs 而非 barGroups，因為現在每天都生成 bar）
+    if (monthLogs.isEmpty) {
       return Card(
         child: Container(
           height: 250,
@@ -639,7 +656,7 @@ class _MonthlyCalorieBarChart extends StatelessWidget {
                 show: true,
                 horizontalInterval: (maxY / 4).ceilToDouble(),
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   strokeWidth: 1,
                 ),
                 drawVerticalLine: false,
@@ -685,9 +702,9 @@ class _MonthlyCalorieBarChart extends StatelessWidget {
 
 /// 營養素圓餅圖
 class _MacroPieChart extends StatelessWidget {
-  final Map<String, DailyLog> weekLogs;
+  final Map<String, DailyLog> logs;
 
-  const _MacroPieChart({required this.weekLogs});
+  const _MacroPieChart({required this.logs});
 
   @override
   Widget build(BuildContext context) {
@@ -695,7 +712,7 @@ class _MacroPieChart extends StatelessWidget {
     double totalProtein = 0;
     double totalFat = 0;
 
-    for (final log in weekLogs.values) {
+    for (final log in logs.values) {
       totalCarbs += log.totalCarbs;
       totalProtein += log.totalProtein;
       totalFat += log.totalFat;
@@ -840,6 +857,7 @@ class _WeekSummaryCard extends StatelessWidget {
   final int target;
 
   const _WeekSummaryCard({required this.weekLogs, required this.target});
+
 
   @override
   Widget build(BuildContext context) {
@@ -1024,18 +1042,18 @@ class _MonthSummaryCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _SummaryItem(
-                    icon: Icons.egg,
+                    icon: Icons.fitness_center,
                     label: '蛋白質',
                     value: '${totalProtein.round()}g',
-                    color: Colors.blue,
+                    color: AppTheme.proteinColor,
                   ),
                 ),
                 Expanded(
                   child: _SummaryItem(
-                    icon: Icons.water_drop,
+                    icon: Icons.local_fire_department,
                     label: '脂肪',
                     value: '${totalFat.round()}g',
-                    color: Colors.orange,
+                    color: AppTheme.fatColor,
                   ),
                 ),
                 Expanded(
@@ -1043,7 +1061,7 @@ class _MonthSummaryCard extends StatelessWidget {
                     icon: Icons.grain,
                     label: '碳水',
                     value: '${totalCarbs.round()}g',
-                    color: Colors.green,
+                    color: AppTheme.carbsColor,
                   ),
                 ),
               ],
@@ -1076,7 +1094,7 @@ class _SummaryItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 20),
