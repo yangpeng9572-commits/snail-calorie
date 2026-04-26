@@ -16,12 +16,12 @@ class AppThemeDark {
   static const Color proteinColor = Color(0xFF81C784);
   static const Color fatColor = Color(0xFFFFD54F);
 
-  // 深色背景色彩
-  static const Color backgroundColor = Color(0xFF121212);
-  static const Color cardColor = Color(0xFF1E1E1E);
-  static const Color surfaceColor = Color(0xFF1E1E1E);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0B0B0);
+  // 深色背景色彩（參考 FatSecret 深色主題 #1C1C1E）
+  static const Color backgroundColor = Color(0xFF1C1C1E); // 改為 #1C1C1E 更護眼
+  static const Color cardColor = Color(0xFF2C2C2E); // 卡片較背景淡一點
+  static const Color surfaceColor = Color(0xFF2C2C2E);
+  static const Color textPrimary = Color(0xFFF5F5F5); // 改為護眼白
+  static const Color textSecondary = Color(0xFFA0A0A0); // 次要文字
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -40,7 +40,7 @@ class AppThemeDark {
       ),
       scaffoldBackgroundColor: backgroundColor,
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF1E1E1E),
+        backgroundColor: Color(0xFF2C2C2E),
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
@@ -55,14 +55,14 @@ class AppThemeDark {
         foregroundColor: Colors.black,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF1E1E1E),
+        backgroundColor: Color(0xFF2C2C2E),
         selectedItemColor: primaryColor,
         unselectedItemColor: textSecondary,
         type: BottomNavigationBarType.fixed,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF2C2C2C),
+        fillColor: surfaceColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
