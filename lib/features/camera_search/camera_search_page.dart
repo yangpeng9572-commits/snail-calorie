@@ -64,7 +64,7 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
     });
 
     try {
-      final result = await _geminiService.analyzeFood(photo.path);
+      final result = await _geminiService.analyzeFood(filePath);
       if (!mounted) return;
       setState(() {
         _analysisResult = result;
