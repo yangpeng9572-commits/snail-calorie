@@ -313,19 +313,19 @@ class _PrivacyConsentPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _PrivacyItem(
+          const _PrivacyItem(
             icon: Icons.restaurant,
             title: '個人化目標',
             desc: '使用你的個人和健康資料來提供營養建議和每日熱量攝取量。',
           ),
           const SizedBox(height: 12),
-          _PrivacyItem(
+          const _PrivacyItem(
             icon: Icons.school,
             title: '教育與指引',
             desc: '根據你的活動記錄，提供食物營養教育內容及功能使用建議。',
           ),
           const SizedBox(height: 12),
-          _PrivacyItem(
+          const _PrivacyItem(
             icon: Icons.analytics,
             title: '平台改善',
             desc: '使用匿名分析資料來了解使用者行為，藉此改善我們的服務。',
