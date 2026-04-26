@@ -93,8 +93,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       _showValidationError('請輸入有效的體重（30-300kg）');
       return;
     }
+    final nameInput = _nameController.text.trim();
     final profile = UserProfile(
-      name: _nameController.text.isEmpty ? '使用者' : _nameController.text,
+      name: nameInput.isEmpty ? '使用者' : nameInput,
       age: age,
       heightCm: height,
       weightKg: weight,
@@ -153,9 +154,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     }
 
     final weight = double.tryParse(weightStr);
-    if (weight == null || weight <= 0 || weight > 500) {
+    if (weight == null || weight <= 0 || weight > 300) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請輸入有效的體重值')),
+        const SnackBar(content: Text('請輸入有效的體重（1-300 kg）')),
       );
       return;
     }

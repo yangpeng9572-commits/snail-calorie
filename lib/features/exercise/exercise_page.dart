@@ -15,7 +15,6 @@ class ExercisePage extends ConsumerStatefulWidget {
 
 class _ExercisePageState extends ConsumerState<ExercisePage> {
   PredefinedExercise? _selectedExercise;
-  final TextEditingController _durationController = TextEditingController();
   double _calculatedCalories = 0;
   int _selectedDuration = 30;
 
@@ -31,7 +30,6 @@ class _ExercisePageState extends ConsumerState<ExercisePage> {
 
   @override
   void dispose() {
-    _durationController.dispose();
     super.dispose();
   }
 
@@ -65,7 +63,6 @@ class _ExercisePageState extends ConsumerState<ExercisePage> {
       );
       setState(() {
         _selectedExercise = null;
-        _durationController.clear();
         _selectedDuration = 30;
         _calculatedCalories = 0;
       });

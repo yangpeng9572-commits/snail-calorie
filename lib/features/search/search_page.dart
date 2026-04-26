@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:async';
 import 'dart:io';
 import '../../providers/app_providers.dart';
 import '../../data/models/food_item.dart';
@@ -20,6 +21,7 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -38,17 +40,20 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
   void _onSearch(String query) {
-    ref.read(searchQueryProvider.notifier).state = query;
-    // 儲存搜尋歷史
-    if (query.trim().isNotEmpty) {
-      ref.read(localStorageProvider).addSearchHistory(query);
-    }
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      ref.read(searchQueryProvider.notifier).state = query;
+      if (query.trim().isNotEmpty) {
+        ref.read(localStorageProvider).addSearchHistory(query);
+      }
+    });
   }
 
   void _showComingSoonSnackbar() {

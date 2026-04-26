@@ -17,12 +17,25 @@ import '../core/utils/date_utils.dart';
 
 /// 地區語言 Provider
 final localeProvider = StateNotifierProvider<LocaleNotifier, String>((ref) {
-  return LocaleNotifier();
+  final storage = ref.watch(localStorageProvider);
+  return LocaleNotifier(storage);
 });
 
 class LocaleNotifier extends StateNotifier<String> {
-  LocaleNotifier() : super('zh');
-  void setLocale(String code) { state = code; }
+  final LocalStorageService _storage;
+
+  LocaleNotifier(this._storage) : super('zh') {
+    _load();
+  }
+
+  void _load() {
+    state = _storage.getLocale();
+  }
+
+  Future<void> setLocale(String code) async {
+    state = code;
+    await _storage.saveLocale(code);
+  }
 }
 
 // ==================== 主題設定 Provider ====================
@@ -132,19 +145,24 @@ class BarcodeScannerNotifier extends StateNotifier<BarcodeScanState> {
       lastBarcode: barcode,
     );
 
-    final food = await _service.getFoodByBarcode(barcode);
+    try {
+      final food = await _service.getFoodByBarcode(barcode);
 
-    if (!mounted) return;
-
-    if (food != null) {
-      state = state.copyWith(
-        status: BarcodeScanStatus.found,
-        foundFood: food,
-      );
-    } else {
+      if (food != null) {
+        state = state.copyWith(
+          status: BarcodeScanStatus.found,
+          foundFood: food,
+        );
+      } else {
+        state = state.copyWith(
+          status: BarcodeScanStatus.notFound,
+          errorMessage: '找不到條碼 $barcode 對應的食品',
+        );
+      }
+    } catch (e) {
       state = state.copyWith(
         status: BarcodeScanStatus.notFound,
-        errorMessage: '找不到條碼 $barcode 對應的食品',
+        errorMessage: '網路錯誤，請檢查連線後重試',
       );
     }
   }
@@ -237,8 +255,12 @@ class DailyLogNotifier extends StateNotifier<DailyLog> {
   }
 
   void _load() {
-    final log = _storage.getDailyLog(AppDateUtils.formatDate(_date));
-    if (log != null) state = log;
+    try {
+      final log = _storage.getDailyLog(AppDateUtils.formatDate(_date));
+      if (log != null) state = log;
+    } catch (_) {
+      // 資料損壞時使用空白日誌，不影響 App 啟動
+    }
   }
 
   Future<void> addEntry(String mealType, FoodItem food, double grams) async {

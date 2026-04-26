@@ -15,6 +15,7 @@ import 'data/services/auth_service.dart';
 import 'data/services/firestore_service.dart';
 import 'data/services/exercise_service.dart';
 import 'features/home/home_page.dart';
+import 'features/home/stats_screen.dart';
 import 'features/profile/profile_page.dart';
 import 'features/charts/charts_page.dart';
 import 'features/auth/login_page.dart';
@@ -205,6 +206,8 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
                   return SlidePageRoute(page: const FavoritesPage());
                 case '/exercise':
                   return SlidePageRoute(page: const ExercisePage());
+                case '/stats':
+                  return SlidePageRoute(page: const StatsScreen());
                 case '/add-food':
                   // QuickActions 捷徑：帶著餐次參數開啟搜尋頁
                   final mealType = settings.arguments as String? ?? '早餐';
