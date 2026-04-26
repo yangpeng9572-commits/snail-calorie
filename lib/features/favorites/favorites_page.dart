@@ -327,13 +327,14 @@ class _FavoriteFoodCardState extends ConsumerState<_FavoriteFoodCard> {
               leading: Icon(_getMealIcon(mealType), color: AppTheme.primaryColor),
               title: Text(mealType),
               onTap: () async {
+                final messenger = ScaffoldMessenger.of(context);
                 Navigator.pop(ctx);
                 await ref.read(dailyLogProvider.notifier).addEntry(
                   mealType,
                   widget.food,
                   _servingSize,
                 );
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(content: Text('已新增 ${widget.food.name} 到 $mealType')),
                 );
               },
