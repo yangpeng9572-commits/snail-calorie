@@ -53,7 +53,7 @@ class AppTheme {
         ),
       ),
       // 卡片主題 - 扁平化設計
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardColor,
         elevation: 0,
         shape: RoundedRectangleBorder(

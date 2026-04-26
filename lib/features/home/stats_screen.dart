@@ -865,7 +865,6 @@ class _WeekSummaryCard extends StatelessWidget {
     final avgCarbs = daysWithData > 0 ? totalCarbs / daysWithData : 0.0;
     final avgProtein = daysWithData > 0 ? totalProtein / daysWithData : 0.0;
     final avgFat = daysWithData > 0 ? totalFat / daysWithData : 0.0;
-    final avgWaterMl = daysWithData > 0 ? totalWaterMl / daysWithData : 0.0;
 
     final targetMetDays = weekLogs.values.where((log) => log.totalCalories >= target && target > 0).length;
 
