@@ -131,6 +131,15 @@ class LocalStorageService {
       'breakfastEnabled': settings.breakfastEnabled,
       'lunchEnabled': settings.lunchEnabled,
       'dinnerEnabled': settings.dinnerEnabled,
+      'snackEnabled': settings.snackEnabled,
+      'breakfastHour': settings.breakfastHour,
+      'breakfastMinute': settings.breakfastMinute,
+      'lunchHour': settings.lunchHour,
+      'lunchMinute': settings.lunchMinute,
+      'dinnerHour': settings.dinnerHour,
+      'dinnerMinute': settings.dinnerMinute,
+      'snackHour': settings.snackHour,
+      'snackMinute': settings.snackMinute,
     }));
   }
 
@@ -143,6 +152,15 @@ class LocalStorageService {
       breakfastEnabled: map['breakfastEnabled'] as bool? ?? false,
       lunchEnabled: map['lunchEnabled'] as bool? ?? false,
       dinnerEnabled: map['dinnerEnabled'] as bool? ?? false,
+      snackEnabled: map['snackEnabled'] as bool? ?? false,
+      breakfastHour: map['breakfastHour'] as int? ?? 8,
+      breakfastMinute: map['breakfastMinute'] as int? ?? 0,
+      lunchHour: map['lunchHour'] as int? ?? 12,
+      lunchMinute: map['lunchMinute'] as int? ?? 0,
+      dinnerHour: map['dinnerHour'] as int? ?? 18,
+      dinnerMinute: map['dinnerMinute'] as int? ?? 0,
+      snackHour: map['snackHour'] as int? ?? 20,
+      snackMinute: map['snackMinute'] as int? ?? 0,
     );
   }
 

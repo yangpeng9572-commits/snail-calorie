@@ -3,13 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/services/gemini_food_service.dart';
+import '../../data/services/food_recognition_service.dart';
 import '../../data/models/food_item.dart';
 import '../../providers/app_providers.dart';
 
 /// 拍照搜尋頁面
-/// 雙軌 ML Kit 食物辨識：
-/// 1. ImageLabeler（主要）→ 營養卡片
-/// 2. OCR 回退（失敗時）→ 搜尋建議
+/// 三軌食物辨識：
+/// 1. Gemini AI（主要，高精度營養分析）
+/// 2. ML Kit ImageLabeler（快速標籤）
+/// 3. ML Kit OCR（文字回退）
 class CameraSearchPage extends ConsumerStatefulWidget {
   const CameraSearchPage({super.key});
 
@@ -20,17 +22,18 @@ class CameraSearchPage extends ConsumerStatefulWidget {
 class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
   final _picker = ImagePicker();
   final _geminiService = GeminiFoodService();
+  final _foodRecognitionService = FoodRecognitionService();
   bool _isProcessing = false;
   String? _errorMessage;
   GeminiFoodResult? _analysisResult;
   double _portionGrams = 100;
 
-  /// 四大餐選項
+  /// 四大餐選項（使用中文 key 與 DailyLog 一致）
   final List<Map<String, dynamic>> _mealOptions = [
-    {'key': 'breakfast', 'label': '早餐', 'icon': Icons.wb_sunny_outlined},
-    {'key': 'lunch', 'label': '午餐', 'icon': Icons.wb_sunny},
-    {'key': 'dinner', 'label': '晚餐', 'icon': Icons.nights_stay_outlined},
-    {'key': 'snack', 'label': '點心', 'icon': Icons.cookie_outlined},
+    {'key': '早餐', 'label': '早餐', 'icon': Icons.wb_sunny_outlined},
+    {'key': '午餐', 'label': '午餐', 'icon': Icons.wb_sunny},
+    {'key': '晚餐', 'label': '晚餐', 'icon': Icons.nights_stay_outlined},
+    {'key': '點心', 'label': '點心', 'icon': Icons.cookie_outlined},
   ];
 
   /// 拍照取得圖片
@@ -51,6 +54,42 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
     );
     if (image == null) return;
     await _processImage(image.path);
+  }
+
+  /// 顯示選擇方式（拍照 or 相簿）
+  void _showImageSourcePicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: AppTheme.primaryColor),
+              title: const Text('拍照'),
+              subtitle: const Text('即時拍攝食物照片'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _takePhoto();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: AppTheme.primaryColor),
+              title: const Text('從相簿選擇'),
+              subtitle: const Text('選取已拍攝的照片'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickFromGallery();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// 處理圖片：雙軌辨識
@@ -199,9 +238,9 @@ class _CameraSearchPageState extends ConsumerState<CameraSearchPage> {
           ],
           const SizedBox(height: 32),
           ElevatedButton.icon(
-            onPressed: _takePhoto,
+            onPressed: _showImageSourcePicker,
             icon: const Icon(Icons.camera),
-            label: const Text('拍照'),
+            label: const Text('選擇方式'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               backgroundColor: AppTheme.primaryColor,

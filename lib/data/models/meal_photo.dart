@@ -20,7 +20,7 @@ class MealPhoto {
     required this.photoPath,
     DateTime? takenAt,
     this.notes,
-  })  : id = id ?? const Uuid().v4(),
+  })  : id = id ?? Uuid().v4(),
         takenAt = takenAt ?? DateTime.now();
 
   MealPhoto copyWith({

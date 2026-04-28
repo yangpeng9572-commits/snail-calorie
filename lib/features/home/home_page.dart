@@ -9,6 +9,7 @@ import '../../data/models/meal_record.dart';
 import 'widgets/macro_rings_widget.dart';
 import '../search/search_page.dart';
 import '../barcode/barcode_scanner_page.dart';
+import '../camera_search/camera_search_page.dart';
 import '../meal/meal_detail_page.dart';
 import 'stats_screen.dart';
 
@@ -120,10 +121,28 @@ class HomePage extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppTheme.primaryColor,
-        onPressed: () => _showQuickAddPanel(context, ref),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 'camera_search',
+            backgroundColor: AppTheme.accentColor,
+            onPressed: () => Navigator.push(
+              context,
+              SlidePageRoute(page: const CameraSearchPage()),
+            ),
+            tooltip: '拍照辨識',
+            child: const Icon(Icons.camera_alt, color: Colors.white),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'search_food',
+            backgroundColor: AppTheme.primaryColor,
+            onPressed: () => _showQuickAddPanel(context, ref),
+            tooltip: '新增食物',
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+        ],
       ),
     );
   }

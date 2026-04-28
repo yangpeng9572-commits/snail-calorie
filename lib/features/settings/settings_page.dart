@@ -19,6 +19,12 @@ class SettingsPage extends ConsumerWidget {
       ),
       body: ListView(
         children: [
+          // 提醒設定區塊
+          const _SectionHeader(title: '提醒設定'),
+          const _NotificationSettingsSection(),
+
+          const Divider(),
+
           // 關於區塊
           const _SectionHeader(title: '關於'),
           const ListTile(
@@ -187,6 +193,147 @@ class SettingsPage extends ConsumerWidget {
   /// 重啟 App（透過 Navigator 回到根頁面）
   void _restartApp(BuildContext context) {
     Navigator.of(context).pushNamedAndRemoveUntil('/splash', (route) => false);
+  }
+}
+
+/// 提醒設定區塊
+class _NotificationSettingsSection extends ConsumerWidget {
+  const _NotificationSettingsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(notificationSettingsProvider);
+    final notifier = ref.read(notificationSettingsProvider.notifier);
+
+    return Column(
+      children: [
+        // 早餐提醒
+        _MealReminderTile(
+          icon: Icons.free_breakfast,
+          title: '早餐提醒',
+          timeStr: settings.breakfastTimeStr,
+          isEnabled: settings.breakfastEnabled,
+          onToggle: (value) => notifier.toggleBreakfast(value),
+          onTimeChanged: (hour, minute) => notifier.updateBreakfastTime(hour, minute),
+        ),
+        const Divider(height: 1, indent: 56),
+
+        // 午餐提醒
+        _MealReminderTile(
+          icon: Icons.lunch_dining,
+          title: '午餐提醒',
+          timeStr: settings.lunchTimeStr,
+          isEnabled: settings.lunchEnabled,
+          onToggle: (value) => notifier.toggleLunch(value),
+          onTimeChanged: (hour, minute) => notifier.updateLunchTime(hour, minute),
+        ),
+        const Divider(height: 1, indent: 56),
+
+        // 晚餐提醒
+        _MealReminderTile(
+          icon: Icons.dinner_dining,
+          title: '晚餐提醒',
+          timeStr: settings.dinnerTimeStr,
+          isEnabled: settings.dinnerEnabled,
+          onToggle: (value) => notifier.toggleDinner(value),
+          onTimeChanged: (hour, minute) => notifier.updateDinnerTime(hour, minute),
+        ),
+        const Divider(height: 1, indent: 56),
+
+        // 點心提醒
+        _MealReminderTile(
+          icon: Icons.cookie,
+          title: '點心提醒',
+          timeStr: settings.snackTimeStr,
+          isEnabled: settings.snackEnabled,
+          onToggle: (value) => notifier.toggleSnack(value),
+          onTimeChanged: (hour, minute) => notifier.updateSnackTime(hour, minute),
+        ),
+      ],
+    );
+  }
+}
+
+/// 單一餐次提醒設定列
+class _MealReminderTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String timeStr;
+  final bool isEnabled;
+  final ValueChanged<bool> onToggle;
+  final void Function(int hour, int minute) onTimeChanged;
+
+  const _MealReminderTile({
+    required this.icon,
+    required this.title,
+    required this.timeStr,
+    required this.isEnabled,
+    required this.onToggle,
+    required this.onTimeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: isEnabled ? AppTheme.primaryColor : Colors.grey),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isEnabled ? AppTheme.textPrimary : Colors.grey,
+        ),
+      ),
+      subtitle: isEnabled
+          ? GestureDetector(
+              onTap: () => _showTimePicker(context),
+              child: Text(
+                timeStr,
+                style: const TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+          : null,
+      trailing: Switch(
+        value: isEnabled,
+        onChanged: onToggle,
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppTheme.primaryColor;
+          }
+          return Colors.grey;
+        }),
+      ),
+    );
+  }
+
+  Future<void> _showTimePicker(BuildContext context) async {
+    // 解析目前時間
+    final parts = timeStr.split(':');
+    final initialHour = int.parse(parts[0]);
+    final initialMinute = int.parse(parts[1]);
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: initialHour, minute: initialMinute),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppTheme.primaryColor,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: AppTheme.textPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      onTimeChanged(picked.hour, picked.minute);
+    }
   }
 }
 

@@ -15,7 +15,7 @@ class MealEntry {
     required this.grams,
     DateTime? loggedAt,
     this.photoPath,
-  })  : id = id ?? const Uuid().v4(),
+  })  : id = id ?? Uuid().v4(),
         loggedAt = loggedAt ?? DateTime.now();
 
   double get calories => food.caloriesForServing(grams);

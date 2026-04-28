@@ -316,7 +316,7 @@ class FoodRecognitionService {
     if (label.contains(foodName)) return 0.85;
 
     // 標籤是食物名稱的一部分
-    if (foodName.contains(label)) return 0.8;
+    if (foodName.length > 3 && label.length > 3 && foodName.contains(label.substring(0, label.length ~/ 2))) return 0.7;
 
     // 單詞級別匹配
     final labelWords = label.split(RegExp(r'[\s\-_,;]+'));

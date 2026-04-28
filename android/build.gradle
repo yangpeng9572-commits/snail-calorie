@@ -5,6 +5,21 @@ allprojects {
     }
 }
 
+subprojects {
+    afterEvaluate { project ->
+        project.android {
+            if (project.hasProperty('android')) {
+                project.android {
+                    if (namespace != null && namespace.contains('connectivity')) {
+                        ext.compileSdkVersion = 36
+                        compileSdkVersion 36
+                    }
+                }
+            }
+        }
+    }
+}
+
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"

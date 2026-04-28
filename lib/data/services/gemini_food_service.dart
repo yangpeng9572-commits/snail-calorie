@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:async';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/config/api_keys.dart';
 
 /// Gemini 食物分析服務
@@ -21,16 +21,14 @@ class GeminiFoodService {
 
   /// 分析食物圖片並回傳營養資訊
   ///
-  /// [imagePath] 圖片檔案路徑
+  /// [imagePath] 圖片檔案路徑（支援 Android content URI 和檔案路徑）
   /// 回傳 [GeminiFoodResult] 包含食物名稱和營養資訊
   Future<GeminiFoodResult> analyzeFood(String imagePath) async {
     try {
-      final file = File(imagePath);
-      if (!await file.exists()) {
-        throw Exception('圖片檔案不存在：$imagePath');
-      }
-
-      final bytes = await file.readAsBytes();
+      // XFile.path 在 Android 上可能是 content URI，無法用 File() 直接讀取
+      // 使用 XFile.readAsBytes() 可以正確處理所有平台的所有 URI 類型
+      final xfile = XFile(imagePath);
+      final bytes = await xfile.readAsBytes();
 
       const prompt = '''
 請分析這張食物圖片，並以 JSON 格式回傳營養資訊。

@@ -14,7 +14,7 @@ class ExerciseEntry {
     required this.duration,
     required this.caloriesBurned,
     required this.date,
-  }) : id = id ?? const Uuid().v4();
+  }) : id = id ?? Uuid().v4();
 
   /// 從 JSON 建立
   factory ExerciseEntry.fromJson(Map<String, dynamic> json) {

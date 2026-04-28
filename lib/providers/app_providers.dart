@@ -440,24 +440,69 @@ class NotificationSettings {
   final bool breakfastEnabled;
   final bool lunchEnabled;
   final bool dinnerEnabled;
+  final bool snackEnabled;
+  final int breakfastHour;
+  final int breakfastMinute;
+  final int lunchHour;
+  final int lunchMinute;
+  final int dinnerHour;
+  final int dinnerMinute;
+  final int snackHour;
+  final int snackMinute;
 
   const NotificationSettings({
     this.breakfastEnabled = false,
     this.lunchEnabled = false,
     this.dinnerEnabled = false,
+    this.snackEnabled = false,
+    this.breakfastHour = 8,
+    this.breakfastMinute = 0,
+    this.lunchHour = 12,
+    this.lunchMinute = 0,
+    this.dinnerHour = 18,
+    this.dinnerMinute = 0,
+    this.snackHour = 20,
+    this.snackMinute = 0,
   });
 
   NotificationSettings copyWith({
     bool? breakfastEnabled,
     bool? lunchEnabled,
     bool? dinnerEnabled,
+    bool? snackEnabled,
+    int? breakfastHour,
+    int? breakfastMinute,
+    int? lunchHour,
+    int? lunchMinute,
+    int? dinnerHour,
+    int? dinnerMinute,
+    int? snackHour,
+    int? snackMinute,
   }) {
     return NotificationSettings(
       breakfastEnabled: breakfastEnabled ?? this.breakfastEnabled,
       lunchEnabled: lunchEnabled ?? this.lunchEnabled,
       dinnerEnabled: dinnerEnabled ?? this.dinnerEnabled,
+      snackEnabled: snackEnabled ?? this.snackEnabled,
+      breakfastHour: breakfastHour ?? this.breakfastHour,
+      breakfastMinute: breakfastMinute ?? this.breakfastMinute,
+      lunchHour: lunchHour ?? this.lunchHour,
+      lunchMinute: lunchMinute ?? this.lunchMinute,
+      dinnerHour: dinnerHour ?? this.dinnerHour,
+      dinnerMinute: dinnerMinute ?? this.dinnerMinute,
+      snackHour: snackHour ?? this.snackHour,
+      snackMinute: snackMinute ?? this.snackMinute,
     );
   }
+
+  String formatTime(int hour, int minute) {
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  }
+
+  String get breakfastTimeStr => formatTime(breakfastHour, breakfastMinute);
+  String get lunchTimeStr => formatTime(lunchHour, lunchMinute);
+  String get dinnerTimeStr => formatTime(dinnerHour, dinnerMinute);
+  String get snackTimeStr => formatTime(snackHour, snackMinute);
 }
 
 /// 通知設定 Provider
@@ -495,6 +540,31 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
     await _saveAndSync();
   }
 
+  Future<void> toggleSnack(bool enabled) async {
+    state = state.copyWith(snackEnabled: enabled);
+    await _saveAndSync();
+  }
+
+  Future<void> updateBreakfastTime(int hour, int minute) async {
+    state = state.copyWith(breakfastHour: hour, breakfastMinute: minute);
+    await _saveAndSync();
+  }
+
+  Future<void> updateLunchTime(int hour, int minute) async {
+    state = state.copyWith(lunchHour: hour, lunchMinute: minute);
+    await _saveAndSync();
+  }
+
+  Future<void> updateDinnerTime(int hour, int minute) async {
+    state = state.copyWith(dinnerHour: hour, dinnerMinute: minute);
+    await _saveAndSync();
+  }
+
+  Future<void> updateSnackTime(int hour, int minute) async {
+    state = state.copyWith(snackHour: hour, snackMinute: minute);
+    await _saveAndSync();
+  }
+
   Future<void> _saveAndSync() async {
     final storage = _ref.read(localStorageProvider);
     await storage.saveNotificationSettings(state);
@@ -513,8 +583,8 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
         id: 1,
         title: '🍳 早餐時間到！',
         body: '記得吃早餐，補充一天的活力！',
-        hour: 8,
-        minute: 0,
+        hour: state.breakfastHour,
+        minute: state.breakfastMinute,
       );
     }
 
@@ -523,8 +593,8 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
         id: 2,
         title: '🥗 午餐時間到！',
         body: '該吃午餐了，注意營養均衡！',
-        hour: 12,
-        minute: 0,
+        hour: state.lunchHour,
+        minute: state.lunchMinute,
       );
     }
 
@@ -533,8 +603,18 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
         id: 3,
         title: '🍽️ 晚餐時間到！',
         body: '晚餐時間到了，別忘了記錄！',
-        hour: 18,
-        minute: 0,
+        hour: state.dinnerHour,
+        minute: state.dinnerMinute,
+      );
+    }
+
+    if (state.snackEnabled) {
+      await notificationService.scheduleMealReminder(
+        id: 4,
+        title: '🍬 點心時間到！',
+        body: '想吃點小零食嗎？注意熱量哦！',
+        hour: state.snackHour,
+        minute: state.snackMinute,
       );
     }
   }
