@@ -27,6 +27,8 @@ import 'features/settings/privacy_policy_page.dart';
 import 'features/settings/settings_page.dart';
 import 'features/favorites/favorites_page.dart';
 import 'features/exercise/exercise_page.dart';
+import 'features/camera_search/camera_search_page.dart';
+import 'features/fridge_recipe/fridge_recipe_page.dart';
 import 'features/search/search_page.dart';
 import 'providers/app_providers.dart';
 
@@ -209,6 +211,10 @@ class _SnailCalorieAppState extends ConsumerState<SnailCalorieApp> {
                   return SlidePageRoute(page: const FavoritesPage());
                 case '/exercise':
                   return SlidePageRoute(page: const ExercisePage());
+                case '/camera-search':
+                  return SlidePageRoute(page: const CameraSearchPage());
+                case '/fridge-recipe':
+                  return SlidePageRoute(page: const FridgeRecipePage());
                 case '/stats':
                   return SlidePageRoute(page: const StatsScreen());
                 case '/add-food':

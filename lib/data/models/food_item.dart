@@ -36,8 +36,26 @@ class FoodItem {
       return defaultVal;
     }
 
+    // 解析 serving_size（字串如 "240g" 或 "1 cup"）→ 嘗試取數值
+    double parseServingSize(dynamic value) {
+      if (value == null) return 100;
+      if (value is num) return value.toDouble();
+      if (value is String && value.isNotEmpty) {
+        // 移除常見單位後綴，取第一組數字
+        final numeric = value.replaceAll(RegExp(r'[^0-9.]'), ' ').trim().split(' ').first;
+        return double.tryParse(numeric) ?? 100;
+      }
+      return 100;
+    }
+
+    // 確保 ID 不為空：優先用 barcode，其次用 code/_id，再其次用 UUID
+    final rawId = product['code'] ?? product['_id'] ?? '';
+    final id = (rawId is String && rawId.isNotEmpty)
+        ? rawId
+        : 'off_${DateTime.now().millisecondsSinceEpoch}';
+
     return FoodItem(
-      id: '${product['code'] ?? product['_id'] ?? ''}',
+      id: id,
       name: product['product_name'] as String? ??
             product['product_name_tw'] as String? ??
             product['brands'] as String? ?? '未知食物',
@@ -46,7 +64,7 @@ class FoodItem {
       carbs: parseNutrient(nutriments['carbohydrates_100g'], 0),
       protein: parseNutrient(nutriments['proteins_100g'], 0),
       fat: parseNutrient(nutriments['fat_100g'], 0),
-      servingSize: parseNutrient(product['serving_size']),
+      servingSize: parseServingSize(product['serving_size']),
       barcode: product['code'] as String?,
       imageUrl: product['image_small_url'] as String? ??
                 product['image_url'] as String?,

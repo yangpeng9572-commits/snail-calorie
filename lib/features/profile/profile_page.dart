@@ -341,6 +341,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
             const SizedBox(height: 24),
 
+            // 清冰箱食譜生成
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.kitchen, color: AppTheme.primaryColor),
+                title: const Text('清冰箱食譜'),
+                subtitle: const Text('AI 根據冰箱食材生成美味食譜', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pushNamed(context, '/fridge-recipe'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
             // 分享 QR Code
             Card(
               child: ListTile(
